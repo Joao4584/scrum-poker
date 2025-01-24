@@ -1,0 +1,23 @@
+{
+  "name": "meta-scrum-poker",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "configs/*",
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "husky run pre-dev && turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "husky": "^8.0.0",
+    "turbo": "^2.1.3"
+  },
+  "dependencies": {},
+  "packageManager": "npm@11.0.0"
+}
