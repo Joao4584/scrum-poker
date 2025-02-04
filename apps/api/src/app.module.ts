@@ -1,10 +1,8 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-
-import { UserModule } from './modules/user/user.module';
-import { typeOrmConfig } from 'infrastructure/database/typeorm.config';
+import { PrismaModule } from 'infrastructure/database/prisma.module';
+import { UserModule } from 'modules/user/user.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(typeOrmConfig), UserModule],
+  imports: [UserModule, PrismaModule],
 })
-export class GlobalModule {}
+export class AppModule {}

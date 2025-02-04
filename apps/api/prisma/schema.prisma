@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://postgres:password@localhost:5432/nestdb"
+}
+
+enum Language {
+  en_us
+  pt_br
+}
+
+model User {
+  id         Int       @id @default(autoincrement())
+  uuid       String    @unique @default(uuid())
+  name       String
+  email      String    @unique
+  password   String?
+  githubId   String?   @unique
+  googleId   String?   @unique
+  avatarUrl  String?
+  status     String    @default("available")
+  githubLink String?
+  bio        String?
+  language   Language  @default(pt_br)
+  lastOnline DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@map("users")
+}

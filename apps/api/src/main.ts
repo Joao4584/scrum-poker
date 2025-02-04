@@ -1,13 +1,13 @@
 import * as dotenv from 'dotenv';
 import { NestFactory } from '@nestjs/core';
 
-import { GlobalModule } from './app.module';
-import { ValidationRequestPipe } from 'modules/common/pipe/validation-request.pipe';
+import { ValidationRequestPipe } from 'modules/shared/pipe/validation-request.pipe';
+import { AppModule } from 'app.module';
 
 dotenv.config();
 
 async function bootstrap() {
-  const app = await NestFactory.create(GlobalModule);
+  const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(new ValidationRequestPipe());
 

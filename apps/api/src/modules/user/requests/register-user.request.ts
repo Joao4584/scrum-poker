@@ -1,6 +1,6 @@
 import { IsEmail, IsString, MinLength } from 'class-validator';
 
-export class RegisterUserDto {
+export class RegisterUserRequest {
   @IsEmail({}, { message: 'The `email` field must be a valid email.' })
   email: string;
 

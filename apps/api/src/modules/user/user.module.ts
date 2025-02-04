@@ -1,20 +1,9 @@
-import {
-  Module,
-  type MiddlewareConsumer,
-  type NestModule,
-} from '@nestjs/common';
-
-import { RegisterUserController } from './controllers/register-user.controller';
-import { LoadUserService } from './services/load-users.service';
-// import { CaptchaValidationMiddleware } from 'modules/common/middleware/captcha-validation.middleware';
+import { Module } from '@nestjs/common';
+import { CreateUserUseCase } from './useCases/create-user';
+import { RegisterIntegrationUserController } from './controllers/auth-user.controller';
 
 @Module({
-  imports: [],
-  controllers: [RegisterUserController],
-  providers: [LoadUserService],
+  providers: [CreateUserUseCase],
+  controllers: [RegisterIntegrationUserController],
 })
-export class UserModule {
-  // configure(consumer: MiddlewareConsumer) {
-  //   consumer.apply(CaptchaValidationMiddleware).forRoutes('user');
-  // }
-}
+export class UserModule {}
