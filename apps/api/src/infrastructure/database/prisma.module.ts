@@ -5,7 +5,7 @@ import { PrismaClient } from '@prisma/client';
 @Module({
   providers: [
     {
-      provide: PrismaClient,
+      provide: 'PrismaConnect',
       useFactory: async () => {
         const prisma = new PrismaClient({
           log: ['query', 'info', 'warn', 'error'],
@@ -17,6 +17,6 @@ import { PrismaClient } from '@prisma/client';
       },
     },
   ],
-  exports: [PrismaClient],
+  exports: ['PrismaConnect'],
 })
 export class PrismaModule {}

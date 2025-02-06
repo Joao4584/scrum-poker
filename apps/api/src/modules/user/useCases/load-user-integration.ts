@@ -3,11 +3,12 @@ import type { IntegrationUserRequest } from '../requests/integration-user.reques
 import { UsersRepository } from '../repositories/users.repo';
 
 @Injectable()
-export class CreateUserUseCase {
+export class LoadUserIntegrationUseCase {
   constructor(
     @Inject(UsersRepository) private readonly usersRepository: UsersRepository,
   ) {}
+
   async execute(data: IntegrationUserRequest) {
-    return this.usersRepository.insertUser(data);
+    return this.usersRepository.loadUserIntegration(data);
   }
 }
