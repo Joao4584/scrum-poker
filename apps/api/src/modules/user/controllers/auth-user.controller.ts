@@ -1,4 +1,12 @@
-import { Controller, Post, Body, Inject } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Inject,
+  Res,
+  HttpStatus,
+} from '@nestjs/common';
+import { Response } from 'express';
 import { RegisterUserRequest } from '../requests/register-user.request';
 import { ValidationRequestPipe } from 'modules/shared/pipe/validation-request.pipe';
 import { CreateUserUseCase } from 'modules/user/useCases/create-user';
@@ -17,14 +25,16 @@ export class RegisterIntegrationUserController {
   @Post()
   async authUser(
     @Body(new ValidationRequestPipe()) DataRequest: IntegrationUserRequest,
+    @Res() res: Response,
   ) {
     let existsUser = this.loadUserIntegrationUseCase.execute(DataRequest);
     if (!existsUser) {
       existsUser = this.createUserUseCase.execute(DataRequest);
     }
 
-    return {
-      message: 'Usuário criado com sucesso!',
-    };
+    return res.status(HttpStatus.OK).json({
+      message: 'Logado com sucesso!',
+      data: DataRequest,
+    });
   }
 }

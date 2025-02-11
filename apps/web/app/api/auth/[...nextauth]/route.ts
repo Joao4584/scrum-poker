@@ -1,6 +1,7 @@
 import NextAuth, { AuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import GithubProvider from 'next-auth/providers/github';
+import { api } from '@/modules/shared/http/api-client';
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -17,10 +18,32 @@ export const authOptions: AuthOptions = {
     strategy: 'jwt',
   },
   callbacks: {
-    async jwt({ token, account, profile, user, session }) {
+    async jwt({ token, account, profile, user, session }: any) {
       console.log('JWT Callback:', { token, account, profile, user, session });
+      let payload;
+
       if (account) {
-        token.accessToken = account.access_token;
+        if (account.provider && account.provider == 'github') {
+          payload = {
+            id: profile.id,
+            login: profile.login,
+            email: profile.email,
+            name: profile.name,
+            avatarUrl: profile.avatar_url,
+            github_link: profile.html_url,
+            bio: profile.bio,
+          };
+        }
+        const result = await api.post('user/integration', {
+          json: { payload },
+        });
+
+        if (result.status === 200) {
+          const { data } = await result.json();
+          console.log(data);
+        } else {
+          throw new Error('Failed to integrate user');
+        }
       }
       return token;
     },
