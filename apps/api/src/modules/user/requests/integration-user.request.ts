@@ -35,18 +35,14 @@ export class IntegrationUserRequest {
   typeIntegration?: string;
 
   @IsOptional()
-  @IsString({ message: 'The `githubId` field must be a string.' })
-  githubId?: string;
+  @IsString({ message: 'The `id` field must be a string.' })
+  id?: string;
 
   @IsOptional()
-  @IsString({ message: 'The `githubLink` field must be a string.' })
-  githubLink?: string;
+  @IsString({ message: 'The `github_link` field must be a string.' })
+  github_link?: string;
 
   @IsOptional()
-  @IsString({ message: 'The `githubBio` field must be a string.' })
-  githubBio?: string;
-
-  @IsOptional()
-  @IsString({ message: 'The `googleId` field must be a string.' })
-  googleId?: string;
+  @IsString({ message: 'The `bio` field must be a string.' })
+  bio?: string;
 }

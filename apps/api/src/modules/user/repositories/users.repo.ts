@@ -6,24 +6,25 @@ export class UsersRepository {
   constructor(@Inject('PrismaConnect') private readonly prisma: PrismaClient) {}
 
   async insertUser(data: IntegrationUserRequest) {
+    console.log('🚀 ~ UsersRepository ~ insertUser ~ data:', data);
     let dataValue: any = {
       email: data.email,
       name: data.name,
       avatarUrl: data.avatarUrl,
     };
 
-    if (data.type == 'github' && data.githubId) {
+    if (data.type == 'github' && data.id) {
       dataValue = {
         ...dataValue,
-        githubId: data.githubId,
-        githubLink: data.githubLink,
-        bio: data.githubBio,
+        githubId: String(data.id),
+        githubLink: data.github_link,
+        bio: data.bio,
       };
     }
     if (data.type == 'google') {
       dataValue = {
         ...dataValue,
-        googleId: data.googleId,
+        googleId: data.id,
       };
     }
 
@@ -37,12 +38,9 @@ export class UsersRepository {
     if (data.type == 'github') {
       user = this.prisma.user.findFirst({
         where: {
-          githubId: data.githubId,
+          githubId: String(data.id),
         },
       });
-    }
-
-    if (data.type == 'google') {
     }
 
     return user;

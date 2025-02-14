@@ -4,9 +4,15 @@ import { RegisterIntegrationUserController } from './controllers/auth-user.contr
 import { LoadUserIntegrationUseCase } from './useCases/load-user-integration';
 import { UsersRepository } from './repositories/users.repo';
 import { PrismaModule } from 'infrastructure/database/prisma.module';
+import { CreateJwtUserUseCase } from './useCases/create-jwt-user';
 
 @Module({
-  providers: [UsersRepository, CreateUserUseCase, LoadUserIntegrationUseCase],
+  providers: [
+    UsersRepository,
+    CreateUserUseCase,
+    LoadUserIntegrationUseCase,
+    CreateJwtUserUseCase,
+  ],
   controllers: [RegisterIntegrationUserController],
 })
 export class UserModule {}

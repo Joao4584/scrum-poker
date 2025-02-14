@@ -8,6 +8,6 @@ export class CreateUserUseCase {
     @Inject(UsersRepository) private readonly usersRepository: UsersRepository,
   ) {}
   async execute(data: IntegrationUserRequest) {
-    return this.usersRepository.insertUser(data);
+    return await this.usersRepository.insertUser(data);
   }
 }

@@ -25,6 +25,7 @@ export const authOptions: AuthOptions = {
       if (account) {
         if (account.provider && account.provider == 'github') {
           payload = {
+            type: account.provider,
             id: profile.id,
             login: profile.login,
             email: profile.email,
