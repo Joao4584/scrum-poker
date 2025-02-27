@@ -16,7 +16,7 @@ import GitHubSvg from '@/assets/svg/github.svg';
 import GoogleSvg from '@/assets/svg/google.svg';
 import Image from 'next/image';
 import { useI18n } from '@/locales/client';
-import { signIn } from 'next-auth/react'; // Importa o método signIn
+import { signIn } from 'next-auth/react';
 
 export function LoginForm({
   className,
@@ -25,12 +25,12 @@ export function LoginForm({
   const t = useI18n();
 
   const handleSocialLogin = async (provider: string) => {
-    const result = await signIn(provider, { redirect: false }); // Evita redirecionamento imediato
-    console.log(result); // Exibe o resultado no console
+    const result = await signIn(provider, { redirect: false });
+    console.log(result);
   };
 
   const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault(); // Impede o comportamento padrão do formulário
+    event.preventDefault();
     console.log('Form submitted!');
   };
 
@@ -44,7 +44,6 @@ export function LoginForm({
         <CardContent>
           <form onSubmit={handleSubmit}>
             {' '}
-            {/* Previne o comportamento padrão */}
             <div className="grid gap-6">
               <div className="flex flex-col gap-4">
                 <Button
