@@ -1,3 +1,6 @@
-export default function Page() {
-  return <div>Home</div>;
+import UuidRedirect from '@/modules/lobby/functions/uuid-redirect';
+
+export default async function Page() {
+  await UuidRedirect();
+  return null;
 }

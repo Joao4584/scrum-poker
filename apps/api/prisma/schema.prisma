@@ -34,9 +34,35 @@ model User {
   createdRooms      Room[]            @relation("CreatedRooms")
   roomParticipation RoomParticipant[]
 
-  votes Vote[]
+  votes            Vote[]
+  LobbyParticipant LobbyParticipant[]
 
   @@map("users")
+}
+
+model Lobby {
+  id          Int       @id @default(autoincrement())
+  uuid        String    @unique @default(uuid())
+  maxCapacity Int       @default(15) // Máximo de 15 pessoas por lobby
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  participants LobbyParticipant[]
+}
+
+model LobbyParticipant {
+  id        Int       @id @default(autoincrement())
+  lobbyId   Int
+  userId    Int
+  joinedAt  DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  lobby Lobby @relation(fields: [lobbyId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
+
+  @@unique([lobbyId, userId])
 }
 
 model Room {

@@ -5,12 +5,13 @@ import {
   type NestModule,
 } from '@nestjs/common';
 import { PrismaModule } from 'infrastructure/database/prisma.module';
+import { LobbyModule } from 'modules/lobby/lobby.module';
 import { JwtAuthMiddleware } from 'modules/shared/middleware/jwt-auth.middleware';
 import { LoggingMiddleware } from 'modules/shared/middleware/logging.middleware';
 import { UserModule } from 'modules/user/user.module';
 
 @Module({
-  imports: [UserModule, PrismaModule],
+  imports: [UserModule, LobbyModule, PrismaModule],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
