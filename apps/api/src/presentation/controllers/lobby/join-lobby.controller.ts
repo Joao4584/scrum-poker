@@ -7,8 +7,7 @@ import {
   Request,
   Res,
 } from '@nestjs/common';
-import { FindOrCreateLobbyUseCase } from '../useCases/find-or-create-lobby';
-import { ValidationRequestPipe } from 'modules/shared/pipe/validation-request.pipe';
+import { FindOrCreateLobbyUseCase } from '@/application/lobby/find-or-create-lobby.use-case';
 import { Response } from 'express';
 
 @Controller('lobby/join')

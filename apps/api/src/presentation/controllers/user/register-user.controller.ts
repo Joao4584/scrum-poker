@@ -1,7 +1,6 @@
 import { Controller, Post, Body } from '@nestjs/common';
-import { ValidationPipe } from '@nestjs/common';
-import { RegisterUserRequest } from '../requests/register-user.request';
-import { ValidationRequestPipe } from 'modules/shared/pipe/validation-request.pipe';
+import { RegisterUserRequest } from '@/presentation/requests/user/register-user.request';
+import { ValidationRequestPipe } from '@/shared/pipes/validation-request.pipe';
 
 @Controller('user')
 export class RegisterUserController {

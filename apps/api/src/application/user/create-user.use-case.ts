@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type { IntegrationUserRequest } from '../requests/integration-user.request';
-import { UsersRepository } from '../repositories/users.repo';
+import type { IntegrationUserRequest } from '@/presentation/requests/user/integration-user.request';
+import { UsersRepository } from '@/infrastructure/repositories/user.repository';
 
 @Injectable()
 export class CreateUserUseCase {

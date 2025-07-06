@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
-import type { IntegrationUserRequest } from '../requests/integration-user.request';
-import { UsersRepository } from '../repositories/users.repo';
+import { UsersRepository } from '@/infrastructure/repositories/user.repository';
 import type { User } from '@prisma/client';
 
 @Injectable()

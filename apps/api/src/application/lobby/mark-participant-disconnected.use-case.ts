@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { LobbyRepository } from '../repositories/lobby.repo';
+import { LobbyRepository } from '@/infrastructure/repositories/lobby.repository';
 
 @Injectable()
 export class MarkParticipantAsDisconnectedUseCase {

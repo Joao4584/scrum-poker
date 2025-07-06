@@ -1,6 +1,6 @@
-import UuidRedirect from '@/modules/lobby/functions/uuid-redirect';
+'use client';
+import LobbyUuidGenerate from '@/modules/lobby/components/lobby-generate';
 
-export default async function Page() {
-  await UuidRedirect();
-  return null;
+export default function Page() {
+  return <LobbyUuidGenerate />;
 }

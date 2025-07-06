@@ -4,11 +4,11 @@ import {
   type MiddlewareConsumer,
   type NestModule,
 } from '@nestjs/common';
-import { PrismaModule } from 'infrastructure/database/prisma.module';
-import { LobbyModule } from 'modules/lobby/lobby.module';
-import { JwtAuthMiddleware } from 'modules/shared/middleware/jwt-auth.middleware';
-import { LoggingMiddleware } from 'modules/shared/middleware/logging.middleware';
-import { UserModule } from 'modules/user/user.module';
+import { PrismaModule } from '@/database/prisma.module';
+import { LobbyModule } from '@/application/lobby/lobby.module';
+import { JwtAuthMiddleware } from '@/presentation/middleware/jwt-auth.middleware';
+import { LoggingMiddleware } from '@/presentation/middleware/logging.middleware';
+import { UserModule } from '@/application/user/user.module';
 
 @Module({
   imports: [UserModule, LobbyModule, PrismaModule],

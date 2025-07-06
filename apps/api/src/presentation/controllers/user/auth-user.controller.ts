@@ -7,11 +7,11 @@ import {
   Res,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { ValidationRequestPipe } from 'modules/shared/pipe/validation-request.pipe';
-import { CreateUserUseCase } from 'modules/user/useCases/create-user';
-import type { IntegrationUserRequest } from '../requests/integration-user.request';
-import { LoadUserIntegrationUseCase } from '../useCases/load-user-integration';
-import { CreateJwtUserUseCase } from '../useCases/create-jwt-user';
+import { ValidationRequestPipe } from '@/shared/pipes/validation-request.pipe';
+import { CreateUserUseCase } from '@/application/user/create-user.use-case';
+import type { IntegrationUserRequest } from '@/presentation/requests/user/integration-user.request';
+import { LoadUserIntegrationUseCase } from '@/application/user/load-user-integration.use-case';
+import { CreateJwtUserUseCase } from '@/application/user/create-jwt-user.use-case';
 
 @Controller('user/integration')
 export class RegisterIntegrationUserController {

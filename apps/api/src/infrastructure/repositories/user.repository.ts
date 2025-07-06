@@ -1,6 +1,6 @@
 import { Inject } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
-import type { IntegrationUserRequest } from '../requests/integration-user.request';
+import type { IntegrationUserRequest } from '@/presentation/requests/user/integration-user.request';
 
 export class UsersRepository {
   constructor(@Inject('PrismaConnect') private readonly prisma: PrismaClient) {}

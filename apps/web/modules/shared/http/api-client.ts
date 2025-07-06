@@ -11,17 +11,14 @@ export const api = ky.create({
   hooks: {
     beforeRequest: [
       async (request, options) => {
-        let cookieStore: CookiesFn | undefined;
         let token: string | undefined;
 
         if (isRunningOnServer) {
           const { cookies } = await import('next/headers');
-          cookieStore = await cookies();
+          const cookieStore = await cookies();
           token = cookieStore.get(`${storageKey}session`)?.value;
-
-          console.log(`🚀 ~ token ${storageKey}session :`, token);
         } else {
-          token = getCookie(`${storageKey}-session`);
+          token = getCookie(`${storageKey}session`);
         }
 
         if (token) {
@@ -33,7 +30,6 @@ export const api = ky.create({
       async (_request, _options, response) => {
         if (response.status === 401 && response.url.indexOf('/auth') === -1) {
           const redirectUrl = `/auth`;
-
           if (isRunningOnServer) {
             redirect(redirectUrl);
           } else {

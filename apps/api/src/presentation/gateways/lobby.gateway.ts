@@ -7,14 +7,14 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Socket, type Server } from 'socket.io';
-import { AddParticipantLobbyUseCase } from 'modules/lobby/useCases/add-participant-lobby';
-import { FindOrCreateLobbyUseCase } from 'modules/lobby/useCases/find-or-create-lobby';
-import { MarkParticipantAsDisconnectedUseCase } from 'modules/lobby/useCases/mark-participant-disconnected';
-import { MarkLobbyAsEmptyUseCase } from 'modules/lobby/useCases/mark-lobby-as-empty';
+import { AddParticipantLobbyUseCase } from '@/application/lobby/add-participant-lobby.use-case';
+import { MarkParticipantAsDisconnectedUseCase } from '@/application/lobby/mark-participant-disconnected.use-case';
+import { MarkLobbyAsEmptyUseCase } from '@/application/lobby/mark-lobby-as-empty.use-case';
 
 @WebSocketGateway({ namespace: 'lobby' }) // ws://localhost:3000/lobby
 export class LobbyGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  @WebSocketServer() server: Server;
+  @WebSocketServer()
+  server: Server;
 
   constructor(
     @Inject(AddParticipantLobbyUseCase)
@@ -39,7 +39,7 @@ export class LobbyGateway implements OnGatewayConnection, OnGatewayDisconnect {
       Number(userId),
       String(lobbyUuid),
     );
-    client.join(lobbyUuid);
+    client.join(lobbyUuid as string);
   }
 
   async handleDisconnect(client: Socket) {
@@ -52,7 +52,7 @@ export class LobbyGateway implements OnGatewayConnection, OnGatewayDisconnect {
       String(lobbyUuid),
     );
 
-    const clients = await this.server.in(lobbyUuid).fetchSockets();
+    const clients = await this.server.in(lobbyUuid as string).fetchSockets();
 
     if (clients.length === 0) {
       await this.markLobbyAsEmptyUseCase.execute(String(lobbyUuid));
