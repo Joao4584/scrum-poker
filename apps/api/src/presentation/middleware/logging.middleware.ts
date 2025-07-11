@@ -1,9 +1,9 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
+import { FastifyRequest, FastifyReply, HookHandlerDoneFunction } from 'fastify';
 
 @Injectable()
 export class LoggingMiddleware implements NestMiddleware {
-  use(req: Request, res: Response, next: NextFunction) {
+  use(req: FastifyRequest, res: FastifyReply, next: HookHandlerDoneFunction) {
     const { method, originalUrl, params, query, body } = req;
 
     console.log('');

@@ -3,12 +3,12 @@ import {
   NestMiddleware,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
+import { FastifyRequest, FastifyReply, HookHandlerDoneFunction } from 'fastify';
 import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class JwtAuthMiddleware implements NestMiddleware {
-  use(req: Request, res: Response, next: NextFunction) {
+  use(req: FastifyRequest, res: FastifyReply, next: HookHandlerDoneFunction) {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       throw new UnauthorizedException('Token not provided');

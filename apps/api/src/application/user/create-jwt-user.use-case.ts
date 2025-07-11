@@ -1,7 +1,16 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 import { UsersRepository } from '@/infrastructure/repositories/user.repository';
-import type { User } from '@prisma/client';
+import { User } from '@/infrastructure/entities/user.entity';
+
+interface JwtPayload {
+  id: number;
+  email: string;
+  uuid: string;
+  created_at: Date;
+  github_id?: string;
+  google_id?: string;
+}
 
 @Injectable()
 export class CreateJwtUserUseCase {
@@ -10,7 +19,7 @@ export class CreateJwtUserUseCase {
   ) {}
 
   async execute(data: User) {
-    const { id, email, uuid, createdAt, githubId, googleId } = data;
+    const { id, email, uuid, created_at, github_id, google_id } = data;
 
     if (!id || !email) {
       return {
@@ -20,8 +29,10 @@ export class CreateJwtUserUseCase {
       };
     }
 
+    const payload: JwtPayload = { id, email, uuid, created_at, github_id, google_id };
+
     const token = await jwt.sign(
-      { id, email, uuid, createdAt, githubId, googleId },
+      payload,
       process.env.JWT_SECRET || 'default-secret',
       {
         expiresIn: '24h',

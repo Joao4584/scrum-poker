@@ -21,8 +21,8 @@ export class IntegrationUserRequest {
   @IsString({ message: 'The `name` field must be a string.' })
   name: string;
 
-  @IsString({ message: 'The `avatarUrl` field must be a string.' })
-  avatarUrl: string;
+  @IsString({ message: 'The `avatar_url` field must be a string.' })
+  avatar_url: string;
 
   @IsString({ message: 'The `password` field must be a string.' })
   @MinLength(6, {

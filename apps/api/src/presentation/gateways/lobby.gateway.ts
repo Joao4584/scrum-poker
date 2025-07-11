@@ -28,27 +28,27 @@ export class LobbyGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ) {}
 
   async handleConnection(client: Socket) {
-    const { userId, lobbyUuid } = client.handshake.query;
+    const { user_id, lobbyUuid } = client.handshake.query;
 
-    if (!userId || !lobbyUuid) {
+    if (!user_id || !lobbyUuid) {
       client.disconnect();
       return;
     }
 
     await this.addParticipantLobbyUseCase.execute(
-      Number(userId),
+      Number(user_id),
       String(lobbyUuid),
     );
     client.join(lobbyUuid as string);
   }
 
   async handleDisconnect(client: Socket) {
-    const { userId, lobbyUuid } = client.handshake.query;
+    const { user_id, lobbyUuid } = client.handshake.query;
 
-    if (!userId || !lobbyUuid) return;
+    if (!user_id || !lobbyUuid) return;
 
     await this.markParticipantAsDisconnectedUseCase.execute(
-      Number(userId),
+      Number(user_id),
       String(lobbyUuid),
     );
 

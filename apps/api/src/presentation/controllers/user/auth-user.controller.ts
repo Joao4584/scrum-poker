@@ -6,7 +6,7 @@ import {
   Post,
   Res,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { FastifyReply } from 'fastify';
 import { ValidationRequestPipe } from '@/shared/pipes/validation-request.pipe';
 import { CreateUserUseCase } from '@/application/user/create-user.use-case';
 import type { IntegrationUserRequest } from '@/presentation/requests/user/integration-user.request';
@@ -27,7 +27,7 @@ export class RegisterIntegrationUserController {
   @Post()
   async authUser(
     @Body(new ValidationRequestPipe()) dataRequest: IntegrationUserRequest,
-    @Res() res: Response,
+    @Res() res: FastifyReply,
   ) {
     try {
       let user = await this.loadUserIntegrationUseCase.execute(dataRequest);
@@ -38,7 +38,7 @@ export class RegisterIntegrationUserController {
 
       const token = await this.createJwtUserUseCase.execute(user);
 
-      return res.status(HttpStatus.OK).json({
+      return res.status(HttpStatus.OK).send({
         success: true,
         message: 'Logado com sucesso!',
         accessToken: token,
@@ -46,7 +46,7 @@ export class RegisterIntegrationUserController {
     } catch (error) {
       return res
         .status(error.getStatus?.() || HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({
+        .send({
           success: false,
           message: error.message || 'Ocorreu um erro inesperado',
         });

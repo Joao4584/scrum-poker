@@ -6,10 +6,10 @@ export class MarkParticipantAsDisconnectedUseCase {
   constructor(
     @Inject(LobbyRepository) private readonly lobbyRepository: LobbyRepository,
   ) {}
-  async execute(userId: number, lobbyUuid: string) {
+  async execute(user_id: number, lobbyUuid: string) {
     const lobby = await this.lobbyRepository.findByUuid(lobbyUuid);
     if (!lobby) return;
 
-    await this.lobbyRepository.markParticipantAsDeleted(userId, lobby.id);
+    await this.lobbyRepository.markParticipantAsDeleted(user_id, lobby.id);
   }
 }

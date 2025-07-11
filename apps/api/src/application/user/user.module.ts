@@ -1,11 +1,14 @@
 import { Module } from '@nestjs/common';
-import { CreateUserUseCase } from '@/application/user/create-user.use-case';
-import { RegisterIntegrationUserController } from '@/presentation/controllers/user/auth-user.controller';
-import { LoadUserIntegrationUseCase } from '@/application/user/load-user-integration.use-case';
-import { UsersRepository } from '@/infrastructure/repositories/user.repository';
-import { CreateJwtUserUseCase } from '@/application/user/create-jwt-user.use-case';
+import { CreateUserUseCase } from './create-user.use-case';
+import { RegisterIntegrationUserController } from '../../presentation/controllers/user/auth-user.controller';
+import { LoadUserIntegrationUseCase } from './load-user-integration.use-case';
+import { UsersRepository } from '../../infrastructure/repositories/user.repository';
+import { CreateJwtUserUseCase } from './create-jwt-user.use-case';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from '../../infrastructure/entities/user.entity';
 
 @Module({
+  imports: [TypeOrmModule.forFeature([User])],
   providers: [
     UsersRepository,
     CreateUserUseCase,
@@ -13,5 +16,6 @@ import { CreateJwtUserUseCase } from '@/application/user/create-jwt-user.use-cas
     CreateJwtUserUseCase,
   ],
   controllers: [RegisterIntegrationUserController],
+  exports: [UsersRepository],
 })
 export class UserModule {}

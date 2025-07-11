@@ -16,7 +16,8 @@
       "@/infrastructure/*": ["infrastructure/*"],
       "@/config/*": ["config/*"],
       "@/shared/*": ["shared/*"],
-      "@/database/*": ["database/*"]
+      "@/database/*": ["database/*"],
+      "@scrum-poker/env": ["../../packages/env/index.ts"]
     },
     "incremental": true,
     "skipLibCheck": true,
