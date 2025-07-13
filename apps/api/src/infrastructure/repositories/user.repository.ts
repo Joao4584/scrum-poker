@@ -15,7 +15,7 @@ export class UsersRepository {
     const newUser = this.user_repository.create({
       email: data.email,
       name: data.name || 'Unknown',
-      avatar_url: data.avatarUrl,
+      avatar_url: data.avatar_url,
       github_id: data.type === 'github' ? String(data.id) : undefined,
       github_link: data.type === 'github' ? data.github_link : undefined,
       bio: data.type === 'github' ? data.bio : undefined,
@@ -24,7 +24,9 @@ export class UsersRepository {
     return this.user_repository.save(newUser);
   }
 
-  async loadUserIntegration(data: IntegrationUserRequest): Promise<User | undefined> {
+  async loadUserIntegration(
+    data: IntegrationUserRequest,
+  ): Promise<User | undefined> {
     if (data.type === 'github') {
       return this.user_repository.findOne({
         where: { github_id: String(data.id) },

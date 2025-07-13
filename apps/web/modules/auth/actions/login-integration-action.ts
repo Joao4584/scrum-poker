@@ -1,6 +1,6 @@
 'use server';
 
-import { HTTPError } from 'ky';
+import { AxiosError } from 'axios';
 
 import {
   postIntegrationService,
@@ -15,11 +15,11 @@ export async function integrationAction(params: IntegrationInput) {
     const cookieStore = await cookies();
     cookieStore.set(`${storageKey}session`, response.accessToken);
   } catch (err) {
-    if (err instanceof HTTPError) {
+    if (err instanceof AxiosError) {
       console.error(
         'HTTP Error:',
-        err.response.status,
-        err.response.statusText,
+        err.response?.status,
+        err.response?.statusText,
       );
     } else {
       console.error('Unexpected Error:', err);

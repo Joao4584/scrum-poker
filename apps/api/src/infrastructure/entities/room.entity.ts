@@ -16,6 +16,10 @@ import { Question } from './question.entity';
 export class Room {
   @PrimaryGeneratedColumn({ name: 'id' })
   id: number;
+
+  @Column({ unique: true, name: 'uuid' })
+  uuid: string;
+
   @Column({ name: 'public_id', unique: true })
   public_id: string;
 

@@ -30,6 +30,8 @@ export class RegisterIntegrationUserController {
     @Res() res: FastifyReply,
   ) {
     try {
+      console.log('dataRequest', dataRequest);
+
       let user = await this.loadUserIntegrationUseCase.execute(dataRequest);
       console.log(user);
       if (!user) {

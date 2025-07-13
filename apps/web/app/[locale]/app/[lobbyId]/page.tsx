@@ -2,14 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 
 const url = process.env.BACKEND_URL + '/lobby'; // Certifique-se de usar NEXT_PUBLIC_
 
 export default function Page() {
   const params = useParams();
   const lobbyId = params?.lobbyId as string;
-  const [socket, setSocket] = useState<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [socket, setSocket] = useState<Socket | null>(null);
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {

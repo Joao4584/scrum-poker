@@ -18,9 +18,7 @@ interface LoginOutput {
 }
 
 export async function postIntegrationService(credentials: IntegrationInput) {
-  return await api
-    .post(`user/integration`, {
-      json: credentials,
-    })
-    .json<LoginOutput>();
+  // console.log('credentials', credentials);
+  const response = await api.post(`user/integration`, credentials);
+  return response.data as LoginOutput;
 }

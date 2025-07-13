@@ -1,42 +1,47 @@
+import axios, { AxiosError } from 'axios';
 import { getCookie } from 'cookies-next';
-import ky from 'ky';
 import { redirect } from 'next/navigation';
-import { CookiesFn } from 'cookies-next/lib/types';
 import { storageKey } from '../config/storage-key';
+import { env } from '@scrum-poker/env';
 
 const isRunningOnServer = typeof window === 'undefined';
 
-export const api = ky.create({
-  prefixUrl: process.env.BACKEND_URL,
-  hooks: {
-    beforeRequest: [
-      async (request, options) => {
-        let token: string | undefined;
-
-        if (isRunningOnServer) {
-          const { cookies } = await import('next/headers');
-          const cookieStore = await cookies();
-          token = cookieStore.get(`${storageKey}session`)?.value;
-        } else {
-          token = getCookie(`${storageKey}session`);
-        }
-
-        if (token) {
-          request.headers.set('Authorization', `Bearer ${token}`);
-        }
-      },
-    ],
-    afterResponse: [
-      async (_request, _options, response) => {
-        if (response.status === 401 && response.url.indexOf('/auth') === -1) {
-          const redirectUrl = `/auth`;
-          if (isRunningOnServer) {
-            redirect(redirectUrl);
-          } else {
-            window.location.href = redirectUrl;
-          }
-        }
-      },
-    ],
-  },
+export const api = axios.create({
+  baseURL: `http://localhost:${env.PORT_NEST}/`,
 });
+
+api.interceptors.request.use(async (config) => {
+  let token: string | undefined;
+
+  if (isRunningOnServer) {
+    const { cookies } = await import('next/headers');
+    const cookieStore = await cookies();
+    token = cookieStore.get(`${storageKey}session`)?.value;
+  } else {
+    token = getCookie(`${storageKey}session`);
+  }
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
+api.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError) => {
+    if (
+      error.response?.status === 401 &&
+      error.config?.url?.indexOf('/auth') === -1
+    ) {
+      const redirectUrl = `/auth`;
+      if (isRunningOnServer) {
+        redirect(redirectUrl);
+      } else {
+        window.location.href = redirectUrl;
+      }
+    }
+    return Promise.reject(error);
+  },
+);

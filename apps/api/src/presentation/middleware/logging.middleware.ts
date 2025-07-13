@@ -8,9 +8,9 @@ export class LoggingMiddleware implements NestMiddleware {
 
     console.log('');
     console.log(`📢 [${method}] ${originalUrl}`);
-    if (Object.keys(params).length) console.log('🟡 Params:', params);
-    if (Object.keys(query).length) console.log('🔵 Query:', query);
-    if (Object.keys(body).length) console.log('🟢 Body:', body);
+    if (params && Object.keys(params).length) console.log('🟡 Params:', params);
+    if (query && Object.keys(query).length) console.log('🔵 Query:', query);
+    if (body && Object.keys(body).length) console.log('🟢 Body:', body);
 
     next();
   }
