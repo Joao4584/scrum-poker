@@ -21,8 +21,11 @@ export class User {
   @PrimaryGeneratedColumn({ name: 'id' })
   id: number;
 
-  @Column({ unique: true, name: 'uuid' })
-  uuid: string;
+  @Column({ type: 'varchar', length: 26, unique: true, name: 'public_id' })
+  public_id: string;
+
+  @Column({ type: 'bigint', nullable: true, name: 'last_login_iat' })
+  last_login_iat?: bigint;
 
   @Column({ name: 'name' })
   name: string;

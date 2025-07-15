@@ -6,11 +6,11 @@ import { ValidationRequestPipe } from '@/shared/pipes/validation-request.pipe';
 export class RegisterUserController {
   @Post()
   async createUser(
-    @Body(new ValidationRequestPipe()) RegisterUserRequest: RegisterUserRequest,
+    @Body(ValidationRequestPipe) registerUserRequest: RegisterUserRequest,
   ) {
     return {
       message: 'Usuário criado com sucesso!',
-      data: RegisterUserRequest,
+      data: registerUserRequest,
     };
   }
 }

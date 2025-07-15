@@ -5,6 +5,12 @@ import { plainToClass } from 'class-transformer';
 @Injectable()
 export class ValidationRequestPipe implements PipeTransform {
   transform(value: any, { metatype }: any) {
+    if (value === null || typeof value !== 'object') {
+      throw new BadRequestException(
+        'Invalid request body. Expected a JSON object.',
+      );
+    }
+
     if (!metatype || !this.toValidate(metatype)) {
       return value;
     }
@@ -28,7 +34,7 @@ export class ValidationRequestPipe implements PipeTransform {
       });
     }
 
-    return value;
+    return object;
   }
 
   private toValidate(metatype: any): boolean {

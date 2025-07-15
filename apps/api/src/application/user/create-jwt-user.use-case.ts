@@ -4,12 +4,12 @@ import { UsersRepository } from '@/infrastructure/repositories/user.repository';
 import { User } from '@/infrastructure/entities/user.entity';
 
 interface JwtPayload {
-  id: number;
+  public_id: string;
   email: string;
-  uuid: string;
   created_at: Date;
   github_id?: string;
   google_id?: string;
+  iat: number;
 }
 
 @Injectable()
@@ -19,7 +19,7 @@ export class CreateJwtUserUseCase {
   ) {}
 
   async execute(data: User) {
-    const { id, email, uuid, created_at, github_id, google_id } = data;
+    const { id, email, public_id, created_at, github_id, google_id } = data;
 
     if (!id || !email) {
       return {
@@ -29,7 +29,14 @@ export class CreateJwtUserUseCase {
       };
     }
 
-    const payload: JwtPayload = { id, email, uuid, created_at, github_id, google_id };
+    const payload: JwtPayload = {
+      email,
+      public_id: public_id.toString(),
+      created_at,
+      github_id,
+      google_id,
+      iat: Math.floor(Date.now() / 1000),
+    };
 
     const token = await jwt.sign(
       payload,
@@ -38,6 +45,11 @@ export class CreateJwtUserUseCase {
         expiresIn: '24h',
       },
     );
+
+    const decoded = jwt.decode(token) as JwtPayload;
+    await this.usersRepository.updateUser(id, {
+      last_login_iat: BigInt(decoded.iat),
+    });
 
     return token;
   }

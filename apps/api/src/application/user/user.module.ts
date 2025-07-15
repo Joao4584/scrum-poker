@@ -6,9 +6,10 @@ import { UsersRepository } from '../../infrastructure/repositories/user.reposito
 import { CreateJwtUserUseCase } from './create-jwt-user.use-case';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../../infrastructure/entities/user.entity';
+import { UlidModule } from '@/shared/ulid/ulid.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [TypeOrmModule.forFeature([User]), UlidModule],
   providers: [
     UsersRepository,
     CreateUserUseCase,

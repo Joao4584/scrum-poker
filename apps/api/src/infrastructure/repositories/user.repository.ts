@@ -11,8 +11,11 @@ export class UsersRepository {
     private readonly user_repository: Repository<User>,
   ) {}
 
-  async insertUser(data: IntegrationUserRequest): Promise<User> {
+  async insertUser(
+    data: IntegrationUserRequest & { public_id: string },
+  ): Promise<User> {
     const newUser = this.user_repository.create({
+      public_id: data.public_id,
       email: data.email,
       name: data.name || 'Unknown',
       avatar_url: data.avatar_url,
@@ -24,24 +27,31 @@ export class UsersRepository {
     return this.user_repository.save(newUser);
   }
 
+  async findOneByPublicId(public_id: string): Promise<User | undefined> {
+    return this.user_repository.findOne({ where: { public_id } });
+  }
+
   async loadUserIntegration(
-    data: IntegrationUserRequest,
+    integrationData: IntegrationUserRequest,
   ): Promise<User | undefined> {
-    if (data.type === 'github') {
-      return this.user_repository.findOne({
-        where: { github_id: String(data.id) },
-      });
-    }
-    if (data.type === 'google') {
-      return this.user_repository.findOne({
-        where: { google_id: String(data.id) },
-      });
-    }
-    return undefined;
+    const { type, id } = integrationData;
+
+    const query = {
+      where: {
+        [`${type}_id`]: String(id),
+      },
+    };
+
+    return this.user_repository.findOne(query);
   }
 
   async userExists(user_id: number): Promise<boolean> {
     const user = await this.user_repository.findOne({ where: { id: user_id } });
     return !!user;
+  }
+
+  async updateUser(id: number, data: Partial<User>): Promise<User> {
+    await this.user_repository.update(id, data);
+    return this.user_repository.findOneByOrFail({ id });
   }
 }

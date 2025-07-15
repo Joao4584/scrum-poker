@@ -14,8 +14,8 @@ export class Vote {
   @PrimaryGeneratedColumn({ name: 'id' })
   id: number;
 
-  @Column({ unique: true, name: 'uuid' })
-  uuid: string;
+  @Column({ type: 'varchar', length: 26, unique: true, name: 'public_id' })
+  public_id: string;
 
   @Column({ name: 'question_id' })
   question_id: number;

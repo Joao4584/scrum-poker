@@ -14,6 +14,6 @@ export const AppDataSource = new DataSource({
   password: env.DB_PASSWORD,
   database: env.DB_DATABASE,
   entities: [User, Room, RoomParticipant, Question, Vote],
-  migrations: ['src/infrastructure/migrations/*.ts'],
+  migrations: ['./src/infrastructure/migrations/*.ts'],
   synchronize: false,
 });

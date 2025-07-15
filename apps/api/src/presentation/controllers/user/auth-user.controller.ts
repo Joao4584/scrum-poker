@@ -5,11 +5,12 @@ import {
   Inject,
   Post,
   Res,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { FastifyReply } from 'fastify';
-import { ValidationRequestPipe } from '@/shared/pipes/validation-request.pipe';
 import { CreateUserUseCase } from '@/application/user/create-user.use-case';
-import type { IntegrationUserRequest } from '@/presentation/requests/user/integration-user.request';
+import { IntegrationUserRequest } from '@/presentation/requests/user/integration-user.request';
 import { LoadUserIntegrationUseCase } from '@/application/user/load-user-integration.use-case';
 import { CreateJwtUserUseCase } from '@/application/user/create-jwt-user.use-case';
 
@@ -25,15 +26,15 @@ export class RegisterIntegrationUserController {
   ) {}
 
   @Post()
+  @UsePipes(new ValidationPipe({ transform: true }))
   async authUser(
-    @Body(new ValidationRequestPipe()) dataRequest: IntegrationUserRequest,
+    @Body() dataRequest: IntegrationUserRequest,
     @Res() res: FastifyReply,
   ) {
     try {
-      console.log('dataRequest', dataRequest);
-
       let user = await this.loadUserIntegrationUseCase.execute(dataRequest);
-      console.log(user);
+      console.log({ ...user, public_id: user?.public_id?.toString() });
+
       if (!user) {
         user = await this.createUserUseCase.execute(dataRequest);
       }
