@@ -34,6 +34,7 @@ export class JwtAuthMiddleware implements NestMiddleware {
       const user = await this.usersRepository.findOneByPublicId(
         decoded.public_id,
       );
+      console.log('a', user);
 
       if (
         !user ||

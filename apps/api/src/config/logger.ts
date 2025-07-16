@@ -1,16 +1,16 @@
-import { Logger } from '@nestjs/common';
+import { ConsoleLogger } from '@nestjs/common';
 import chalk from 'chalk';
 
-export class CustomLogger extends Logger {
-  log(message: string) {
-    super.log(chalk.greenBright(`[INFO] ${message}`));
+export class CustomLogger extends ConsoleLogger {
+  log(message: any, context?: string) {
+    super.log(chalk.greenBright(message), context);
   }
 
-  error(message: string) {
-    super.error(chalk.redBright(`[ERROR] ${message}`));
+  error(message: any, stack?: string, context?: string) {
+    super.error(chalk.redBright(message), stack, context);
   }
 
-  warn(message: string) {
-    super.warn(chalk.yellowBright(`[WARN] ${message}`));
+  warn(message: any, context?: string) {
+    super.warn(chalk.yellowBright(message), context);
   }
 }

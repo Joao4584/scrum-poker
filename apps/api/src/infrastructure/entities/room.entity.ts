@@ -20,8 +20,6 @@ export class Room {
   @Column({ type: 'varchar', length: 26, unique: true, name: 'public_id' })
   public_id: string;
 
-  
-
   @Column({ name: 'name' })
   name: string;
 
