@@ -45,7 +45,7 @@ export class JwtAuthMiddleware implements NestMiddleware {
 
       req['user'] = user;
       next();
-    } catch (error) {
+    } catch {
       throw new UnauthorizedException('Invalid or expired token');
     }
   }
