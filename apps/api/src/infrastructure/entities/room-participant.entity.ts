@@ -4,6 +4,7 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { Room } from './room.entity';
 import { User } from './user.entity';
@@ -28,7 +29,7 @@ export class RoomParticipant {
   @Column({ type: 'timestamp', name: 'joined_at' })
   joined_at: Date;
 
-  @Column({ type: 'timestamp', nullable: true, name: 'deleted_at' })
+  @DeleteDateColumn({ type: 'timestamp', nullable: true, name: 'deleted_at' })
   deleted_at?: Date;
 
   @ManyToOne(() => Room, (room) => room.participants)

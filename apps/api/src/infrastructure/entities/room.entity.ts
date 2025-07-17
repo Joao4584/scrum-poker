@@ -7,6 +7,7 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
 import { RoomParticipant } from './room-participant.entity';
@@ -57,6 +58,6 @@ export class Room {
   @UpdateDateColumn({ name: 'updated_at' })
   updated_at: Date;
 
-  @Column({ type: 'timestamp', nullable: true, name: 'deleted_at' })
+  @DeleteDateColumn({ type: 'timestamp', nullable: true, name: 'deleted_at' })
   deleted_at?: Date;
 }
