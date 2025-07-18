@@ -18,16 +18,23 @@ import { CreateQuestionUseCase } from './create-question.use-case';
 import { UpdateQuestionUseCase } from './update-question.use-case';
 import { DeleteQuestionUseCase } from './delete-question.use-case';
 import { QuestionController } from '@/presentation/controllers/room/question.controller';
+import { Vote } from '@/infrastructure/entities/vote.entity';
+import { VoteRepository } from '@/infrastructure/repositories/vote.repository';
+import { CreateVoteUseCase } from './create-vote.use-case';
+import { UpdateVoteUseCase } from './update-vote.use-case';
+import { DeleteVoteUseCase } from './delete-vote.use-case';
+import { VoteController } from '@/presentation/controllers/room/vote.controller';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Room, RoomParticipant, Question]),
+    TypeOrmModule.forFeature([Room, RoomParticipant, Question, Vote]),
     UlidModule,
   ],
   providers: [
     RoomsRepository,
     RoomParticipantsRepository,
     QuestionRepository,
+    VoteRepository,
     CreateRoomUseCase,
     GetRoomUseCase,
     DeleteRoomUseCase,
@@ -36,7 +43,15 @@ import { QuestionController } from '@/presentation/controllers/room/question.con
     CreateQuestionUseCase,
     UpdateQuestionUseCase,
     DeleteQuestionUseCase,
+    CreateVoteUseCase,
+    UpdateVoteUseCase,
+    DeleteVoteUseCase,
   ],
-  controllers: [RoomController, RoomParticipantsController, QuestionController],
+  controllers: [
+    RoomController,
+    RoomParticipantsController,
+    QuestionController,
+    VoteController,
+  ],
 })
 export class RoomModule {}
