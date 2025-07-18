@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { RoomsRepository } from '@/infrastructure/repositories/room.repository';
 import { UlidService } from '@/shared/ulid/ulid.service';
-import { VotingScale } from '@api/shared/enums/voting-scale.enum';
+import { VotingScale } from '@/shared/enums/voting-scale.enum';
 
 @Injectable()
 export class CreateRoomUseCase {

@@ -1,44 +1,39 @@
-import { Injectable, PipeTransform, BadRequestException } from '@nestjs/common';
-import { ValidationError, validateSync } from 'class-validator';
-import { plainToClass } from 'class-transformer';
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
+import {
+  PipeTransform,
+  Injectable,
+  ArgumentMetadata,
+  BadRequestException,
+} from '@nestjs/common';
+import { validate } from 'class-validator';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
-export class ValidationRequestPipe implements PipeTransform {
-  transform(value: any, { metatype }: any) {
-    if (value === null || typeof value !== 'object') {
+export class ValidationRequestPipe implements PipeTransform<any> {
+  async transform(value: any, { metatype }: ArgumentMetadata) {
+    if (!metatype || !this.toValidate(metatype)) {
+      if (
+        typeof value === 'object' &&
+        value !== null &&
+        Object.keys(value).length === 0
+      ) {
+        return value;
+      }
+      return value;
+    }
+
+    const object = plainToInstance(metatype, value);
+    const errors = await validate(object);
+    if (errors.length > 0) {
       throw new BadRequestException(
         'Invalid request body. Expected a JSON object.',
       );
     }
-
-    if (!metatype || !this.toValidate(metatype)) {
-      return value;
-    }
-    const object = plainToClass(metatype, value);
-
-    const errors: ValidationError[] = validateSync(object);
-
-    if (errors.length > 0) {
-      const messageErrors = errors.reduce((acc, err) => {
-        const messages = Object.values(err.constraints || {});
-        if (messages.length > 0 && !acc[err.property]) {
-          acc[err.property] = messages[0];
-        }
-        return acc;
-      }, {});
-
-      throw new BadRequestException({
-        message: messageErrors,
-        error: 'Bad Request',
-        statusCode: 422,
-      });
-    }
-
-    return object;
+    return value;
   }
 
-  private toValidate(metatype: any): boolean {
-    const types = [String, Boolean, Number, Array, Object];
+  private toValidate(metatype: Function): boolean {
+    const types: Function[] = [String, Boolean, Number, Array, Object];
     return !types.includes(metatype);
   }
 }

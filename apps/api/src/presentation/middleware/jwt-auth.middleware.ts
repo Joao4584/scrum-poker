@@ -20,7 +20,9 @@ export class JwtAuthMiddleware implements NestMiddleware {
     next: HookHandlerDoneFunction,
   ) {
     const authHeader = req.headers.authorization;
+    console.log('Auth Header:', authHeader);
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.log('Token not provided or invalid format');
       throw new UnauthorizedException('Token not provided');
     }
 
@@ -30,22 +32,25 @@ export class JwtAuthMiddleware implements NestMiddleware {
         token,
         process.env.JWT_SECRET || 'default-secret',
       );
+      console.log('Decoded Token:', decoded);
 
       const user = await this.usersRepository.findOneByPublicId(
         decoded.public_id,
       );
-      console.log('a', user);
+      console.log('Found User:', user);
 
       if (
         !user ||
         (user.last_login_iat && BigInt(decoded.iat) < user.last_login_iat)
       ) {
+        console.log('Invalid or expired token: User not found or token expired');
         throw new UnauthorizedException('Invalid or expired token');
       }
 
       req['user'] = user;
       next();
-    } catch {
+    } catch (error) {
+      console.log('JWT Verification Error:', error.message);
       throw new UnauthorizedException('Invalid or expired token');
     }
   }

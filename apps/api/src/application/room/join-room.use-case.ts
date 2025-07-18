@@ -20,6 +20,7 @@ export class JoinRoomUseCase {
   async execute(room_public_id: string, user_id: number) {
     const room = await this.roomsRepository.findRoomByPublicId(room_public_id);
     if (!room) {
+      console.log('aquii');
       throw new NotFoundException('Sala não encontrada');
     }
 

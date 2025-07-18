@@ -17,7 +17,7 @@ export class RoomsRepository {
 
   async findRoomByPublicId(public_id: string): Promise<Room | undefined> {
     return this.room_repository.findOne({
-      where: { public_id, deleted_at: null },
+      where: { public_id },
     });
   }
 

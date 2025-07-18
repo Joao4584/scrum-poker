@@ -11,13 +11,27 @@
     "outDir": "./dist",
     "baseUrl": "./src",
     "paths": {
-      "@/application/*": ["application/*"],
-      "@/presentation/*": ["presentation/*"],
-      "@/infrastructure/*": ["infrastructure/*"],
-      "@/config/*": ["config/*"],
-      "@/shared/*": ["shared/*"],
-      "@/database/*": ["database/*"],
-      "@scrum-poker/env": ["../../packages/env/index.ts"]
+      "@/application/*": [
+        "application/*"
+      ],
+      "@/presentation/*": [
+        "presentation/*"
+      ],
+      "@/infrastructure/*": [
+        "infrastructure/*"
+      ],
+      "@/config/*": [
+        "config/*"
+      ],
+      "@/shared/*": [
+        "shared/*"
+      ],
+      "@/database/*": [
+        "database/*"
+      ],
+      "@scrum-poker/env": [
+        "../../packages/env/index.ts"
+      ]
     },
     "incremental": true,
     "skipLibCheck": true,
@@ -25,6 +39,8 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
   }
 }
