@@ -43,7 +43,9 @@ export class JwtAuthMiddleware implements NestMiddleware {
         !user ||
         (user.last_login_iat && BigInt(decoded.iat) < user.last_login_iat)
       ) {
-        console.log('Invalid or expired token: User not found or token expired');
+        console.log(
+          'Invalid or expired token: User not found or token expired',
+        );
         throw new UnauthorizedException('Invalid or expired token');
       }
 

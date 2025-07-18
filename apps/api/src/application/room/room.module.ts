@@ -37,10 +37,6 @@ import { QuestionController } from '@/presentation/controllers/room/question.con
     UpdateQuestionUseCase,
     DeleteQuestionUseCase,
   ],
-  controllers: [
-    RoomController,
-    RoomParticipantsController,
-    QuestionController,
-  ],
+  controllers: [RoomController, RoomParticipantsController, QuestionController],
 })
 export class RoomModule {}
