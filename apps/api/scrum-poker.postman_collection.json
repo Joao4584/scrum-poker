@@ -1,0 +1,429 @@
+{
+	"info": {
+		"_postman_id": "a8b8e8e8-8e8e-4e8e-8e8e-8e8e8e8e8e8e",
+		"name": "Scrum Poker API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"password123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Auth User (Integration)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"avatar\": \"https://example.com/avatar.png\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/integration",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"integration"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Room",
+			"item": [
+				{
+					"name": "Create Room",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"My Room\",\n    \"public\": true,\n    \"voting_scale\": \"fibonacci\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/room",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"room"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Recent Rooms",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/room/recent",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"room",
+								"recent"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Room",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/room/:public_id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"room",
+								":public_id"
+							],
+							"variable": [
+								{
+									"key": "public_id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Room",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/room/:public_id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"room",
+								":public_id"
+							],
+							"variable": [
+								{
+									"key": "public_id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Join Room",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/room/:room_public_id/participants/join",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"room",
+								":room_public_id",
+								"participants",
+								"join"
+							],
+							"variable": [
+								{
+									"key": "room_public_id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Question",
+			"item": [
+				{
+					"name": "Create Question",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"My Question\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/rooms/:room_public_id/questions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"rooms",
+								":room_public_id",
+								"questions"
+							],
+							"variable": [
+								{
+									"key": "room_public_id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Question",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"is_active\": true,\n    \"revealed\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/rooms/:room_public_id/questions/:public_id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"rooms",
+								":room_public_id",
+								"questions",
+								":public_id"
+							],
+							"variable": [
+								{
+									"key": "room_public_id",
+									"value": ""
+								},
+								{
+									"key": "public_id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Question",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/rooms/:room_public_id/questions/:public_id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"rooms",
+								":room_public_id",
+								"questions",
+								":public_id"
+							],
+							"variable": [
+								{
+									"key": "room_public_id",
+									"value": ""
+								},
+								{
+									"key": "public_id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Vote",
+			"item": [
+				{
+					"name": "Create Vote",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"value\": \"5\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/questions/:question_public_id/votes",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"questions",
+								":question_public_id",
+								"votes"
+							],
+							"variable": [
+								{
+									"key": "question_public_id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Vote",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"value\": \"8\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/questions/:question_public_id/votes/:public_id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"questions",
+								":question_public_id",
+								"votes",
+								":public_id"
+							],
+							"variable": [
+								{
+									"key": "question_public_id",
+									"value": ""
+								},
+								{
+									"key": "public_id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Vote",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/questions/:question_public_id/votes/:public_id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"questions",
+								":question_public_id",
+								"votes",
+								":public_id"
+							],
+							"variable": [
+								{
+									"key": "question_public_id",
+									"value": ""
+								},
+								{
+									"key": "public_id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Ping",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/ping",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"ping"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000"
+		}
+	]
+}

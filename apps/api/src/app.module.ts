@@ -11,9 +11,21 @@ import { UserModule } from './application/user/user.module';
 import { RoomModule } from './application/room/room.module';
 import { TypeOrmConfigModule } from './shared/typeorm/typeorm.module';
 import { PingController } from './presentation/controllers/ping.controller';
+import { FilesModule } from './application/files/files.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
-  imports: [UserModule, RoomModule, TypeOrmConfigModule],
+  imports: [
+    UserModule,
+    RoomModule,
+    TypeOrmConfigModule,
+    FilesModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/files',
+    }),
+  ],
   controllers: [PingController],
 })
 export class AppModule implements NestModule {
