@@ -13,4 +13,12 @@ export class CustomLogger extends ConsoleLogger {
   warn(message: any, context?: string) {
     super.warn(chalk.yellowBright(message), context);
   }
+
+  debug(message: any, context?: string) {
+    super.debug(chalk.blueBright(message), context);
+  }
+
+  verbose(message: any, context?: string) {
+    super.verbose(chalk.magentaBright(message), context);
+  }
 }

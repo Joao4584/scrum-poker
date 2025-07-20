@@ -20,7 +20,6 @@ async function bootstrap() {
 
   app.enableCors(corsConfig);
   app.useGlobalPipes(new ValidationRequestPipe());
-
   const port = env.PORT_NEST ?? 3000;
   await app.listen(port, '0.0.0.0');
   console.log(`Application is running on: ${await app.getUrl()}`);

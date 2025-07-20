@@ -20,9 +20,7 @@ export class JwtAuthMiddleware implements NestMiddleware {
     next: HookHandlerDoneFunction,
   ) {
     const authHeader = req.headers.authorization;
-    console.log('Auth Header:', authHeader);
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      console.log('Token not provided or invalid format');
       throw new UnauthorizedException('Token not provided');
     }
 

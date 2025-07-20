@@ -25,9 +25,10 @@ export class ValidationRequestPipe implements PipeTransform<any> {
     const object = plainToInstance(metatype, value);
     const errors = await validate(object);
     if (errors.length > 0) {
-      throw new BadRequestException(
-        'Invalid request body. Expected a JSON object.',
-      );
+      const errorMessages = errors
+        .map((error) => Object.values(error.constraints || {}))
+        .flat();
+      throw new BadRequestException(errorMessages);
     }
     return value;
   }

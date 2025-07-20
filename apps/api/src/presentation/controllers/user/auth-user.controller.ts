@@ -32,6 +32,7 @@ export class RegisterIntegrationUserController {
     @Res() res: FastifyReply,
   ) {
     try {
+      console.log('data', dataRequest);
       let user = await this.loadUserIntegrationUseCase.execute(dataRequest);
       console.log({ ...user, public_id: user?.public_id?.toString() });
 

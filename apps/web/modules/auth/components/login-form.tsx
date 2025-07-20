@@ -17,16 +17,22 @@ import GoogleSvg from '@/assets/svg/google.svg';
 import Image from 'next/image';
 import { useI18n } from '@/locales/client';
 import { signIn } from 'next-auth/react';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'div'>) {
   const t = useI18n();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl');
 
   const handleSocialLogin = async (provider: string) => {
     const result = await signIn(provider, { redirect: false });
-    console.log(result);
+    if (result && !result.error) {
+      router.push(callbackUrl || '/app');
+    }
   };
 
   const handleSubmit = (event: React.FormEvent) => {

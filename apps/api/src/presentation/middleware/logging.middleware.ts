@@ -3,16 +3,19 @@ import { FastifyRequest, FastifyReply, HookHandlerDoneFunction } from 'fastify';
 
 @Injectable()
 export class LoggingMiddleware implements NestMiddleware {
-  private readonly logger = new Logger(LoggingMiddleware.name);
+  private readonly logger = new Logger('HTTP');
 
   use(req: FastifyRequest, res: FastifyReply, next: HookHandlerDoneFunction) {
-    const { method, originalUrl, params, query, body } = req;
+    const { method, originalUrl, body } = req;
 
-    this.logger.log(`📢 [${method}] ${originalUrl}`);
-    if (params && Object.keys(params).length)
-      this.logger.warn('🟡 Params:', params);
-    if (query && Object.keys(query).length) this.logger.log('🔵 Query:', query);
-    if (body && Object.keys(body).length) this.logger.log('🟢 Body:', body);
+    let logMessage = `➡️  [${method}] ${originalUrl}`;
+
+    if (method === 'POST' && body) {
+      const requestBody = JSON.stringify(body);
+      logMessage += ` - Body: ${requestBody}`;
+    }
+
+    this.logger.log(logMessage);
 
     next();
   }

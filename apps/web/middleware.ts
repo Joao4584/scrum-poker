@@ -25,7 +25,13 @@ export async function middleware(request: NextRequest) {
   if (normalizedPath.startsWith('/app')) {
     const token = request.cookies.get(`${storageKey}session`);
     if (!token) {
-      return NextResponse.redirect(new URL('/auth', request.url));
+      const redirectUrl = new URL('/auth', request.url);
+      const originalUrl = request.nextUrl.pathname + request.nextUrl.search;
+
+      if (originalUrl !== '/app') {
+        redirectUrl.searchParams.set('callbackUrl', originalUrl);
+      }
+      return NextResponse.redirect(redirectUrl);
     }
   }
 

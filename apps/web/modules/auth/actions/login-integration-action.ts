@@ -15,14 +15,13 @@ export async function integrationAction(params: IntegrationInput) {
     const cookieStore = await cookies();
     cookieStore.set(`${storageKey}session`, response.accessToken);
   } catch (err) {
-    if (err instanceof AxiosError) {
-      console.error(
-        'HTTP Error:',
-        err.response?.status,
-        err.response?.statusText,
-      );
-    } else {
-      console.error('Unexpected Error:', err);
-    }
+    return {
+      success: false,
+      message: 'An unexpected error occurred.',
+    };
   }
+  return {
+    success: true,
+    message: 'Login successful.',
+  };
 }

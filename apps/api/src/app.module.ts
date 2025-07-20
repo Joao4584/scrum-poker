@@ -20,11 +20,11 @@ import { join } from 'path';
     UserModule,
     RoomModule,
     TypeOrmConfigModule,
-    FilesModule,
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploads'),
-      serveRoot: '/files',
-    }),
+    // FilesModule,
+    // ServeStaticModule.forRoot({
+    //   rootPath: join(__dirname, '..', 'uploads'),
+    //   serveRoot: '/files',
+    // }),
   ],
   controllers: [PingController],
 })

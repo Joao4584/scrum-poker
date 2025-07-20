@@ -20,27 +20,36 @@ export const authOptions: AuthOptions = {
     strategy: 'jwt',
   },
   callbacks: {
-    async jwt({ token, account, profile, user, session }: any) {
-      // console.log('JWT Callback:', { token, account, profile, user, session });
-      let payload;
+    async jwt({ token, account, profile }: any) {
+      if (account && profile) {
+        let payload;
 
-      if (account) {
-        if (account.provider && account.provider == 'github') {
+        if (account.provider === 'github') {
           payload = {
             type: account.provider,
-            id: profile.id,
-            login: profile.login,
+            id: String(profile.id),
             email: profile.email,
-            name: profile.name,
-            avatarUrl: profile.avatar_url,
+            name: profile.name || profile.login,
+            avatar_url: profile.avatar_url,
             github_link: profile.html_url,
             bio: profile.bio,
           };
+        } else if (account.provider === 'google') {
+          payload = {
+            type: account.provider,
+            id: profile.sub,
+            email: profile.email,
+            name: profile.name,
+            avatar_url: profile.picture,
+          };
+        }
+
+        if (payload) {
           await integrationAction(payload);
         }
       }
 
-      return { token, account, profile, user, session };
+      return token;
     },
     async redirect({ url, baseUrl }) {
       if (url.startsWith('/')) {
