@@ -1,13 +1,19 @@
 import * as Phaser from 'phaser';
-import { MainScene } from './scenes/MainScene';
+import { GameScene } from './scenes/GameScene';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
-  width: 800,
+  width: 700,
   height: 600,
   parent: 'phaser-game-container',
-  scene: [MainScene],
+  scene: [GameScene],
   backgroundColor: '#2d2d2d',
+  physics: {
+    default: 'arcade',
+    arcade: {
+      debug: false,
+    },
+  },
 };
 
 const createGame = () => {
