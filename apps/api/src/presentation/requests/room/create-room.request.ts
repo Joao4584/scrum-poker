@@ -2,7 +2,14 @@ import { IsString, IsOptional, MinLength, IsEnum, IsIn } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { VotingScale } from '@/shared/enums/voting-scale.enum';
 
-export class CreateRoomRequest {
+export interface CreateRoomDto {
+  name: string;
+  description?: string;
+  public: boolean;
+  voting_scale?: VotingScale;
+}
+
+export class CreateRoomRequest implements CreateRoomDto {
   @IsString()
   @MinLength(3, {
     message: 'O nome da sala deve ter pelo menos 3 caracteres.',

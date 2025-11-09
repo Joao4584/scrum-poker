@@ -48,6 +48,9 @@ importers:
       '@scrum-poker/env':
         specifier: workspace:^1.0.0
         version: link:../../packages/env
+      '@scrum-poker/types':
+        specifier: workspace:*
+        version: link:../../packages/types
       chalk:
         specifier: ^5.4.1
         version: 5.4.1
@@ -364,6 +367,12 @@ importers:
       '@types/node':
         specifier: ^24.0.10
         version: 24.0.13
+
+  packages/types:
+    devDependencies:
+      typescript:
+        specifier: ^5.0.4
+        version: 5.8.3
 
 packages:
 

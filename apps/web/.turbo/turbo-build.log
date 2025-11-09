@@ -5,25 +5,6 @@
    ▲ Next.js 15.1.4
 
    Creating an optimized production build ...
-(node:21784) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-(node:13864) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
-(Use `node --trace-deprecation ...` to show where the warning was created)
- ✓ Compiled successfully
-   Linting and checking validity of types ...
-Failed to compile.
-
-.next/types/app/[locale]/app/room/[roomId]/page.ts:34:29
-Type error: Type 'PageProps' does not satisfy the constraint 'import("C:/Users/joaor/Documents/Joao4584/Projetos/scrum-poker/apps/web/.next/types/app/[locale]/app/room/[roomId]/page").PageProps'.
-  Types of property 'params' are incompatible.
-    Type '{ roomId: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
-
-[0m [90m 32 |[39m[0m
-[0m [90m 33 |[39m [90m// Check the prop type of the entry function[39m[0m
-[0m[31m[1m>[22m[39m[90m 34 |[39m checkFields[33m<[39m[33mDiff[39m[33m<[39m[33mPageProps[39m[33m,[39m [33mFirstArg[39m[33m<[39m[33mTEntry[39m[[32m'default'[39m][33m>[39m[33m,[39m [32m'default'[39m[33m>>[39m()[0m
-[0m [90m    |[39m                             [31m[1m^[22m[39m[0m
-[0m [90m 35 |[39m[0m
-[0m [90m 36 |[39m [90m// Check the arguments and return type of the generateMetadata function[39m[0m
-[0m [90m 37 |[39m [36mif[39m ([32m'generateMetadata'[39m [36min[39m entry) {[0m
+ ⨯ test/page.tsx doesn't have a root layout. To fix this error, make sure every page has a root layout.
 Static worker exited with code: 1 and signal: null
  ELIFECYCLE  Command failed with exit code 1.

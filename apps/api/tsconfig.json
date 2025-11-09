@@ -31,6 +31,10 @@
       ],
       "@scrum-poker/env": [
         "../../packages/env/index.ts"
+      ],
+      
+      "@/dir/*": [
+        "../../../*"
       ]
     },
     "incremental": true,

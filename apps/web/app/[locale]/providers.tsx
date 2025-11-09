@@ -5,7 +5,7 @@ import { ThemeProvider } from 'next-themes';
 import { QueryClientProvider } from '@tanstack/react-query';
 
 import { I18nProviderClient } from '@/locales/client';
-import { Toaster } from '@/modules/shared/ui/sonner';
+import { Toaster } from '@/modules/shared/components/ui/sonner';
 import { queryClient } from '@/modules/shared/config/react-query';
 
 type ProviderProps = {

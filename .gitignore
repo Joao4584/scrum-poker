@@ -9,6 +9,9 @@
 # testing
 /coverage
 
+
+/tilesets
+
 # next.js
 /.next/
 /.turbo/

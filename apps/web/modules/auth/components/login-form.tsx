@@ -1,16 +1,16 @@
 'use client';
 
 import { cn } from '@/modules/shared/utils';
-import { Button } from '@/modules/shared/ui/button';
+import { Button } from '@/modules/shared/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/modules/shared/ui/card';
-import { Input } from '@/modules/shared/ui/input';
-import { Label } from '@/modules/shared/ui/label';
+} from '@/modules/shared/components/ui/card';
+import { Input } from '@/modules/shared/components/ui/input';
+import { Label } from '@/modules/shared/components/ui/label';
 
 import GitHubSvg from '@/assets/svg/github.svg';
 import GoogleSvg from '@/assets/svg/google.svg';
