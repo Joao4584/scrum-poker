@@ -18,10 +18,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "typeorm": "typeorm-ts-node-commonjs",
-    "typeorm:run-migrations": "npm run typeorm migration:run -- -d ./ormconfig.ts",
-    "typeorm:generate-migration": "typeorm-ts-node-commonjs migration:generate -d ./ormconfig.ts",
-    "typeorm:revert-migration": "npm run typeorm migration:revert -- -d ./ormconfig.ts"
+    "typeorm": "ts-node ./node_modules/typeorm/cli -d ./ormconfig.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -31,8 +28,6 @@
     "@nestjs/serve-static": "^5.0.3",
     "@nestjs/typeorm": "10.0.0",
     "@nestjs/websockets": "^10.0.0",
-    "@scrum-poker/types": "workspace:*",
-    
     "@scrum-poker/env": "workspace:^1.0.0",
     "chalk": "^5.4.1",
     "class-transformer": "^0.5.1",
@@ -45,7 +40,6 @@
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
     "socket.io": "^4.8.1",
-    "typeorm": "0.3.0",
     "ulid": "^3.0.1"
   },
   "devDependencies": {
@@ -69,6 +63,7 @@
     "ts-loader": "^9.4.3",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
+    "typeorm": "^0.3.20",
     "typescript": "^5.1.3"
   },
   "jest": {
