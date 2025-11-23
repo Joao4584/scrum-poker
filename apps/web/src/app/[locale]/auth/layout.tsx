@@ -1,9 +1,9 @@
-import Image from 'next/image';
-import type { ReactNode } from 'react';
-import type React from 'react';
+import Image from "next/image";
+import type { ReactNode } from "react";
+import type React from "react";
 
-import LogoSvg from '@/public/meta-rtc-logo.png';
-import { getI18n } from '@/locales/server';
+import LogoSvg from "@public/meta-rtc-logo.png";
+import { getI18n } from "@/locales/server";
 
 export default async function DefaultLayout({
   children,
@@ -25,7 +25,7 @@ export default async function DefaultLayout({
           </a>
           {children}
           <div className="text-balance text-center text-xs text-secondary [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-gray-200  ">
-            {t('recommended.github.messageFollowUp')}{' '}
+            {t("recommended.github.messageFollowUp")}{" "}
             <a target="_blank" href="https://github.com/Joao4584/">
               GitHub
             </a>

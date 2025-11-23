@@ -12,21 +12,24 @@ export const PhaserGame: React.FC = () => {
   useEffect(() => {
     if (phaserGameRef.current) return;
 
-    const config: Phaser.Types.Core.GameConfig = {
+    phaserGameRef.current = new Phaser.Game({
       type: Phaser.AUTO,
-      width: 900,
-      height: 600,
+      width: '100%',
+      height: '100%',
+      pixelArt: true,
       parent: gameRef.current || undefined,
       physics: {
         default: 'arcade',
         arcade: {
-          gravity: { y: 200, x: 0 },
+          gravity: { y: 0, x: 0 },
         },
       },
       scene: [Preloader, MainScene],
-    };
-
-    phaserGameRef.current = new Phaser.Game(config);
+      scale: {
+        mode: Phaser.Scale.RESIZE,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+      },
+    });
 
     return () => {
       phaserGameRef.current?.destroy(true);
@@ -34,5 +37,11 @@ export const PhaserGame: React.FC = () => {
     };
   }, []);
 
-  return <div id="phaser-game-container" ref={gameRef} />;
+  return (
+    <div
+      id="phaser-game-container"
+      ref={gameRef}
+      style={{ width: '100%', height: '100%' }}
+    />
+  );
 };

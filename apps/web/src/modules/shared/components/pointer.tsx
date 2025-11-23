@@ -1,8 +1,13 @@
-'use client';
+"use client";
 
-import { cn } from '../utils';
-import { AnimatePresence, motion, useMotionValue } from 'motion/react';
-import React, { useEffect, useRef, useState } from 'react';
+import { cn } from "../utils";
+import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  type MotionValue,
+} from "motion/react";
+import React, { useEffect, useRef, useState, type JSX } from "react";
 
 /**
  * @property {React.ReactNode} children - The child elements to be wrapped
@@ -41,10 +46,10 @@ export function PointerWrapper({
     updateRect();
 
     // Update rect on window resize
-    window.addEventListener('resize', updateRect);
+    window.addEventListener("resize", updateRect);
 
     return () => {
-      window.removeEventListener('resize', updateRect);
+      window.removeEventListener("resize", updateRect);
     };
   }, []);
 
@@ -69,7 +74,7 @@ export function PointerWrapper({
   return (
     <div
       ref={ref}
-      className={cn('relative cursor-none', className)}
+      className={cn("relative cursor-none", className)}
       onMouseLeave={handleMouseLeave}
       onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
@@ -86,8 +91,8 @@ export function PointerWrapper({
  * @property {MotionValue<number>} y - The y-coordinate position of the pointer
  */
 interface PointerProps {
-  x: any;
-  y: any;
+  x: MotionValue<number>;
+  y: MotionValue<number>;
 }
 
 /**

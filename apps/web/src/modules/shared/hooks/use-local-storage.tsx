@@ -31,7 +31,7 @@ export function useLocalStorage<T>(key: string, initialValue?: T) {
         setStoredValue(initialValue);
       }
     } catch {}
-  }, [key, initialValue]);
+  }, [key, initialValue, isClient]);
 
   const setValue: SetValue<T> = (newValue) => {
     if (!isClient) return;
