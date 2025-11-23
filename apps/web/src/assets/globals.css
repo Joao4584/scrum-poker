@@ -1,6 +1,6 @@
 @tailwind base;
 @tailwind components;
-@tailwind utilities; 
+@tailwind utilities;
 
 body {
   margin: 0;
@@ -85,7 +85,7 @@ body {
     --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
+    --border: 227.2 0% 24.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
     --chart-1: 220 70% 50%;
@@ -105,13 +105,11 @@ body {
   }
 }
 
-.relative-center-x{
+.relative-center-x {
   position: relative;
   left: 50%;
   transform: translateX(-50%);
 }
-
-
 
 @layer base {
   * {

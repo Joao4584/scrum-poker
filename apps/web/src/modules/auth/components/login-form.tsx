@@ -1,14 +1,14 @@
 "use client";
 
 import { cn } from "@/modules/shared/utils";
-import { Button } from "@/modules/shared/components/ui/button";
+import { Button } from "@/modules/shared/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/modules/shared/components/ui/card";
+} from "@/modules/shared/ui/card";
 
 import GitHubSvg from "@/assets/svg/github.svg";
 import GoogleSvg from "@/assets/svg/google.svg";
