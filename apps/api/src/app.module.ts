@@ -13,16 +13,7 @@ import { TypeOrmConfigModule } from './shared/typeorm/typeorm.module';
 import { PingController } from './presentation/controllers/ping.controller';
 
 @Module({
-  imports: [
-    UserModule,
-    RoomModule,
-    TypeOrmConfigModule,
-    // FilesModule,
-    // ServeStaticModule.forRoot({
-    //   rootPath: join(__dirname, '..', 'uploads'),
-    //   serveRoot: '/files',
-    // }),
-  ],
+  imports: [UserModule, RoomModule, TypeOrmConfigModule],
   controllers: [PingController],
 })
 export class AppModule implements NestModule {

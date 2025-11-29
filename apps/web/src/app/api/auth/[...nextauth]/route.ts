@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import NextAuth, { AuthOptions } from 'next-auth';
-import GoogleProvider from 'next-auth/providers/google';
-import GithubProvider from 'next-auth/providers/github';
-import { integrationAction } from '@/modules/auth/actions/login-integration-action';
-import { env } from '@scrum-poker/env';
+import NextAuth, { AuthOptions } from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
+import GithubProvider from "next-auth/providers/github";
+import { integrationAction } from "@/modules/auth/actions/login-integration-action";
+import { env } from "@scrum-poker/env";
 
 export const authOptions: AuthOptions = {
   providers: [
     GithubProvider({
-      clientId: env.GITHUB_CLIENT_ID ?? '',
-      clientSecret: env.GITHUB_CLIENT_SECRET ?? '',
+      clientId: env.GITHUB_CLIENT_ID ?? "",
+      clientSecret: env.GITHUB_CLIENT_SECRET ?? "",
     }),
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -17,14 +17,14 @@ export const authOptions: AuthOptions = {
     }),
   ],
   session: {
-    strategy: 'jwt',
+    strategy: "jwt",
   },
   callbacks: {
     async jwt({ token, account, profile }: any) {
       if (account && profile) {
         let payload;
 
-        if (account.provider === 'github') {
+        if (account.provider === "github") {
           payload = {
             type: account.provider,
             id: String(profile.id),
@@ -34,7 +34,7 @@ export const authOptions: AuthOptions = {
             github_link: profile.html_url,
             bio: profile.bio,
           };
-        } else if (account.provider === 'google') {
+        } else if (account.provider === "google") {
           payload = {
             type: account.provider,
             id: profile.sub,
@@ -52,7 +52,7 @@ export const authOptions: AuthOptions = {
       return token;
     },
     async redirect({ url, baseUrl }) {
-      if (url.startsWith('/')) {
+      if (url.startsWith("/")) {
         return `${baseUrl}/app`;
       } else if (new URL(url).origin === baseUrl) {
         return `${baseUrl}/app`;
@@ -62,6 +62,5 @@ export const authOptions: AuthOptions = {
   },
 };
 
-// Exporta a API NextAuth
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };

@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import { io, Socket } from 'socket.io-client';
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { io, Socket } from "socket.io-client";
 
-const url = process.env.BACKEND_URL + '/lobby'; // Certifique-se de usar NEXT_PUBLIC_
+const url = process.env.BACKEND_URL + "/lobby";
 
 export default function Page() {
   const params = useParams();
@@ -17,21 +17,21 @@ export default function Page() {
     if (!lobbyId) return;
 
     const newSocket = io(url, {
-      transports: ['websocket'], // Garante que usa apenas WebSockets
+      transports: ["websocket"],
       query: {
-        userId: '123', // Substitua pelo ID real do usuário
+        userId: "123",
         lobbyUuid: lobbyId,
       },
-      host: 'dwadwa',
+      host: "dwadwa",
     });
 
-    newSocket.on('connect', () => {
-      console.log('Conectado ao WebSocket');
+    newSocket.on("connect", () => {
+      console.log("Conectado ao WebSocket");
       setConnected(true);
     });
 
-    newSocket.on('disconnect', () => {
-      console.log('Desconectado do WebSocket');
+    newSocket.on("disconnect", () => {
+      console.log("Desconectado do WebSocket");
       setConnected(false);
     });
 
@@ -45,7 +45,7 @@ export default function Page() {
   return (
     <div className="a">
       <h1>Landing - Lobby ID: {lobbyId}</h1>
-      <p>Status: {connected ? 'Conectado' : 'Desconectado'}</p>
+      <p>Status: {connected ? "Conectado" : "Desconectado"}</p>
     </div>
   );
 }

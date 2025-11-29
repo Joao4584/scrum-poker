@@ -26,12 +26,10 @@ export class MapManager {
     const wallLayer = createIfExists("wall/wall");
     const wallTopLayer = createIfExists("wall/wall-top");
 
-    // Profundidade: chao < parede < player < topo
     floorLayer?.setDepth(0);
     wallLayer?.setDepth(1);
     wallTopLayer?.setDepth(1000);
 
-    // Evita tiles sumindo no culling em mapas com chunks.
     const cullPad = 2;
     floorLayer?.setCullPadding(cullPad, cullPad);
     wallLayer?.setCullPadding(cullPad, cullPad);

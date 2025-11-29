@@ -23,7 +23,6 @@ export class MainScene extends Phaser.Scene {
       4,
     );
 
-    // === Jogador ===
     this.player = new Player(
       this,
       spawnPosition.x,
@@ -44,7 +43,6 @@ export class MainScene extends Phaser.Scene {
       this.physics.add.collider(this.player, colliderLayer);
     }
 
-    // === Camera ===
     this.cameras.main.startFollow(this.player);
     this.cameras.main.setBounds(
       worldBounds.x,

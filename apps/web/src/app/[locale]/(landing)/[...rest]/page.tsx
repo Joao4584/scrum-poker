@@ -1,3 +1,5 @@
-export default function notFoundPage() {
-  return <div>Not Found Page</div>;
+import { notFound } from "next/navigation";
+
+export default function CatchAllNotFound() {
+  return notFound();
 }

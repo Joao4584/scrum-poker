@@ -32,7 +32,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.setCollideWorldBounds(true);
 
     this.shadow = scene.add
-      .ellipse(x, y, 18, 8, 0x000000, 0.25)
+      .ellipse(x, y, 30, 12, 0x000000, 0.25)
       .setDepth(9)
       .setScrollFactor(1);
     this.once(Phaser.GameObjects.Events.DESTROY, () => {
@@ -47,10 +47,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.height - hitboxSize.height,
     );
 
-    // Configuracoes do jogador
     this.createAnimations();
 
-    // === Controles (setas + WASD + CTRL) ===
     this.cursors = this.scene.input.keyboard!.addKeys({
       up: Phaser.Input.Keyboard.KeyCodes.W,
       down: Phaser.Input.Keyboard.KeyCodes.S,
@@ -77,7 +75,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       animationManager.create(config);
     };
 
-    // Animacoes de caminhada
     createOnce({
       key: "walk-down",
       frames: animationManager.generateFrameNumbers(this.spriteName, {
@@ -118,7 +115,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       repeat: -1,
     });
 
-    // Animacoes de idle
     createOnce({
       key: "idle-down",
       frames: animationManager.generateFrameNumbers(this.idleSpriteName, {
@@ -168,9 +164,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.cursors;
 
     this.setVelocity(0);
-    this.shadow.setPosition(this.x, this.y + this.height / 2 - 10);
+    this.shadow.setPosition(this.x, this.y + this.height / 1.97);
 
-    // Movimento horizontal
     if (left.isDown || leftArrow.isDown) {
       this.lastDirection = "left";
       this.setVelocityX(-currentSpeed);
@@ -179,9 +174,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.lastDirection = "right";
       this.setVelocityX(currentSpeed);
       this.anims.play("walk-right", true);
-    }
-    // Movimento vertical
-    else if (up.isDown || upArrow.isDown) {
+    } else if (up.isDown || upArrow.isDown) {
       this.lastDirection = "up";
       this.setVelocityY(-currentSpeed);
       this.anims.play("walk-up", true);
@@ -190,7 +183,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.setVelocityY(currentSpeed);
       this.anims.play("walk-down", true);
     } else {
-      // Se nao estiver se movendo, execute a animacao de idle correspondente a ultima direcao
       switch (this.lastDirection) {
         case "up":
           this.anims.play("idle-up", true);

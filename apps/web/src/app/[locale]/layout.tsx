@@ -1,10 +1,15 @@
 import type { Metadata } from 'next';
-import { GeistSans } from 'geist/font/sans';
-import { GeistMono } from 'geist/font/mono';
-import '@/assets/globals.css';
+import type { ReactNode } from 'react';
+import { notFound } from 'next/navigation';
+
 import { Providers } from './providers';
+import { locales } from '@/locales/config';
 
+export const dynamicParams = false;
 
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }));
+}
 
 export const metadata: Metadata = {
   title: 'Meta RTC - Auth',
@@ -17,18 +22,15 @@ export default async function RootLayout({
   children,
   params,
 }: Readonly<{
-  children: React.ReactNode;
-  params: { locale: string };
+  children: ReactNode;
+  params: Promise<{ locale: string }>;
 }>) {
   const { locale } = await params;
+  if (!locales.includes(locale as (typeof locales)[number])) {
+    notFound();
+  }
 
   return (
-    <html lang={locale} suppressHydrationWarning>
-      <body
-        className={`${GeistSans.variable} ${GeistMono.variable} antialiased `}
-      >
-        <Providers locale={locale}>{children}</Providers>
-      </body>
-    </html>
+    <Providers locale={locale}>{children}</Providers>
   );
 }

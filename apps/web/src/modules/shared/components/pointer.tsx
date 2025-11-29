@@ -42,10 +42,8 @@ export function PointerWrapper({
       }
     }
 
-    // Initial rect calculation
     updateRect();
 
-    // Update rect on window resize
     window.addEventListener("resize", updateRect);
 
     return () => {
