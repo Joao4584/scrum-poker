@@ -39,14 +39,14 @@ export function middleware(request: NextRequest) {
   }
 
   const cookieLocale =
-    request.cookies.get("Next-Locale")?.value ??
-    request.cookies.get("meta-locale")?.value;
+    request.cookies.get("Next-Locale")?.value ?? request.cookies.get("meta-locale")?.value;
   const locale = normalizeLocale(cookieLocale) ?? defaultLocale;
 
-  const remainder = segments.slice(0).join("/");
-  const newPath = `/${locale}/${remainder}`.replace(/\/+$/, "/");
+  const remainder = segments.join("/");
+  const newPathname = remainder ? `/${locale}/${remainder}` : `/${locale}`;
 
-  const url = new URL(newPath, request.url);
+  const url = request.nextUrl.clone();
+  url.pathname = newPathname;
   return NextResponse.redirect(url);
 }
 

@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { ThemeProvider } from "next-themes";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 import { I18nProviderClient } from "@/locales/client";
 import { Toaster } from "@/modules/shared/ui/sonner";
@@ -18,21 +19,23 @@ type ProviderProps = {
 export function Providers({ locale, children }: ProviderProps) {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="dark"
-        themes={["light", "dark"]}
-        enableSystem={false}
-        disableTransitionOnChange
-      >
-        <I18nProviderClient locale={locale}>
-          <LocalePersist locale={locale as "pt-br" | "en-us"} />
-          {children}
+      <NuqsAdapter>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          themes={["light", "dark"]}
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          <I18nProviderClient locale={locale}>
+            <LocalePersist locale={locale as "pt-br" | "en-us"} />
+            {children}
 
-          <Toaster />
-          <LocaleSync />
-        </I18nProviderClient>
-      </ThemeProvider>
+            <Toaster />
+            <LocaleSync />
+          </I18nProviderClient>
+        </ThemeProvider>
+      </NuqsAdapter>
     </QueryClientProvider>
   );
 }

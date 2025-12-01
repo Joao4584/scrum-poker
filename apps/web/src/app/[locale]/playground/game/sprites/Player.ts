@@ -5,12 +5,14 @@ type Direction = "up" | "down" | "left" | "right";
 export class Player extends Phaser.Physics.Arcade.Sprite {
   private baseSpeed = 150;
   private sprintSpeed = 300;
+  private skin = "steve";
 
   private cursors: Record<string, Phaser.Input.Keyboard.Key>;
   private sprintKey: Phaser.Input.Keyboard.Key;
   private shadow: Phaser.GameObjects.Ellipse;
 
   private lastDirection: Direction = "down";
+  private moving = false;
 
   private spriteName = "";
   private idleSpriteName = "";
@@ -19,22 +21,21 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     scene: Phaser.Scene,
     x: number,
     y: number,
-    texture: string,
-    idle_texture: string,
+    skin: string,
     frame?: string | number,
   ) {
-    super(scene, x, y, texture, frame);
-    this.spriteName = texture;
-    this.idleSpriteName = idle_texture;
+    const spriteName = `${skin}-walk`;
+    super(scene, x, y, spriteName, frame);
+    this.skin = skin;
+    this.spriteName = `${skin}-walk`;
+    this.idleSpriteName = `${skin}-idle`;
 
     scene.add.existing(this);
     scene.physics.add.existing(this);
     this.setCollideWorldBounds(true);
 
-    this.shadow = scene.add
-      .ellipse(x, y, 30, 12, 0x000000, 0.25)
-      .setDepth(9)
-      .setScrollFactor(1);
+    this.shadow = scene.add.ellipse(x, y, 18, 8, 0x000000, 0.25).setDepth(9).setScrollFactor(1);
+
     this.once(Phaser.GameObjects.Events.DESTROY, () => {
       this.shadow.destroy();
     });
@@ -42,10 +43,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     const body = this.body as Phaser.Physics.Arcade.Body;
     const hitboxSize = { width: 16, height: 16 };
     body.setSize(hitboxSize.width, hitboxSize.height);
-    body.setOffset(
-      (this.width - hitboxSize.width) / 2,
-      this.height - hitboxSize.height,
-    );
+    body.setOffset((this.width - hitboxSize.width) / 2, this.height - hitboxSize.height);
 
     this.createAnimations();
 
@@ -60,9 +58,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       rightArrow: Phaser.Input.Keyboard.KeyCodes.RIGHT,
     }) as Record<string, Phaser.Input.Keyboard.Key>;
 
-    this.sprintKey = this.scene.input.keyboard!.addKey(
-      Phaser.Input.Keyboard.KeyCodes.SHIFT,
-    );
+    this.sprintKey = this.scene.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
   }
 
   private createAnimations() {
@@ -75,128 +71,95 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       animationManager.create(config);
     };
 
-    createOnce({
-      key: "walk-down",
-      frames: animationManager.generateFrameNumbers(this.spriteName, {
-        start: 18,
-        end: 23,
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
+    const dirs: Direction[] = ["down", "left", "right", "up"];
+    const walkFrames: Record<Direction, [number, number]> = {
+      right: [0, 5],
+      up: [6, 11],
+      left: [12, 17],
+      down: [18, 23],
+    };
 
-    createOnce({
-      key: "walk-left",
-      frames: animationManager.generateFrameNumbers(this.spriteName, {
-        start: 12,
-        end: 17,
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-
-    createOnce({
-      key: "walk-right",
-      frames: animationManager.generateFrameNumbers(this.spriteName, {
-        start: 0,
-        end: 5,
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-
-    createOnce({
-      key: "walk-up",
-      frames: animationManager.generateFrameNumbers(this.spriteName, {
-        start: 6,
-        end: 11,
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-
-    createOnce({
-      key: "idle-down",
-      frames: animationManager.generateFrameNumbers(this.idleSpriteName, {
-        start: 18,
-        end: 23,
-      }),
-      frameRate: 5,
-      repeat: -1,
-    });
-
-    createOnce({
-      key: "idle-left",
-      frames: animationManager.generateFrameNumbers(this.idleSpriteName, {
-        start: 12,
-        end: 17,
-      }),
-      frameRate: 5,
-      repeat: -1,
-    });
-
-    createOnce({
-      key: "idle-right",
-      frames: animationManager.generateFrameNumbers(this.idleSpriteName, {
-        start: 0,
-        end: 5,
-      }),
-      frameRate: 5,
-      repeat: -1,
-    });
-
-    createOnce({
-      key: "idle-up",
-      frames: animationManager.generateFrameNumbers(this.idleSpriteName, {
-        start: 6,
-        end: 11,
-      }),
-      frameRate: 5,
-      repeat: -1,
+    dirs.forEach((dir) => {
+      createOnce({
+        key: this.animKey("walk", dir),
+        frames: animationManager.generateFrameNumbers(this.spriteName, {
+          start: walkFrames[dir][0],
+          end: walkFrames[dir][1],
+        }),
+        frameRate: 10,
+        repeat: -1,
+      });
+      createOnce({
+        key: this.animKey("idle", dir),
+        frames: animationManager.generateFrameNumbers(this.idleSpriteName, {
+          start: walkFrames[dir][0],
+          end: walkFrames[dir][1],
+        }),
+        frameRate: 5,
+        repeat: -1,
+      });
     });
   }
 
   update() {
-    const currentSpeed = this.sprintKey.isDown
-      ? this.sprintSpeed
-      : this.baseSpeed;
-    const { left, right, up, down, leftArrow, rightArrow, upArrow, downArrow } =
-      this.cursors;
+    const currentSpeed = this.sprintKey.isDown ? this.sprintSpeed : this.baseSpeed;
+    const { left, right, up, down, leftArrow, rightArrow, upArrow, downArrow } = this.cursors;
 
     this.setVelocity(0);
     this.shadow.setPosition(this.x, this.y + this.height / 1.97);
+    this.moving = false;
 
     if (left.isDown || leftArrow.isDown) {
       this.lastDirection = "left";
       this.setVelocityX(-currentSpeed);
-      this.anims.play("walk-left", true);
+      this.anims.play(this.animKey("walk", "left"), true);
+      this.moving = true;
     } else if (right.isDown || rightArrow.isDown) {
       this.lastDirection = "right";
       this.setVelocityX(currentSpeed);
-      this.anims.play("walk-right", true);
+      this.anims.play(this.animKey("walk", "right"), true);
+      this.moving = true;
     } else if (up.isDown || upArrow.isDown) {
       this.lastDirection = "up";
       this.setVelocityY(-currentSpeed);
-      this.anims.play("walk-up", true);
+      this.anims.play(this.animKey("walk", "up"), true);
+      this.moving = true;
     } else if (down.isDown || downArrow.isDown) {
       this.lastDirection = "down";
       this.setVelocityY(currentSpeed);
-      this.anims.play("walk-down", true);
+      this.anims.play(this.animKey("walk", "down"), true);
+      this.moving = true;
     } else {
       switch (this.lastDirection) {
         case "up":
-          this.anims.play("idle-up", true);
+          this.anims.play(this.animKey("idle", "up"), true);
           break;
         case "down":
-          this.anims.play("idle-down", true);
+          this.anims.play(this.animKey("idle", "down"), true);
           break;
         case "left":
-          this.anims.play("idle-left", true);
+          this.anims.play(this.animKey("idle", "left"), true);
           break;
         case "right":
-          this.anims.play("idle-right", true);
+          this.anims.play(this.animKey("idle", "right"), true);
           break;
       }
     }
+  }
+
+  getDirection(): Direction {
+    return this.lastDirection;
+  }
+
+  isMoving() {
+    return this.moving;
+  }
+
+  isSprinting() {
+    return this.sprintKey.isDown;
+  }
+
+  private animKey(type: "walk" | "idle", dir: Direction) {
+    return `${this.skin}-${type}-${dir}`;
   }
 }

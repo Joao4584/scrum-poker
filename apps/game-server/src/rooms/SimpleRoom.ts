@@ -7,6 +7,9 @@ export class SimpleRoom extends Room<State> {
 
     this.onMessage("move", (client, input) => {
       const player = this.state.players.get(client.sessionId);
+      if (!player || typeof input?.x !== "number" || typeof input?.y !== "number") {
+        return;
+      }
       player.x = input.x;
       player.y = input.y;
     });

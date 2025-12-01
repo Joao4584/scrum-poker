@@ -5,16 +5,9 @@ export class MapManager {
     const map = scene.make.tilemap({ key: "wall-room" });
 
     const tileset1 = map.addTilesetImage("room-wall", "room-wall", 32, 32);
-    const tileset2 = map.addTilesetImage(
-      "block_builder_32x32",
-      "block_builder_32x32",
-      32,
-      32,
-    );
+    const tileset2 = map.addTilesetImage("block_builder_32x32", "block_builder_32x32", 32, 32);
 
-    const allTilesets = [tileset1, tileset2].filter(
-      Boolean,
-    ) as Phaser.Tilemaps.Tileset[];
+    const allTilesets = [tileset1, tileset2].filter(Boolean) as Phaser.Tilemaps.Tileset[];
 
     const createIfExists = (name: string) => {
       const idx = map.getLayerIndex(name);
@@ -28,7 +21,7 @@ export class MapManager {
 
     floorLayer?.setDepth(0);
     wallLayer?.setDepth(1);
-    wallTopLayer?.setDepth(1000);
+    wallTopLayer?.setDepth(1 * 9999);
 
     const cullPad = 2;
     floorLayer?.setCullPadding(cullPad, cullPad);
@@ -84,12 +77,7 @@ export class MapManager {
     const padX = paddingTiles * map.tileWidth;
     const padY = paddingTiles * map.tileHeight;
 
-    return new Phaser.Geom.Rectangle(
-      x - padX,
-      y - padY,
-      width + padX * 2,
-      height + padY * 2,
-    );
+    return new Phaser.Geom.Rectangle(x - padX, y - padY, width + padX * 2, height + padY * 2);
   }
 
   public static findSpawnOnFloor(
@@ -123,12 +111,8 @@ export class MapManager {
     }
 
     const selectedTile = Phaser.Utils.Array.GetRandom(walkableTiles);
-    const x =
-      floorLayer.tilemap.tileToWorldX(selectedTile.x) +
-      floorLayer.tilemap.tileWidth / 2;
-    const y =
-      floorLayer.tilemap.tileToWorldY(selectedTile.y) +
-      floorLayer.tilemap.tileHeight / 2;
+    const x = floorLayer.tilemap.tileToWorldX(selectedTile.x) + floorLayer.tilemap.tileWidth / 2;
+    const y = floorLayer.tilemap.tileToWorldY(selectedTile.y) + floorLayer.tilemap.tileHeight / 2;
 
     return new Phaser.Math.Vector2(x, y);
   }

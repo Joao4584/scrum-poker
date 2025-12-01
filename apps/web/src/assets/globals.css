@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "PixelFont";
+  src: url("./fonts/pixel-font.ttf") format("truetype");
+  font-display: swap;
+}
+
 body {
   margin: 0;
   padding: 0;
