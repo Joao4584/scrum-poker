@@ -20,6 +20,8 @@ export default function TestPage() {
   const [idParam] = useQueryState("id");
   const [botParam] = useQueryState("bot");
   const [name, setName] = useState("");
+  const [chatMessage, setChatMessage] = useState("");
+  const [lastChatAt, setLastChatAt] = useState(0);
   const overlayRef = useRef<HTMLDivElement>(null);
 
   const skin = (skinParam ?? "steve").toString().toLowerCase();
@@ -47,6 +49,16 @@ export default function TestPage() {
     const trimmed = name.trim();
     if (!trimmed || !room) return;
     room.send("rename", { name: trimmed });
+  };
+
+  const sendChat = () => {
+    const trimmed = chatMessage.trim();
+    if (!trimmed || !room) return;
+    const now = Date.now();
+    if (now - lastChatAt < 600) return;
+    room.send("chat", { text: trimmed });
+    setChatMessage("");
+    setLastChatAt(now);
   };
 
   useEffect(() => {
@@ -104,6 +116,31 @@ export default function TestPage() {
           Voltar ao jogo
         </button>
       )}
+      <div className="absolute bottom-4 right-4 z-50 flex items-center gap-2 bg-slate-900/90 border border-slate-800 px-3 py-2 rounded-md shadow-xl">
+        <input
+          value={chatMessage}
+          onChange={(e) => setChatMessage(e.target.value)}
+          placeholder="Mensagem"
+          onFocus={() => setGameFocus(false)}
+          onBlur={() => setGameFocus(true)}
+          onKeyDownCapture={(e) => {
+            e.stopPropagation();
+            e.nativeEvent.stopImmediatePropagation();
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              sendChat();
+            }
+          }}
+          className="px-3 py-2 bg-slate-800 text-slate-100 text-sm rounded border border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-400/60"
+        />
+        <button
+          onClick={sendChat}
+          className="px-3 py-2 text-sm font-semibold bg-emerald-500 text-slate-900 rounded hover:bg-emerald-400 transition disabled:opacity-50"
+          disabled={!room}
+        >
+          Enviar
+        </button>
+      </div>
     </div>
   );
 }

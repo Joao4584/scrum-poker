@@ -23,10 +23,14 @@ export class MapManager {
     wallLayer?.setDepth(1);
     wallTopLayer?.setDepth(1 * 9999);
 
-    const cullPad = 2;
+    const cullPad = 4;
     floorLayer?.setCullPadding(cullPad, cullPad);
     wallLayer?.setCullPadding(cullPad, cullPad);
     wallTopLayer?.setCullPadding(cullPad, cullPad);
+    // Avoid aggressive culling to prevent edge seams
+    floorLayer?.setSkipCull(true);
+    wallLayer?.setSkipCull(true);
+    wallTopLayer?.setSkipCull(true);
 
     const collider = createIfExists("collider");
     collider?.setCollisionByExclusion([-1]);

@@ -9,6 +9,7 @@ export interface PlayerState extends Schema {
   dir: "up" | "down" | "left" | "right";
   running: boolean;
   skin: string;
+  message: string;
 }
 
 export interface PlaygroundState extends Schema {

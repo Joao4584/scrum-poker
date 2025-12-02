@@ -53,6 +53,11 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Never localize API routes
+  if (pathname.startsWith("/api")) {
+    return NextResponse.next();
+  }
+
   const segments = pathname.split("/").filter(Boolean);
   if (!normalizeLocale(segments[0])) {
     const cookieLocale = normalizeLocale(

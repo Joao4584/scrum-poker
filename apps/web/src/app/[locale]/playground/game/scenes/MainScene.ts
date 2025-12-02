@@ -5,6 +5,13 @@ import type { Room } from "colyseus.js";
 import type { PlaygroundState } from "../network/types";
 import { RemoteManager } from "./helpers/remote-manager";
 import { createNameLabel, positionLabel } from "./helpers/labels";
+import {
+  ChatBubble,
+  createChatBubble,
+  destroyChatBubble,
+  positionChatBubble,
+  updateChatBubble,
+} from "./helpers/chat-bubble";
 
 export class MainScene extends Phaser.Scene {
   private player!: Player;
@@ -18,6 +25,8 @@ export class MainScene extends Phaser.Scene {
   private selfInitialized = false;
   private selfLabel?: Phaser.GameObjects.Text;
   private remotes?: RemoteManager;
+  private selfBubble?: ChatBubble;
+  private lastSelfMessage = "";
 
   constructor() {
     super({ key: "game" });
@@ -66,6 +75,8 @@ export class MainScene extends Phaser.Scene {
     this.cameras.main.startFollow(this.player);
     this.cameras.main.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
     this.cameras.main.roundPixels = true;
+    this.cameras.main.setRoundPixels(true);
+    this.cameras.main.setBackgroundColor("#0b1220");
 
     const { width: gameWidth, height: gameHeight } = this.scale;
     const mapWidth = bounds.width;
@@ -74,7 +85,9 @@ export class MainScene extends Phaser.Scene {
     const zoomX = gameWidth / mapWidth;
     const zoomY = gameHeight / mapHeight;
     const fitZoom = Math.max(zoomX, zoomY);
-    const zoom = Phaser.Math.Clamp(fitZoom * 1.25, 0.3, 2);
+    const rawZoom = Phaser.Math.Clamp(fitZoom * 1.25, 0.4, 2);
+    // Snap zoom to quarter steps to avoid subpixel gaps between tiles
+    const zoom = Math.max(0.5, Math.round(rawZoom * 4) / 4);
 
     this.cameras.main.setZoom(zoom);
 
@@ -85,16 +98,24 @@ export class MainScene extends Phaser.Scene {
       this.fallbackSpawn,
     );
     this.registerNetworkListeners();
+    this.selfBubble = createChatBubble(this, "", localSpawn.x, localSpawn.y);
 
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.remotes?.destroy();
       this.room = undefined;
       this.room?.leave();
+      if (this.selfBubble) {
+        destroyChatBubble(this.selfBubble);
+        this.selfBubble = undefined;
+      }
     });
   }
 
   update() {
     this.player.update();
+    const cam = this.cameras.main;
+    // Snap camera scroll to whole pixels to avoid tile seams near edges
+    cam.setScroll(Math.round(cam.scrollX), Math.round(cam.scrollY));
     // depth based on y to simulate layering
     this.player.setDepth(this.player.y);
     if (this.selfLabel) {
@@ -104,6 +125,15 @@ export class MainScene extends Phaser.Scene {
         this.selfLabel.setText(selfState.name);
       }
       this.selfLabel.setDepth(this.player.y + 1);
+    }
+    const selfState = this.room?.state.players.get(this.room?.sessionId ?? "");
+    const nextMessage = selfState?.message ?? "";
+    if (this.selfBubble) {
+      positionChatBubble(this.selfBubble, this.player.x, this.player.y);
+      if (nextMessage !== this.lastSelfMessage) {
+        updateChatBubble(this.selfBubble, nextMessage);
+        this.lastSelfMessage = nextMessage;
+      }
     }
 
     if (!this.room) return;

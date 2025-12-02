@@ -82,6 +82,11 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, userId, botCount }
         width: '100%',
         height: '100%',
         pixelArt: true,
+        render: {
+          pixelArt: true,
+          antialias: false,
+          roundPixels: true,
+        },
         parent: gameRef.current || undefined,
         physics: {
           default: 'arcade',

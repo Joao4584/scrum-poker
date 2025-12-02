@@ -2,6 +2,13 @@ import * as Phaser from "phaser";
 import type { Room } from "colyseus.js";
 import type { PlaygroundState } from "../../network/types";
 import { createNameLabel, positionLabel } from "./labels";
+import {
+  ChatBubble,
+  createChatBubble,
+  destroyChatBubble,
+  positionChatBubble,
+  updateChatBubble,
+} from "./chat-bubble";
 
 type CoerceFn = (x: number | undefined, y: number | undefined) => Phaser.Math.Vector2;
 
@@ -10,6 +17,8 @@ export class RemoteManager {
   private labels = new Map<string, Phaser.GameObjects.Text>();
   private listeners = new Map<string, { cleanup?: () => void }>();
   private skins = new Map<string, string>();
+  private bubbles = new Map<string, ChatBubble>();
+  private messages = new Map<string, string>();
 
   constructor(
     private scene: Phaser.Scene,
@@ -36,6 +45,11 @@ export class RemoteManager {
     const label = createNameLabel(this.scene, player.name ?? "Player", spawn.x, spawn.y);
     label.setDepth(spawn.y + 1);
     this.labels.set(sessionId, label);
+
+    const bubble = createChatBubble(this.scene, player.message ?? "", spawn.x, spawn.y);
+    positionChatBubble(bubble, spawn.x, spawn.y);
+    this.bubbles.set(sessionId, bubble);
+    this.messages.set(sessionId, player.message ?? "");
 
     if (typeof player.onChange === "function") {
       const handler = () => this.updateRemoteSprite(sessionId, player);
@@ -72,6 +86,7 @@ export class RemoteManager {
       this.setRemoteAnimation(target, player.dir, false, !!player.running, skin);
       target.setDepth(next.y);
       this.updateLabel(sessionId, target.x, target.y, player.name);
+      this.updateBubble(sessionId, target.x, target.y, player.message, true);
       return;
     }
 
@@ -80,6 +95,7 @@ export class RemoteManager {
     this.scene.tweens.killTweensOf(target);
     this.setRemoteAnimation(target, player.dir, true, !!player.running, skin);
     const label = this.labels.get(sessionId);
+    this.updateBubble(sessionId, next.x, next.y, player.message, true);
 
     this.scene.tweens.add({
       targets: target,
@@ -90,11 +106,13 @@ export class RemoteManager {
       onUpdate: () => {
         target.setDepth(target.y);
         this.updateLabel(sessionId, target.x, target.y, player.name);
+        this.updateBubble(sessionId, target.x, target.y, player.message, false);
       },
       onComplete: () => {
         this.setRemoteAnimation(target, player.dir, false, !!player.running, skin);
         target.setDepth(next.y);
         this.updateLabel(sessionId, target.x, target.y, player.name);
+        this.updateBubble(sessionId, next.x, next.y, player.message, true);
       },
     });
   }
@@ -108,6 +126,12 @@ export class RemoteManager {
     listener?.cleanup?.();
     this.listeners.delete(sessionId);
 
+    const bubble = this.bubbles.get(sessionId);
+    if (bubble) {
+      destroyChatBubble(bubble);
+      this.bubbles.delete(sessionId);
+    }
+
     const sprite = this.sprites.get(sessionId);
     if (sprite) {
       sprite.destroy();
@@ -115,6 +139,7 @@ export class RemoteManager {
     }
 
     this.skins.delete(sessionId);
+    this.messages.delete(sessionId);
   }
 
   destroy() {
@@ -122,6 +147,9 @@ export class RemoteManager {
     this.sprites.clear();
     this.labels.forEach((label) => label.destroy());
     this.labels.clear();
+    this.bubbles.forEach((bubble) => destroyChatBubble(bubble));
+    this.bubbles.clear();
+    this.messages.clear();
     this.listeners.forEach((entry) => entry.cleanup?.());
     this.listeners.clear();
     this.skins.clear();
@@ -134,6 +162,7 @@ export class RemoteManager {
     running: boolean,
     skin: string,
   ) {
+    if (!sprite.anims) return;
     const safeDir = dir ?? "down";
     const key = moving ? `${skin}-walk-${safeDir}` : `${skin}-idle-${safeDir}`;
     if (this.scene.anims.exists(key)) {
@@ -150,5 +179,23 @@ export class RemoteManager {
       label.setText(name);
     }
     label.setDepth(y + 5);
+  }
+
+  private updateBubble(
+    sessionId: string,
+    x: number,
+    y: number,
+    message?: string,
+    allowTextUpdate = false,
+  ) {
+    const bubble = this.bubbles.get(sessionId);
+    if (!bubble) return;
+    positionChatBubble(bubble, x, y);
+    if (!allowTextUpdate || typeof message !== "string") return;
+    const prev = this.messages.get(sessionId) ?? "";
+    if (message !== prev) {
+      updateChatBubble(bubble, message);
+      this.messages.set(sessionId, message);
+    }
   }
 }

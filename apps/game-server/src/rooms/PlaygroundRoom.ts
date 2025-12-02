@@ -10,6 +10,7 @@ class Player extends Schema {
   @type("string") dir: string = "down";
   @type("boolean") running: boolean = false;
   @type("string") skin: string = "steve";
+  @type("string") message: string = "";
 }
 
 class PlaygroundState extends Schema {
@@ -58,6 +59,7 @@ const directions = new Set(["up", "down", "left", "right"]);
 export class PlaygroundRoom extends Room<PlaygroundState> {
   maxClients = 16;
   private debugInterval?: any;
+  private messageTimers = new Map<string, any>();
 
   onCreate() {
     this.setState(new PlaygroundState());
@@ -102,6 +104,30 @@ export class PlaygroundRoom extends Room<PlaygroundState> {
       if (!player) return;
       player.name = sanitizeName(payload?.name, player.name);
     });
+
+    this.onMessage("chat", (client, payload: { text?: string }) => {
+      const player = this.state.players.get(client.sessionId);
+      if (!player) return;
+      const text = this.sanitizeMessage(payload?.text);
+      if (!text) return;
+
+      player.message = text;
+
+      const prev = this.messageTimers.get(client.sessionId);
+      if (prev) {
+        this.clock.clear(prev);
+      }
+
+      const ttlMs = 15000;
+      const timer = this.clock.setTimeout(ttlMs, () => {
+        const current = this.state.players.get(client.sessionId);
+        if (current) {
+          current.message = "";
+        }
+        this.messageTimers.delete(client.sessionId);
+      });
+      this.messageTimers.set(client.sessionId, timer);
+    });
   }
 
   onJoin(client: Client, options: { name?: string; color?: string; id?: string; skin?: string }) {
@@ -134,15 +160,29 @@ export class PlaygroundRoom extends Room<PlaygroundState> {
   }
 
   onLeave(client: Client) {
+    const timer = this.messageTimers.get(client.sessionId);
+    if (timer) {
+      this.clock.clear(timer);
+      this.messageTimers.delete(client.sessionId);
+    }
     this.state.players.delete(client.sessionId);
     console.log("[playground] leave", this.roomId, client.sessionId);
   }
 
   onDispose() {
+    this.messageTimers.forEach((timer) => this.clock.clear(timer));
+    this.messageTimers.clear();
     if (this.debugInterval) {
       this.clock.clear(this.debugInterval);
       this.debugInterval = undefined;
     }
     console.log("[playground] room disposed", this.roomId);
+  }
+
+  private sanitizeMessage(raw?: string | null) {
+    if (!raw || typeof raw !== "string") return "";
+    const cleaned = raw.replace(/[\r\n\t]+/g, " ").trim();
+    if (!cleaned) return "";
+    return cleaned.slice(0, 120);
   }
 }
