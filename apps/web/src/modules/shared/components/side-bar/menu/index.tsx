@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useI18n } from "@/locales/client";
 import {
-  routeDashboard,
   RouteDefinition,
   RouteProps,
   RouteGroup,
+  getDashboardRoutes,
 } from "@/modules/dashboard/routes/dashboard.routes";
 import { motion } from "framer-motion";
 import GroupMenu from "./group-menu";
@@ -17,6 +18,7 @@ interface MenuListProps {
 
 export default function MenuList({ currentPath, basePath }: MenuListProps) {
   const router = useRouter();
+  const t = useI18n();
   const normalizedBasePath = useMemo(
     () => (basePath.endsWith("/") ? basePath.slice(0, -1) : basePath),
     [basePath],
@@ -25,10 +27,11 @@ export default function MenuList({ currentPath, basePath }: MenuListProps) {
     const relative = (currentPath.split(`${normalizedBasePath}/`)[1] || "").split("/")[0];
     return relative;
   }, [currentPath, normalizedBasePath]);
+  const routes = useMemo(() => getDashboardRoutes(t), [t]);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    const currentIndex = routeDashboard.findIndex(
+    const currentIndex = routes.findIndex(
       (route: any) =>
         route.path === "/" + activeSegment ||
         (route instanceof Object &&
@@ -37,13 +40,13 @@ export default function MenuList({ currentPath, basePath }: MenuListProps) {
           route.routes.some((subRoute: RouteProps) => subRoute.path === "/" + activeSegment)),
     );
     setActiveIndex(currentIndex);
-  }, [currentPath, activeSegment]);
+  }, [currentPath, activeSegment, routes]);
 
   return (
     <div className="mt-4 relative">
       {activeIndex !== null && (
         <motion.span
-          className="absolute left-0 bg-sky-500 w-1.5 mt-1.5 mxd:mt-0 h-10 mxd:h-10 rounded-br-xl rounded-tr-xl shadow-sky-600 shadow-md"
+          className="absolute left-0 bg-sky-600 w-1.5 mt-1.5 mxd:mt-0 h-10 mxd:h-10 rounded-br-xl rounded-tr-xl shadow-sky-700 shadow-md"
           layoutId="activeIndicator"
           initial={{ y: 0 }}
           animate={{ y: activeIndex * 48 }}
@@ -51,7 +54,7 @@ export default function MenuList({ currentPath, basePath }: MenuListProps) {
         />
       )}
       <ul className="h-125 w-full overflow-y-auto overflow-x-hidden">
-        {routeDashboard.map((route, i) => (
+        {routes.map((route, i) => (
           <React.Fragment key={i}>
             {isRouteGroup(route) ? (
               <GroupMenu

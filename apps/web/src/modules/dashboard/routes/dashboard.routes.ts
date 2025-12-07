@@ -15,51 +15,59 @@ export interface RouteGroup {
 
 export type RouteDefinition = RouteProps | RouteGroup;
 
-export const routeDashboard: RouteDefinition[] = [
+type RoutePropsConfig = Omit<RouteProps, "title"> & {
+  titleKey: string;
+  fallback: string;
+};
+
+type RouteGroupConfig = Omit<RouteGroup, "groupName" | "routes"> & {
+  groupKey: string;
+  groupFallback: string;
+  routes: RoutePropsConfig[];
+};
+
+export type RouteDefinitionConfig = RoutePropsConfig | RouteGroupConfig;
+
+export const routeDashboardConfig: RouteDefinitionConfig[] = [
   {
-    title: "Overview",
+    titleKey: "dashboard.menu.overview",
+    fallback: "Inicio",
     icon: PanelsLeftBottom,
     path: "/",
   },
-  {
-    title: "Notificacoes",
-    icon: Bell,
-    path: "/notification",
-  },
-  {
-    title: "Projetos",
-    icon: Kanban,
-    path: "/projects",
-  },
+  // Example for future items:
   // {
-  //   title: "Conexoes",
-  //   icon: TbNetwork,
-  //   path: "/connections",
+  //   titleKey: "dashboard.menu.notifications",
+  //   fallback: "Notificacoes",
+  //   icon: Bell,
+  //   path: "/notification",
   // },
   // {
-  //   title: "Logs",
-  //   icon: FaReceipt,
-  //   path: "/logs",
-  // },
-  // {
-  //   groupName: "Configuracoes",
-  //   icon: RiSettings2Fill,
-  //   routes: [
-  //     {
-  //       title: "Gerais",
-  //       icon: MdOutlineBroadcastOnHome,
-  //       path: "/config",
-  //     },
-  //     {
-  //       title: "Usuarios",
-  //       icon: TiUser,
-  //       path: "/config/users",
-  //     },
-  //     {
-  //       title: "Grupos",
-  //       icon: FaUsers,
-  //       path: "/config/groups",
-  //     },
-  //   ],
+  //   titleKey: "dashboard.menu.projects",
+  //   fallback: "Projetos",
+  //   icon: Kanban,
+  //   path: "/projects",
   // },
 ];
+
+export function getDashboardRoutes(
+  t: (key: string, params?: Record<string, unknown>) => string,
+): RouteDefinition[] {
+  const translateRoute = (route: RoutePropsConfig): RouteProps => ({
+    title: t(route.titleKey) ?? route.fallback,
+    icon: route.icon,
+    path: route.path,
+  });
+
+  return routeDashboardConfig.map((item) => {
+    if ("groupKey" in item) {
+      const group = item as RouteGroupConfig;
+      return {
+        groupName: t(group.groupKey) ?? group.groupFallback,
+        icon: group.icon,
+        routes: group.routes.map(translateRoute),
+      };
+    }
+    return translateRoute(item as RoutePropsConfig);
+  });
+}
