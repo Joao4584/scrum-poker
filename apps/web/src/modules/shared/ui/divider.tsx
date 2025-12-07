@@ -1,8 +1,24 @@
-import { ReactElement } from "react";
+import * as React from "react";
+import { cn } from "../utils";
 
-const Divider = (): ReactElement => {
-
-    return <hr className='dark:border-gray-1 w-5/6 relative left-1/2 -translate-x-1/2 mt-3' />
+interface DividerProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: "horizontal" | "vertical";
+  className?: string;
 }
 
-export default Divider;
+const Divider = React.forwardRef<HTMLDivElement, DividerProps>(
+  ({ variant = "horizontal", className, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(
+        "bg-[hsl(var(--border))]",
+        variant === "horizontal" ? "h-[1px] w-full" : "h-full w-[1px]",
+        className,
+      )}
+      {...props}
+    />
+  ),
+);
+Divider.displayName = "Divider";
+
+export { Divider };

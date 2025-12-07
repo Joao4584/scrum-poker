@@ -5,19 +5,13 @@ import { GeistMono } from "geist/font/mono";
 import "@/assets/globals.css";
 
 export const metadata: Metadata = {
-  title: "Meta RTC",
+  title: "Meta Scrum",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${GeistSans.variable} ${GeistMono.variable} antialiased`}>
-        {children}
-      </body>
+      <body className={`${GeistSans.variable} ${GeistMono.variable} antialiased`}>{children}</body>
     </html>
   );
 }

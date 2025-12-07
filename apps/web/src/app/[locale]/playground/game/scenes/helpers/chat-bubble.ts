@@ -1,4 +1,5 @@
 import * as Phaser from "phaser";
+import { sanitizeChatMessage } from "../../chat-config";
 
 export type ChatBubble = {
   container: Phaser.GameObjects.Container;
@@ -12,8 +13,9 @@ const PADDING_Y = 3;
 const OFFSET_Y = 54;
 
 export function createChatBubble(scene: Phaser.Scene, message: string, x: number, y: number) {
+  const safeMessage = sanitizeChatMessage(message);
   const background = scene.add.graphics();
-  const text = scene.add.text(0, 0, message, {
+  const text = scene.add.text(0, 0, safeMessage, {
     fontFamily: "PixelFont, monospace",
     fontSize: "16px",
     color: "#0b1220",
@@ -28,24 +30,39 @@ export function createChatBubble(scene: Phaser.Scene, message: string, x: number
 
   const container = scene.add.container(x, y, [background, text]);
   container.setScrollFactor(1, 1);
-  layoutBubble(background, text, message);
-  container.setVisible(!!message);
+  layoutBubble(background, text, safeMessage);
+  container.setVisible(!!safeMessage);
   return { container, background, text };
 }
 
 export function updateChatBubble(bubble: ChatBubble, message: string) {
-  bubble.text.setText(message);
-  layoutBubble(bubble.background, bubble.text, message);
-  bubble.container.setVisible(!!message);
+  const safeMessage = sanitizeChatMessage(message);
+  bubble.text.setText(safeMessage);
+  layoutBubble(bubble.background, bubble.text, safeMessage);
+  bubble.container.setVisible(!!safeMessage);
 }
 
-export function positionChatBubble(bubble: ChatBubble, x: number, y: number) {
+export function positionChatBubble(bubble: ChatBubble, x: number, y: number, smoothing = 1) {
   const width = bubble.text.width + PADDING_X * 2;
   const height = bubble.text.height + PADDING_Y * 2;
-  const px = Math.round(x - width / 2);
-  const py = Math.round(y - OFFSET_Y - height);
-  bubble.container.setPosition(px, py);
-  bubble.container.setDepth(py + 10);
+  const targetPx = x - width / 2;
+  const targetPy = y - OFFSET_Y - height;
+  const useSmooth = smoothing > 0 && smoothing < 1;
+  const px = useSmooth
+    ? Phaser.Math.Linear(bubble.container.x, targetPx, smoothing)
+    : Math.round(targetPx);
+  const py = useSmooth
+    ? Phaser.Math.Linear(bubble.container.y, targetPy, smoothing)
+    : Math.round(targetPy);
+
+  if (bubble.container.x !== px || bubble.container.y !== py) {
+    bubble.container.setPosition(px, py);
+  }
+
+  const depth = Math.round(targetPy + 10);
+  if (bubble.container.depth !== depth) {
+    bubble.container.setDepth(depth);
+  }
 }
 
 export function destroyChatBubble(bubble: ChatBubble) {

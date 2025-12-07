@@ -1,19 +1,36 @@
-import Header from "@/modules/shared/components/header/header";
+"use client";
+
+import { Header } from "@/modules/shared/components/header/header";
 import { PatternBackgroundContainer } from "@/modules/shared/components/pattern-background-container";
-import SideBar from "@/modules/shared/components/side-bar/side-bar";
-import type { ReactNode } from "react";
+import { Sidebar } from "@/modules/shared/components/side-bar/side-bar";
+import { useState, type ReactNode } from "react";
 
 export default function DefaultLayout({ children }: { children: ReactNode }) {
+  const [showProfile, setShowProfile] = useState(false);
+
   return (
-    <div className=" min-h-screen flex  dark:bg-zinc-900 w-full ">
+    <div className="h-screen bg-background overflow-x-hidden">
+      {/* Sidebar */}
       <PatternBackgroundContainer />
-      <SideBar />
-      <main className="relative w-full h-full">
-        <Header />
-        <section className="w-full h-full z-10 relative px-8 py-6">
-          {children}
-        </section>
-      </main>
+      <Header />
+      {/* Main Content */}
+      <div className="flex h-[calc(100vh-69px)]">
+        <Sidebar onItemClick={() => setShowProfile(false)} />
+        {/* Content Area */}
+        <main className="w-full flex-2 overflow-y-auto">
+          <div className="relative ">
+            {children}
+
+            {/* Profile Dropdown */}
+            {showProfile && (
+              <div className="absolute top-4 right-4 z-50">
+                {/* UserDropdown component should be imported if needed */}
+                {/* <UserDropdown onClose={() => setShowProfile(false)} /> */}
+              </div>
+            )}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

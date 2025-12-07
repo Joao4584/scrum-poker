@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { useId } from "react";
 
 export function GridPattern({
   width,
@@ -7,7 +7,7 @@ export function GridPattern({
   y,
   squares,
   ...props
-}: React.ComponentPropsWithoutRef<'svg'> & {
+}: React.ComponentPropsWithoutRef<"svg"> & {
   width: number;
   height: number;
   x: string | number;
@@ -30,12 +30,7 @@ export function GridPattern({
           <path d={`M.5 ${height}V.5H${width}`} fill="none" />
         </pattern>
       </defs>
-      <rect
-        width="100%"
-        height="100%"
-        strokeWidth={0}
-        fill={`url(#${patternId})`}
-      />
+      <rect width="100%" height="100%" strokeWidth={0} fill={`url(#${patternId})`} />
       {squares && (
         <svg x={x} y={y} className="overflow-visible">
           {squares.map(([x, y]) => (
@@ -58,7 +53,7 @@ export function PatternBackgroundContainer() {
   return (
     <div className="absolute inset-0  mx-0 max-w-none overflow-hidden">
       <div className="absolute left-1/2 top-0 ml-[-30rem] h-[35rem] w-[81.25rem] dark:[mask-image:linear-gradient(white,transparent)]">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#a3a3a3] to-[#d8d8d838] opacity-20 [mask-image:radial-gradient(farthest-side_at_top,white,transparent)] dark:from-[#1b2c1d]/30 dark:to-[#9ecf7e]/30 dark:opacity-100">
+        <div className="absolute inset-0 bg-gradient-to-r from-[#a3a3a3] to-[#d8d8d838] opacity-20 [mask-image:radial-gradient(farthest-side_at_top,white,transparent)] dark:from-[#9ca9c5]/40 dark:to-[#6e92e7]/40 dark:opacity-100">
           <GridPattern
             width={72}
             height={76}
@@ -70,7 +65,7 @@ export function PatternBackgroundContainer() {
               [7, 3],
               [10, 6],
             ]}
-            className="absolute inset-x-0 inset-y-[-50%] h-[200%] w-full skew-y-[-18deg] fill-black/40 stroke-black/40 mix-blend-overlay dark:fill-white/2.5 dark:stroke-white/5"
+            className="absolute inset-x-0 inset-y-[-50%] h-[200%] w-full skew-y-[-18deg] fill-black/35 stroke-black/40 mix-blend-overlay dark:fill-white/2.5 dark:stroke-white/5"
           />
         </div>
         <svg

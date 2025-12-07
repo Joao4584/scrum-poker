@@ -2,12 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+/* --------------------- */
+/* FONTES                */
+/* --------------------- */
 @font-face {
   font-family: "PixelFont";
   src: url("./fonts/pixel-font.ttf") format("truetype");
   font-display: swap;
 }
 
+/* --------------------- */
+/* GLOBAL                */
+/* --------------------- */
 body {
   margin: 0;
   padding: 0;
@@ -16,6 +22,9 @@ body {
   position: relative;
 }
 
+/* --------------------- */
+/* UTILITIES CUSTOM      */
+/* --------------------- */
 @layer utilities {
   .text-balance {
     text-wrap: balance;
@@ -23,7 +32,7 @@ body {
 }
 
 .rounded-min {
-  border-radius: 0px;
+  border-radius: 0;
 }
 
 .icon-menu-svg svg {
@@ -31,6 +40,9 @@ body {
   height: 18px;
 }
 
+/* --------------------- */
+/* ANIMAÇÕES             */
+/* --------------------- */
 @keyframes rain {
   0% {
     opacity: 1;
@@ -46,6 +58,9 @@ body {
   animation: rain linear infinite;
 }
 
+/* --------------------- */
+/* THEME VARIABLES       */
+/* --------------------- */
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -74,8 +89,9 @@ body {
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
   }
+
   .dark {
-    --background: 222.2 35% 11%;
+    --background: 222.2 35% 16%;
     --foreground: 210 40% 98%;
     --card: 222.2 35% 11%;
     --card-foreground: 210 40% 98%;
@@ -91,8 +107,8 @@ body {
     --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: 227.2 0% 24.5%;
-    --input: 217.2 32.6% 17.5%;
+    --border: 210.2 27 20.5%;
+    --input: 210.2 27 20.5%;
     --ring: 212.7 26.8% 83.9%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
@@ -102,26 +118,11 @@ body {
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
-
+/* --------------------- */
+/* HELPERS               */
+/* --------------------- */
 .relative-center-x {
   position: relative;
   left: 50%;
   transform: translateX(-50%);
-}
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
 }

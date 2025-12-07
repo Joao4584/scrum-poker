@@ -9,6 +9,7 @@ import {
   positionChatBubble,
   updateChatBubble,
 } from "./chat-bubble";
+import { CHAT_HIDE_DELAY_MS, sanitizeChatMessage } from "../../chat-config";
 
 type CoerceFn = (x: number | undefined, y: number | undefined) => Phaser.Math.Vector2;
 
@@ -19,6 +20,7 @@ export class RemoteManager {
   private skins = new Map<string, string>();
   private bubbles = new Map<string, ChatBubble>();
   private messages = new Map<string, string>();
+  private messageSeenAt = new Map<string, number>();
 
   constructor(
     private scene: Phaser.Scene,
@@ -46,10 +48,14 @@ export class RemoteManager {
     label.setDepth(spawn.y + 1);
     this.labels.set(sessionId, label);
 
-    const bubble = createChatBubble(this.scene, player.message ?? "", spawn.x, spawn.y);
+    const initialMessage = sanitizeChatMessage(player.message ?? "");
+    const bubble = createChatBubble(this.scene, initialMessage, spawn.x, spawn.y);
     positionChatBubble(bubble, spawn.x, spawn.y);
     this.bubbles.set(sessionId, bubble);
-    this.messages.set(sessionId, player.message ?? "");
+    this.messages.set(sessionId, initialMessage);
+    if (initialMessage) {
+      this.messageSeenAt.set(sessionId, this.scene.time.now);
+    }
 
     if (typeof player.onChange === "function") {
       const handler = () => this.updateRemoteSprite(sessionId, player);
@@ -75,23 +81,35 @@ export class RemoteManager {
     const target = this.sprites.get(sessionId);
     if (!target) return;
 
-    const next = this.coerce(player.x, player.y) ?? this.fallbackSpawn;
-    const dist = Phaser.Math.Distance.Between(target.x, target.y, next.x, next.y);
+    const desired = this.coerce(player.x, player.y) ?? this.fallbackSpawn;
+    const dist = Phaser.Math.Distance.Between(target.x, target.y, desired.x, desired.y);
     const moving = dist > 0.2;
     const skin = this.skins.get(sessionId) ?? (player.skin ?? "steve").toString();
 
     if (!moving) {
       this.scene.tweens.killTweensOf(target);
-      target.setPosition(next.x, next.y);
+      target.setPosition(desired.x, desired.y);
       this.setRemoteAnimation(target, player.dir, false, !!player.running, skin);
-      target.setDepth(next.y);
+      target.setDepth(desired.y);
       this.updateLabel(sessionId, target.x, target.y, player.name);
       this.updateBubble(sessionId, target.x, target.y, player.message, true);
       return;
     }
 
+    // Limit step size to avoid visible teleporting when updates arrive late
+    const maxStep = 100;
+    const lerpFactor = dist > maxStep ? maxStep / dist : 1;
+    const next = new Phaser.Math.Vector2(
+      target.x + (desired.x - target.x) * lerpFactor,
+      target.y + (desired.y - target.y) * lerpFactor,
+    );
+
     const speed = player.running ? 320 : 180;
-    const duration = Phaser.Math.Clamp((dist / speed) * 1000, 30, 260);
+    const duration = Phaser.Math.Clamp(
+      (Phaser.Math.Distance.Between(target.x, target.y, next.x, next.y) / speed) * 1000,
+      40,
+      240,
+    );
     this.scene.tweens.killTweensOf(target);
     this.setRemoteAnimation(target, player.dir, true, !!player.running, skin);
     const label = this.labels.get(sessionId);
@@ -140,6 +158,7 @@ export class RemoteManager {
 
     this.skins.delete(sessionId);
     this.messages.delete(sessionId);
+    this.messageSeenAt.delete(sessionId);
   }
 
   destroy() {
@@ -150,6 +169,7 @@ export class RemoteManager {
     this.bubbles.forEach((bubble) => destroyChatBubble(bubble));
     this.bubbles.clear();
     this.messages.clear();
+    this.messageSeenAt.clear();
     this.listeners.forEach((entry) => entry.cleanup?.());
     this.listeners.clear();
     this.skins.clear();
@@ -190,12 +210,26 @@ export class RemoteManager {
   ) {
     const bubble = this.bubbles.get(sessionId);
     if (!bubble) return;
-    positionChatBubble(bubble, x, y);
-    if (!allowTextUpdate || typeof message !== "string") return;
-    const prev = this.messages.get(sessionId) ?? "";
-    if (message !== prev) {
-      updateChatBubble(bubble, message);
-      this.messages.set(sessionId, message);
+    positionChatBubble(bubble, x, y, 0.35);
+    const now = this.scene.time.now;
+    if (allowTextUpdate && typeof message === "string") {
+      const safeMessage = sanitizeChatMessage(message);
+      const prev = this.messages.get(sessionId) ?? "";
+      if (safeMessage !== prev) {
+        this.messages.set(sessionId, safeMessage);
+        if (safeMessage) {
+          this.messageSeenAt.set(sessionId, now);
+        } else {
+          this.messageSeenAt.delete(sessionId);
+        }
+        updateChatBubble(bubble, safeMessage);
+      }
+    }
+
+    const lastSeen = this.messageSeenAt.get(sessionId);
+    if (lastSeen !== undefined && now - lastSeen > CHAT_HIDE_DELAY_MS) {
+      this.messageSeenAt.delete(sessionId);
+      updateChatBubble(bubble, "");
     }
   }
 }

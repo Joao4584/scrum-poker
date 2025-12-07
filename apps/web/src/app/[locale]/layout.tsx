@@ -1,9 +1,9 @@
-import type { Metadata } from 'next';
-import type { ReactNode } from 'react';
-import { notFound } from 'next/navigation';
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
+import { notFound } from "next/navigation";
 
-import { Providers } from './providers';
-import { locales } from '@/locales/config';
+import { Providers } from "./providers";
+import { locales } from "@/locales/config";
 
 export const dynamicParams = false;
 
@@ -12,9 +12,9 @@ export function generateStaticParams() {
 }
 
 export const metadata: Metadata = {
-  title: 'Meta RTC - Auth',
+  title: "Meta Scrum - Auth",
   icons: {
-    icon: '/icon-logo.png',
+    icon: "/icon-logo.png",
   },
 };
 
@@ -30,7 +30,5 @@ export default async function RootLayout({
     notFound();
   }
 
-  return (
-    <Providers locale={locale}>{children}</Providers>
-  );
+  return <Providers locale={locale}>{children}</Providers>;
 }

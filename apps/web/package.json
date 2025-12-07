@@ -1,5 +1,5 @@
 {
-  "name": "meta-scrum-poker-web",
+  "name": "web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@colyseus/schema": "^3.0.42",
     "@radix-ui/react-accordion": "^1.2.2",
     "@radix-ui/react-alert-dialog": "^1.1.4",
     "@radix-ui/react-avatar": "^1.1.2",
@@ -25,16 +26,16 @@
     "@radix-ui/react-slot": "^1.1.1",
     "@radix-ui/react-tooltip": "^1.1.6",
     "@scrum-poker/env": "workspace:^1.0.0",
-    "@colyseus/schema": "^3.0.42",
-    "colyseus.js": "^0.16.22",
     "@tanstack/react-query": "^5.64.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
+    "colyseus.js": "^0.16.22",
     "cookies-next": "^4.3.0",
+    "framer-motion": "^12.23.25",
     "geist": "^1.4.2",
     "ky": "^1.8.2",
-    "lucide-react": "^0.471.1",
+    "lucide-react": "^0.556.0",
     "motion": "^12.4.7",
     "next": "15.1.4",
     "next-auth": "^4.24.11",

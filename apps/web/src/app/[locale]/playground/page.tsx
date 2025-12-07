@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { useRoomStore } from "./game/room-store";
 import { useEffect, useRef, useState } from "react";
 import { useQueryState } from "nuqs";
+import { CHAT_MESSAGE_MAX_CHARS, sanitizeChatMessage } from "./game/chat-config";
 
 const DynamicPhaserGame = dynamic(
   () => import("./game/PhaserGame").then((mod) => mod.PhaserGame),
@@ -52,7 +53,7 @@ export default function TestPage() {
   };
 
   const sendChat = () => {
-    const trimmed = chatMessage.trim();
+    const trimmed = sanitizeChatMessage(chatMessage);
     if (!trimmed || !room) return;
     const now = Date.now();
     if (now - lastChatAt < 600) return;
@@ -68,7 +69,9 @@ export default function TestPage() {
       setGameFocus(true);
     };
     document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
+    return () => {
+      document.removeEventListener("mousedown", handler);
+    };
   }, [focusGame, keyboardToggle]);
 
   return (
@@ -119,7 +122,11 @@ export default function TestPage() {
       <div className="absolute bottom-4 right-4 z-50 flex items-center gap-2 bg-slate-900/90 border border-slate-800 px-3 py-2 rounded-md shadow-xl">
         <input
           value={chatMessage}
-          onChange={(e) => setChatMessage(e.target.value)}
+          onChange={(e) => {
+            const next = e.target.value.slice(0, CHAT_MESSAGE_MAX_CHARS);
+            setChatMessage(next);
+          }}
+          maxLength={CHAT_MESSAGE_MAX_CHARS}
           placeholder="Mensagem"
           onFocus={() => setGameFocus(false)}
           onBlur={() => setGameFocus(true)}

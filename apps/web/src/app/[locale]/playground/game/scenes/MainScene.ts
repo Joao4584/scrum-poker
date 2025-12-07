@@ -3,6 +3,10 @@ import { Player } from "../sprites/Player";
 import { MapManager } from "../map/MapManager";
 import type { Room } from "colyseus.js";
 import type { PlaygroundState } from "../network/types";
+import {
+  CHAT_HIDE_DELAY_MS,
+  sanitizeChatMessage,
+} from "../chat-config";
 import { RemoteManager } from "./helpers/remote-manager";
 import { createNameLabel, positionLabel } from "./helpers/labels";
 import {
@@ -26,7 +30,9 @@ export class MainScene extends Phaser.Scene {
   private selfLabel?: Phaser.GameObjects.Text;
   private remotes?: RemoteManager;
   private selfBubble?: ChatBubble;
-  private lastSelfMessage = "";
+  private selfMessageSeenAt = 0;
+  private selfStateMessage = "";
+  private hiddenMessage?: string;
 
   constructor() {
     super({ key: "game" });
@@ -113,6 +119,7 @@ export class MainScene extends Phaser.Scene {
 
   update() {
     this.player.update();
+    const now = this.time.now;
     const cam = this.cameras.main;
     // Snap camera scroll to whole pixels to avoid tile seams near edges
     cam.setScroll(Math.round(cam.scrollX), Math.round(cam.scrollY));
@@ -127,18 +134,30 @@ export class MainScene extends Phaser.Scene {
       this.selfLabel.setDepth(this.player.y + 1);
     }
     const selfState = this.room?.state.players.get(this.room?.sessionId ?? "");
-    const nextMessage = selfState?.message ?? "";
+    const nextMessage = sanitizeChatMessage(selfState?.message ?? "");
     if (this.selfBubble) {
       positionChatBubble(this.selfBubble, this.player.x, this.player.y);
-      if (nextMessage !== this.lastSelfMessage) {
-        updateChatBubble(this.selfBubble, nextMessage);
-        this.lastSelfMessage = nextMessage;
+      const changed = nextMessage !== this.selfStateMessage;
+      const hiddenSame = this.hiddenMessage !== undefined && nextMessage === this.hiddenMessage;
+
+      if (!hiddenSame) {
+        if (changed) {
+          this.selfStateMessage = nextMessage;
+          this.selfMessageSeenAt = nextMessage ? now : 0;
+          this.hiddenMessage = undefined;
+          updateChatBubble(this.selfBubble, nextMessage);
+        } else if (this.selfStateMessage) {
+          if (this.selfMessageSeenAt && now - this.selfMessageSeenAt > CHAT_HIDE_DELAY_MS) {
+            this.hiddenMessage = this.selfStateMessage;
+            this.selfMessageSeenAt = 0;
+            updateChatBubble(this.selfBubble, "");
+          }
+        }
       }
     }
 
     if (!this.room) return;
 
-    const now = this.time.now;
     const moved =
       Phaser.Math.Distance.Between(
         this.lastSentPosition.x,
