@@ -26,7 +26,7 @@ const SingleMenu: React.FC<SingleMenuProps> = ({
 
   return (
     <li
-      className={`items-center cursor-pointer rounded-sm text-sm relative dark:hover:bg-slate-500 dark:hover:bg-opacity-20 dark:hover:text-slate-200 ${
+      className={`items-center cursor-pointer  text-sm relative dark:hover:bg-slate-500 dark:hover:bg-opacity-20 dark:hover:text-slate-200 ${
         isActive
           ? "text-black dark:text-slate-200 dark:bg-slate-500 dark:bg-opacity-15"
           : "dark:text-slate-300"

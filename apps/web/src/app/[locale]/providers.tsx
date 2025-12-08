@@ -8,8 +8,8 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { I18nProviderClient } from "@/locales/client";
 import { Toaster } from "@/modules/shared/ui/sonner";
 import { queryClient } from "@/modules/shared/config/react-query";
-import { LocaleSync } from "@/modules/shared/components/locale-sync";
-import { LocalePersist } from "@/modules/shared/components/locale-persist";
+import { LocaleSync } from "@/modules/shared/utils/locale-sync";
+import { LocalePersist } from "@/modules/shared/utils/locale-persist";
 
 type ProviderProps = {
   locale: string;
@@ -24,6 +24,7 @@ export function Providers({ locale, children }: ProviderProps) {
           attribute="class"
           defaultTheme="dark"
           themes={["light", "dark"]}
+          storageKey="color-theme"
           enableSystem={false}
           disableTransitionOnChange
         >

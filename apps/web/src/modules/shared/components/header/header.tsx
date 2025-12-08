@@ -1,11 +1,7 @@
-"use client";
-
 import { useState } from "react";
 import { Input } from "../../ui/input";
-import { Button } from "../../ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
-import { UserDropdown } from "./user-dropdown";
 import Image from "next/image";
+import UserProfileHeader from "../profile/profile-header";
 
 interface HeaderProps {
   onSearch?: (query: string) => void;
@@ -44,35 +40,7 @@ export function Header({ onSearch }: HeaderProps) {
 
         {/* Icons */}
         <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hidden sm:inline-flex text-lg hover:bg-secondary"
-          >
-            🔔
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hidden sm:inline-flex text-lg hover:bg-secondary"
-          >
-            🟣
-          </Button>
-
-          <Popover open={isOpen} onOpenChange={setIsOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9 rounded-full bg-accent/20 hover:bg-accent/30 text-lg"
-              >
-                👤
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-64 p-0 border-0 shadow-xl" align="end">
-              <UserDropdown onClose={() => setIsOpen(false)} />
-            </PopoverContent>
-          </Popover>
+          <UserProfileHeader />
         </div>
       </div>
     </header>

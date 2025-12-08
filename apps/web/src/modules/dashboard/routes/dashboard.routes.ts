@@ -36,18 +36,18 @@ export const routeDashboardConfig: RouteDefinitionConfig[] = [
     path: "/",
   },
   // Example for future items:
-  // {
-  //   titleKey: "dashboard.menu.notifications",
-  //   fallback: "Notificacoes",
-  //   icon: Bell,
-  //   path: "/notification",
-  // },
-  // {
-  //   titleKey: "dashboard.menu.projects",
-  //   fallback: "Projetos",
-  //   icon: Kanban,
-  //   path: "/projects",
-  // },
+  {
+    titleKey: "dashboard.menu.notifications",
+    fallback: "Notificacoes",
+    icon: Bell,
+    path: "/notification",
+  },
+  {
+    titleKey: "dashboard.menu.projects",
+    fallback: "Projetos",
+    icon: Kanban,
+    path: "/projects",
+  },
 ];
 
 export function getDashboardRoutes(

@@ -27,7 +27,7 @@ export function Sidebar({ onItemClick, basePath = "/app" }: SidebarProps) {
 
   return (
     <aside className="w-72 bg-card/40 border-r border-border relative top-0 h-full overflow-y-auto">
-      <nav className="flex-1 px-2 py-3 space-y-1 ">
+      <nav className="flex-1 py-3 space-y-1 ">
         <MenuList currentPath={pathname} basePath={basePath} />
       </nav>
     </aside>
