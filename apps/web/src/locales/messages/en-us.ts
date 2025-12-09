@@ -41,6 +41,7 @@ export default {
   dashboard: {
     menu: {
       overview: "Overview",
+      projects: "Projects",
     },
   },
 } as const;

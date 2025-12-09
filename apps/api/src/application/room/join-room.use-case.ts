@@ -4,37 +4,40 @@ import {
   ConflictException,
   NotFoundException,
 } from '@nestjs/common';
-import { RoomsRepository } from '@/infrastructure/repositories/room.repository';
-import { RoomParticipantsRepository } from '@/infrastructure/repositories/room-participant.repository';
 import { UlidService } from '@/shared/ulid/ulid.service';
+import {
+  ROOM_REPOSITORY,
+  RoomRepository,
+} from '@/domain/room/repositories/room.repository';
+import {
+  ROOM_PARTICIPANT_REPOSITORY,
+  RoomParticipantRepository,
+} from '@/domain/room/repositories/room-participant.repository';
 
 @Injectable()
 export class JoinRoomUseCase {
   constructor(
-    @Inject(RoomsRepository) private readonly roomsRepository: RoomsRepository,
-    @Inject(RoomParticipantsRepository)
-    private readonly roomParticipantsRepository: RoomParticipantsRepository,
+    @Inject(ROOM_REPOSITORY)
+    private readonly roomsRepository: RoomRepository,
+    @Inject(ROOM_PARTICIPANT_REPOSITORY)
+    private readonly roomParticipantsRepository: RoomParticipantRepository,
     @Inject(UlidService) private readonly ulidService: UlidService,
   ) {}
 
   async execute(room_public_id: string, user_id: number) {
-    const room = await this.roomsRepository.findRoomByPublicId(room_public_id);
+    const room = await this.roomsRepository.findByPublicId(room_public_id);
     if (!room) {
-      console.log('aquii');
       throw new NotFoundException('Sala não encontrada');
     }
 
     const existingParticipant =
-      await this.roomParticipantsRepository.findRoomParticipant(
-        room.id,
-        user_id,
-      );
+      await this.roomParticipantsRepository.findByRoomAndUser(room.id, user_id);
     if (existingParticipant) {
       throw new ConflictException('Você já está nesta sala');
     }
 
     const public_id = this.ulidService.generateId();
-    return await this.roomParticipantsRepository.createRoomParticipant({
+    return await this.roomParticipantsRepository.create({
       room_id: room.id,
       user_id,
       public_id,

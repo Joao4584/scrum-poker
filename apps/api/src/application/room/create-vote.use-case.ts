@@ -1,15 +1,22 @@
-import { Injectable } from '@nestjs/common';
-import { QuestionRepository } from '@/infrastructure/repositories/question.repository';
-import { VoteRepository } from '@/infrastructure/repositories/vote.repository';
+import { Inject, Injectable } from '@nestjs/common';
 import { UlidService } from '@/shared/ulid/ulid.service';
+import {
+  QUESTION_REPOSITORY,
+  QuestionRepository,
+} from '@/domain/room/repositories/question.repository';
+import {
+  VOTE_REPOSITORY,
+  VoteRepository,
+} from '@/domain/room/repositories/vote.repository';
 import { Vote } from '@/infrastructure/entities/vote.entity';
 import { User } from '@/infrastructure/entities/user.entity';
 
 @Injectable()
 export class CreateVoteUseCase {
   constructor(
+    @Inject(QUESTION_REPOSITORY)
     private readonly questionRepository: QuestionRepository,
-    private readonly voteRepository: VoteRepository,
+    @Inject(VOTE_REPOSITORY) private readonly voteRepository: VoteRepository,
     private readonly ulidService: UlidService,
   ) {}
 
@@ -18,20 +25,19 @@ export class CreateVoteUseCase {
     value: string,
     user: User,
   ): Promise<Vote> {
-    const question = await this.questionRepository.findOne({
-      where: { public_id: questionPublicId },
-    });
+    const question = await this.questionRepository.findByPublicId(
+      questionPublicId,
+    );
 
     if (!question) {
       throw new Error('Question not found');
     }
 
-    const vote = new Vote();
-    vote.public_id = this.ulidService.generateId();
-    vote.value = value;
-    vote.question = question;
-    vote.user = user;
-
-    return this.voteRepository.save(vote);
+    return this.voteRepository.create({
+      public_id: this.ulidService.generateId(),
+      value,
+      question_id: question.id,
+      user_id: user.id,
+    });
   }
 }

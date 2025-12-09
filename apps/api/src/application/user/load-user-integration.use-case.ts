@@ -1,14 +1,17 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type { IntegrationUserRequest } from '@/presentation/requests/user/integration-user.request';
-import { UsersRepository } from '@/infrastructure/repositories/user.repository';
+import { IntegrationUser } from '@/domain/user/integration-user';
+import {
+  USER_REPOSITORY,
+  UserRepository,
+} from '@/domain/user/user.repository';
 
 @Injectable()
 export class LoadUserIntegrationUseCase {
   constructor(
-    @Inject(UsersRepository) private readonly usersRepository: UsersRepository,
+    @Inject(USER_REPOSITORY) private readonly usersRepository: UserRepository,
   ) {}
 
-  async execute(data: IntegrationUserRequest) {
-    return this.usersRepository.loadUserIntegration(data);
+  async execute(data: IntegrationUser) {
+    return this.usersRepository.findByIntegration(data);
   }
 }

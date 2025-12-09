@@ -17,6 +17,9 @@
       "@/presentation/*": [
         "presentation/*"
       ],
+      "@/domain/*": [
+        "domain/*"
+      ],
       "@/infrastructure/*": [
         "infrastructure/*"
       ],

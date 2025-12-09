@@ -41,6 +41,7 @@ export default {
   dashboard: {
     menu: {
       overview: "Inicio",
+      projects: "Projetos",
     },
   },
 } as const;

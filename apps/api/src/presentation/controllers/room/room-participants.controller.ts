@@ -1,7 +1,7 @@
 import { Controller, Post, Param, Inject } from '@nestjs/common';
 import { JoinRoomUseCase } from '@/application/room/join-room.use-case';
-import { User as UserEntity } from '@/infrastructure/entities/user.entity';
 import { User } from '@/presentation/decorators/user.decorator';
+import { User as UserEntity } from '@/infrastructure/entities/user.entity';
 @Controller('room/:room_public_id/participants')
 export class RoomParticipantsController {
   constructor(

@@ -1,14 +1,18 @@
-import { Injectable } from '@nestjs/common';
-import { QuestionRepository } from '@/infrastructure/repositories/question.repository';
+import { Inject, Injectable } from '@nestjs/common';
+import {
+  QUESTION_REPOSITORY,
+  QuestionRepository,
+} from '@/domain/room/repositories/question.repository';
 
 @Injectable()
 export class DeleteQuestionUseCase {
-  constructor(private readonly questionRepository: QuestionRepository) {}
+  constructor(
+    @Inject(QUESTION_REPOSITORY)
+    private readonly questionRepository: QuestionRepository,
+  ) {}
 
   async execute(publicId: string): Promise<void> {
-    const question = await this.questionRepository.findOne({
-      where: { public_id: publicId },
-    });
+    const question = await this.questionRepository.findByPublicId(publicId);
 
     if (!question) {
       throw new Error('Question not found');

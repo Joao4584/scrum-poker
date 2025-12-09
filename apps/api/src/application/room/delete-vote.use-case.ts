@@ -1,14 +1,17 @@
-import { Injectable } from '@nestjs/common';
-import { VoteRepository } from '@/infrastructure/repositories/vote.repository';
+import { Inject, Injectable } from '@nestjs/common';
+import {
+  VOTE_REPOSITORY,
+  VoteRepository,
+} from '@/domain/room/repositories/vote.repository';
 
 @Injectable()
 export class DeleteVoteUseCase {
-  constructor(private readonly voteRepository: VoteRepository) {}
+  constructor(
+    @Inject(VOTE_REPOSITORY) private readonly voteRepository: VoteRepository,
+  ) {}
 
   async execute(publicId: string): Promise<void> {
-    const vote = await this.voteRepository.findOne({
-      where: { public_id: publicId },
-    });
+    const vote = await this.voteRepository.findByPublicId(publicId);
 
     if (!vote) {
       throw new Error('Vote not found');

@@ -2,7 +2,7 @@ import { Controller, Post, Body } from '@nestjs/common';
 import { RegisterUserRequest } from '@/presentation/requests/user/register-user.request';
 import { ValidationRequestPipe } from '@/shared/pipes/validation-request.pipe';
 
-@Controller('user')
+@Controller('usedwa')
 export class RegisterUserController {
   @Post()
   async createUser(

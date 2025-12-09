@@ -7,17 +7,26 @@ type RemoveValue = () => void;
 export function useLocalStorage<T>(key: string, initialValue?: T) {
   const isClient = typeof window !== 'undefined';
 
+  const serialize = (value: T | undefined) => {
+    if (value === undefined) return undefined;
+    if (typeof value === 'string') return value;
+    return JSON.stringify(value);
+  };
+
+  const deserialize = (value: string | null): T | undefined => {
+    if (value === null) return initialValue;
+    if (typeof initialValue === 'string') {
+      return value as unknown as T;
+    }
+    try {
+      return JSON.parse(value) as T;
+    } catch {
+      return initialValue;
+    }
+  };
+
   const [storedValue, setStoredValue] = useState<T | undefined>(
-    isClient
-      ? (() => {
-          try {
-            const item = window.localStorage.getItem(key);
-            return item ? JSON.parse(item) : initialValue;
-          } catch {
-            return initialValue;
-          }
-        })()
-      : initialValue,
+    isClient ? deserialize(window.localStorage.getItem(key)) : initialValue,
   );
 
   useEffect(() => {
@@ -25,9 +34,13 @@ export function useLocalStorage<T>(key: string, initialValue?: T) {
 
     try {
       const item = window.localStorage.getItem(key);
-      if (item) { setStoredValue(JSON.parse(item)); }
-      else if (initialValue !== undefined) {
-        window.localStorage.setItem(key, JSON.stringify(initialValue));
+      if (item) {
+        setStoredValue(deserialize(item));
+      } else if (initialValue !== undefined) {
+        const serialized = serialize(initialValue);
+        if (serialized !== undefined) {
+          window.localStorage.setItem(key, serialized);
+        }
         setStoredValue(initialValue);
       }
     } catch {}
@@ -36,7 +49,10 @@ export function useLocalStorage<T>(key: string, initialValue?: T) {
   const setValue: SetValue<T> = (newValue) => {
     if (!isClient) return;
     try {
-      window.localStorage.setItem(key, JSON.stringify(newValue));
+      const serialized = serialize(newValue);
+      if (serialized !== undefined) {
+        window.localStorage.setItem(key, serialized);
+      }
       setStoredValue(newValue);
     } catch {}
   };

@@ -11,6 +11,10 @@ import { plainToInstance } from 'class-transformer';
 @Injectable()
 export class ValidationRequestPipe implements PipeTransform<any> {
   async transform(value: any, { metatype }: ArgumentMetadata) {
+    if (value === null || value === undefined) {
+      return value;
+    }
+
     if (!metatype || !this.toValidate(metatype)) {
       if (
         typeof value === 'object' &&
@@ -23,7 +27,7 @@ export class ValidationRequestPipe implements PipeTransform<any> {
     }
 
     const object = plainToInstance(metatype, value);
-    const errors = await validate(object);
+    const errors = await validate(object, { forbidUnknownValues: false });
     if (errors.length > 0) {
       const errorMessages = errors
         .map((error) => Object.values(error.constraints || {}))

@@ -46,9 +46,6 @@ export class User {
   @Column({ name: 'avatar_url', nullable: true })
   avatar_url?: string;
 
-  @Column({ name: 'status', default: 'available' })
-  status: string;
-
   @Column({ name: 'github_link', nullable: true })
   github_link?: string;
 

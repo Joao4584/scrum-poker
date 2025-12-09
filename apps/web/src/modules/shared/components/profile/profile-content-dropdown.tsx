@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Cloud,
   CreditCard,
@@ -18,6 +20,7 @@ import {
 
 import { ReactElement } from "react";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import {
   DropdownMenuContent,
   DropdownMenuGroup,
@@ -27,20 +30,19 @@ import {
   DropdownMenuShortcut,
 } from "../../ui/dropdown-menu";
 
-export const ListContentDropDown = (): ReactElement => {
+export function ListContentDropDown(): ReactElement {
+  const { theme, setTheme } = useTheme();
   const router = useRouter();
 
   const disconnectAuth = () => {
-    // setToken("");
     router.push("/auth");
   };
 
-  const alterThemeColor = () => {
-    window.location.reload();
+  const changeTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
   };
-
   return (
-    <DropdownMenuContent className="w-64 ml-50 mxd:ml-19 -mt-1 mxd:-mt-6 rounded-tl-none dark:rounded-tl-none">
+    <DropdownMenuContent align="end" sideOffset={8} flushCorner="top-right" className="w-64 mr-6">
       <DropdownMenuLabel className="">Minha Conta</DropdownMenuLabel>
       <DropdownMenuSeparator />
       <DropdownMenuGroup>
@@ -57,9 +59,9 @@ export const ListContentDropDown = (): ReactElement => {
           <span>Atalhos de Teclado</span>
           <DropdownMenuShortcut className="text-xs">ctrl + /</DropdownMenuShortcut>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={alterThemeColor}>
+        <DropdownMenuItem onClick={changeTheme}>
           <SunMoon className="mr-2 h-4 w-4" />
-          {/* <span>Modo {theme == "dark" ? "Claro" : "Escuro"}</span> */}
+          <span>Modo {theme === "dark" ? "Claro" : "Escuro"}</span>
         </DropdownMenuItem>
       </DropdownMenuGroup>
       <DropdownMenuSeparator />
@@ -85,4 +87,4 @@ export const ListContentDropDown = (): ReactElement => {
       </DropdownMenuItem>
     </DropdownMenuContent>
   );
-};
+}

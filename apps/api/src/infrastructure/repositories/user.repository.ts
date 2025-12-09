@@ -2,39 +2,45 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
-import { IntegrationUserRequest } from '../../presentation/requests/user/integration-user.request';
+import {
+  CreateUserInput,
+  UserRepository,
+} from '@/domain/user/user.repository';
+import { IntegrationUser } from '@/domain/user/integration-user';
 
 @Injectable()
-export class UsersRepository {
+export class UserTypeOrmRepository implements UserRepository {
   constructor(
     @InjectRepository(User)
-    private readonly user_repository: Repository<User>,
+    private readonly userRepository: Repository<User>,
   ) {}
 
-  async insertUser(
-    data: IntegrationUserRequest & { public_id: string },
-  ): Promise<User> {
-    const newUser = this.user_repository.create({
+  async create(data: CreateUserInput): Promise<User> {
+    const newUser = this.userRepository.create({
       public_id: data.public_id,
       email: data.email,
       name: data.name || 'Unknown',
       avatar_url: data.avatar_url,
-      github_id: data.type === 'github' ? String(data.id) : undefined,
-      github_link: data.type === 'github' ? data.github_link : undefined,
-      bio: data.type === 'github' ? data.bio : undefined,
-      google_id: data.type === 'google' ? data.id : undefined,
+      github_id: data.github_id,
+      github_link: data.github_link,
+      bio: data.bio,
+      google_id: data.google_id,
+      password: data.password,
     });
-    return this.user_repository.save(newUser);
+    const saved = await this.userRepository.save(newUser);
+    return saved;
   }
 
-  async findOneByPublicId(public_id: string): Promise<User | undefined> {
-    return this.user_repository.findOne({ where: { public_id } });
+  async findByPublicId(public_id: string): Promise<User | null> {
+    const user = await this.userRepository.findOne({ where: { public_id } });
+    return user;
   }
 
-  async loadUserIntegration(
-    integrationData: IntegrationUserRequest,
-  ): Promise<User | undefined> {
-    const { type, id } = integrationData;
+  async findByIntegration(data: IntegrationUser): Promise<User | null> {
+    const { type, id } = data;
+    if (!id) {
+      return null;
+    }
 
     const query = {
       where: {
@@ -42,16 +48,18 @@ export class UsersRepository {
       },
     };
 
-    return this.user_repository.findOne(query);
+    const user = await this.userRepository.findOne(query);
+    return user;
   }
 
-  async userExists(user_id: number): Promise<boolean> {
-    const user = await this.user_repository.findOne({ where: { id: user_id } });
+  async exists(user_id: number): Promise<boolean> {
+    const user = await this.userRepository.findOne({ where: { id: user_id } });
     return !!user;
   }
 
-  async updateUser(id: number, data: Partial<User>): Promise<User> {
-    await this.user_repository.update(id, data);
-    return this.user_repository.findOneByOrFail({ id });
+  async update(id: number, data: Partial<User>): Promise<User> {
+    await this.userRepository.update(id, data);
+    const user = await this.userRepository.findOneByOrFail({ id });
+    return user;
   }
 }

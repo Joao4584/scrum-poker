@@ -2,34 +2,43 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Room } from '../entities/room.entity';
+import {
+  CreateRoomInput,
+  RoomRepository,
+} from '@/domain/room/repositories/room.repository';
 
 @Injectable()
-export class RoomsRepository {
+export class RoomTypeOrmRepository implements RoomRepository {
   constructor(
     @InjectRepository(Room)
-    private readonly room_repository: Repository<Room>,
+    private readonly roomRepository: Repository<Room>,
   ) {}
 
-  async createRoom(data: Partial<Room>): Promise<Room> {
-    const newRoom = this.room_repository.create(data);
-    return this.room_repository.save(newRoom);
+  async create(data: CreateRoomInput): Promise<Room> {
+    const newRoom = this.roomRepository.create({
+      ...data,
+      status: data.status ?? 'open',
+    });
+    const saved = await this.roomRepository.save(newRoom);
+    return saved;
   }
 
-  async findRoomByPublicId(public_id: string): Promise<Room | undefined> {
-    return this.room_repository.findOne({
+  async findByPublicId(public_id: string): Promise<Room | null> {
+    const room = await this.roomRepository.findOne({
       where: { public_id },
     });
+    return room;
   }
 
-  async deleteRoom(public_id: string): Promise<void> {
-    await this.room_repository.softDelete({ public_id });
+  async deleteByPublicId(public_id: string): Promise<void> {
+    await this.roomRepository.softDelete({ public_id });
   }
 
-  async findRecentRoomsByUserId(
+  async findRecentByUserId(
     user_id: number,
     options: { order?: 'ASC' | 'DESC'; owner_only?: boolean },
   ): Promise<Room[]> {
-    const query = this.room_repository.createQueryBuilder('room');
+    const query = this.roomRepository.createQueryBuilder('room');
 
     if (options.owner_only) {
       query.where('room.owner_id = :user_id', { user_id });
@@ -49,6 +58,7 @@ export class RoomsRepository {
       query.orderBy('room.created_at', options.order);
     }
 
-    return query.getMany();
+    const rooms = await query.getMany();
+    return rooms;
   }
 }

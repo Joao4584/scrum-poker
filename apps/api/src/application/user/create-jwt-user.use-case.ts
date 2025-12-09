@@ -1,6 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
-import { UsersRepository } from '@/infrastructure/repositories/user.repository';
+import {
+  USER_REPOSITORY,
+  UserRepository,
+} from '@/domain/user/user.repository';
 import { User } from '@/infrastructure/entities/user.entity';
 
 interface JwtPayload {
@@ -15,7 +18,8 @@ interface JwtPayload {
 @Injectable()
 export class CreateJwtUserUseCase {
   constructor(
-    @Inject(UsersRepository) private readonly usersRepository: UsersRepository,
+    @Inject(USER_REPOSITORY)
+    private readonly usersRepository: UserRepository,
   ) {}
 
   async execute(data: User) {
@@ -47,7 +51,7 @@ export class CreateJwtUserUseCase {
     );
 
     const decoded = jwt.decode(token) as JwtPayload;
-    await this.usersRepository.updateUser(id, {
+    await this.usersRepository.update(id, {
       last_login_iat: BigInt(decoded.iat),
     });
 

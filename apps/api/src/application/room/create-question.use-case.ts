@@ -1,29 +1,35 @@
-import { Injectable } from '@nestjs/common';
-import { QuestionRepository } from '@/infrastructure/repositories/question.repository';
+import { Inject, Injectable } from '@nestjs/common';
 import { UlidService } from '@/shared/ulid/ulid.service';
+import {
+  ROOM_REPOSITORY,
+  RoomRepository,
+} from '@/domain/room/repositories/room.repository';
+import {
+  QUESTION_REPOSITORY,
+  QuestionRepository,
+} from '@/domain/room/repositories/question.repository';
 import { Question } from '@/infrastructure/entities/question.entity';
-import { RoomsRepository } from '@/infrastructure/repositories/room.repository';
 
 @Injectable()
 export class CreateQuestionUseCase {
   constructor(
-    private readonly roomRepository: RoomsRepository,
+    @Inject(ROOM_REPOSITORY) private readonly roomRepository: RoomRepository,
+    @Inject(QUESTION_REPOSITORY)
     private readonly questionRepository: QuestionRepository,
     private readonly ulidService: UlidService,
   ) {}
 
   async execute(roomPublicId: string, title: string): Promise<Question> {
-    const room = await this.roomRepository.findRoomByPublicId(roomPublicId);
+    const room = await this.roomRepository.findByPublicId(roomPublicId);
 
     if (!room) {
       throw new Error('Room not found');
     }
 
-    const question = new Question();
-    question.public_id = this.ulidService.generateId();
-    question.text = title;
-    question.room = room;
-
-    return this.questionRepository.save(question);
+    return this.questionRepository.create({
+      public_id: this.ulidService.generateId(),
+      text: title,
+      room_id: room.id,
+    });
   }
 }
