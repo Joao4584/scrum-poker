@@ -18,7 +18,7 @@ export default function UserProfileHeader(props: UserProfileProps) {
       <DropdownMenuTrigger asChild>
         <div className="flex relative h-9 pl-5 justify-start gap-2  cursor-pointer  transition-all">
           <div className="flex items-center">
-            <div className="relative card bg-slate-400 rounded-full overflow-hidden p-1 bg-opacity-25 h-10 w-10">
+            <div className="relative card bg-slate-400 rounded-full overflow-hidden p-1 bg-opacity-25 h-11 w-11">
               {!avatarLoaded && (
                 <Skeleton className="absolute inset-1 rounded-full" aria-hidden="true" />
               )}
@@ -28,8 +28,8 @@ export default function UserProfileHeader(props: UserProfileProps) {
                   avatarLoaded ? "opacity-100" : "opacity-0"
                 }`}
                 alt="Perfil"
-                width={34}
-                height={34}
+                width={40}
+                height={40}
                 onLoadingComplete={() => setAvatarLoaded(true)}
               />
             </div>

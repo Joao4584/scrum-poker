@@ -1,16 +1,22 @@
 import { Controller, Get } from '@nestjs/common';
 import { User } from '@/presentation/decorators/user.decorator';
 import { User as UserEntity } from '@/infrastructure/entities/user.entity';
+import { AppErrors } from '@/presentation/errors';
 
 @Controller('user')
 export class GetUserController {
   @Get()
   async getUser(@User() user: UserEntity) {
     if (!user) {
-      return { data: null };
+      throw AppErrors.unauthorized('Usuário não autenticado');
     }
     return {
-      data: user,
+      data: {
+        name: user.name,
+        email: user.email,
+        avatar_url: user.avatar_url,
+        public_id: user.public_id,
+      },
     };
   }
 }

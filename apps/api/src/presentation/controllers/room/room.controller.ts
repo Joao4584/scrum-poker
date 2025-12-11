@@ -7,7 +7,6 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
-  NotFoundException,
   Inject,
   Query,
 } from '@nestjs/common';
@@ -20,6 +19,7 @@ import { DeleteRoomUseCase } from '@/application/room/delete-room.use-case';
 import { ListUserRoomsUseCase } from '@/application/room/list-user-rooms.use-case';
 import { User as UserEntity } from '@/infrastructure/entities/user.entity';
 import { User } from '@/presentation/decorators/user.decorator';
+import { AppErrors } from '@/presentation/errors';
 
 @Controller('room')
 export class RoomController {
@@ -56,7 +56,7 @@ export class RoomController {
   async getRoom(@Param('public_id') public_id: string) {
     const room = await this.getRoomUseCase.execute(public_id);
     if (!room) {
-      throw new NotFoundException('Sala não encontrada');
+      throw AppErrors.notFound('Sala não encontrada');
     }
     return room;
   }

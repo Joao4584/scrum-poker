@@ -1,15 +1,11 @@
-import {
-  Injectable,
-  NestMiddleware,
-  UnauthorizedException,
-  Inject,
-} from '@nestjs/common';
+import { Injectable, NestMiddleware, Inject } from '@nestjs/common';
 import { FastifyRequest, FastifyReply, HookHandlerDoneFunction } from 'fastify';
 import * as jwt from 'jsonwebtoken';
 import {
   USER_REPOSITORY,
   UserRepository,
 } from '@/domain/user/user.repository';
+import { AppErrors } from '@/presentation/errors';
 
 @Injectable()
 export class JwtAuthMiddleware implements NestMiddleware {
@@ -25,7 +21,7 @@ export class JwtAuthMiddleware implements NestMiddleware {
   ) {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new UnauthorizedException('Token not provided');
+      throw AppErrors.unauthorized('Token não fornecido');
     }
 
     const token = authHeader.split(' ')[1];
@@ -48,10 +44,9 @@ export class JwtAuthMiddleware implements NestMiddleware {
         console.log(
           'Invalid or expired token: User not found or token expired',
         );
-        throw new UnauthorizedException('Invalid or expired token');
+        throw AppErrors.unauthorized('Token inválido ou expirado');
       }
 
-      // attach to Fastify request and raw request for downstream decorators
       req['user'] = user;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (req as any).raw = (req as any).raw || {};
@@ -60,7 +55,7 @@ export class JwtAuthMiddleware implements NestMiddleware {
       next();
     } catch (error) {
       console.log('JWT Verification Error:', error.message);
-      throw new UnauthorizedException('Invalid or expired token');
+      throw AppErrors.unauthorized('Token inválido ou expirado');
     }
   }
 }

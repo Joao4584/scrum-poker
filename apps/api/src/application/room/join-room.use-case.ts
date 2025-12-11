@@ -1,9 +1,4 @@
-import {
-  Inject,
-  Injectable,
-  ConflictException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { UlidService } from '@/shared/ulid/ulid.service';
 import {
   ROOM_REPOSITORY,
@@ -13,6 +8,7 @@ import {
   ROOM_PARTICIPANT_REPOSITORY,
   RoomParticipantRepository,
 } from '@/domain/room/repositories/room-participant.repository';
+import { AppErrors } from '@/presentation/errors';
 
 @Injectable()
 export class JoinRoomUseCase {
@@ -27,13 +23,13 @@ export class JoinRoomUseCase {
   async execute(room_public_id: string, user_id: number) {
     const room = await this.roomsRepository.findByPublicId(room_public_id);
     if (!room) {
-      throw new NotFoundException('Sala não encontrada');
+      throw AppErrors.notFound('Sala não encontrada');
     }
 
     const existingParticipant =
       await this.roomParticipantsRepository.findByRoomAndUser(room.id, user_id);
     if (existingParticipant) {
-      throw new ConflictException('Você já está nesta sala');
+      throw AppErrors.conflict('Você já está nesta sala');
     }
 
     const public_id = this.ulidService.generateId();

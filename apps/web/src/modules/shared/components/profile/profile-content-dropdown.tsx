@@ -29,12 +29,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
 } from "../../ui/dropdown-menu";
+import { deleteCookie } from "cookies-next";
+import { storageKey } from "../../config/storage-key";
 
 export function ListContentDropDown(): ReactElement {
   const { theme, setTheme } = useTheme();
   const router = useRouter();
 
   const disconnectAuth = () => {
+    deleteCookie(`${storageKey}session`, { path: "/" });
     router.push("/auth");
   };
 
@@ -54,11 +57,11 @@ export function ListContentDropDown(): ReactElement {
           <Settings className="mr-2 h-4 w-4" />
           <span>Configurações</span>
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        {/* <DropdownMenuItem>
           <Keyboard className="mr-2 h-4 w-4" />
           <span>Atalhos de Teclado</span>
           <DropdownMenuShortcut className="text-xs">ctrl + /</DropdownMenuShortcut>
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
         <DropdownMenuItem onClick={changeTheme}>
           <SunMoon className="mr-2 h-4 w-4" />
           <span>Modo {theme === "dark" ? "Claro" : "Escuro"}</span>
@@ -73,10 +76,10 @@ export function ListContentDropDown(): ReactElement {
         <LifeBuoy className="mr-2 h-4 w-4" />
         <span>Suporte</span>
       </DropdownMenuItem>
-      <DropdownMenuItem disabled>
+      {/* <DropdownMenuItem disabled>
         <Cloud className="mr-2 h-4 w-4" />
         <span>API</span>
-      </DropdownMenuItem>
+      </DropdownMenuItem> */}
       <DropdownMenuSeparator />
       <DropdownMenuItem
         onClick={disconnectAuth}
