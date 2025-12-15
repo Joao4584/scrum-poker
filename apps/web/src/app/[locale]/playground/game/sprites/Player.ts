@@ -10,6 +10,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private cursors: Record<string, Phaser.Input.Keyboard.Key>;
   private sprintKey: Phaser.Input.Keyboard.Key;
   private shadow: Phaser.GameObjects.Ellipse;
+  private syncShadow?: () => void;
 
   private lastDirection: Direction = "down";
   private moving = false;
@@ -34,9 +35,19 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     scene.physics.add.existing(this);
     this.setCollideWorldBounds(true);
 
-    this.shadow = scene.add.ellipse(x, y, 18, 8, 0x000000, 0.25).setDepth(9).setScrollFactor(1);
+    this.shadow = scene.add.ellipse(x, y, 18, 8, 0x000000, 0.25).setScrollFactor(1);
+    // Keep the shadow synced after physics updates so it never trails the sprite
+    this.syncShadow = () => {
+      this.shadow.setPosition(this.x, this.y + this.height / 1.97);
+      this.shadow.setDepth(this.y - 1);
+    };
+    this.syncShadow();
+    scene.events.on(Phaser.Scenes.Events.POST_UPDATE, this.syncShadow);
 
     this.once(Phaser.GameObjects.Events.DESTROY, () => {
+      if (this.syncShadow) {
+        scene.events.off(Phaser.Scenes.Events.POST_UPDATE, this.syncShadow);
+      }
       this.shadow.destroy();
     });
 
@@ -106,7 +117,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     const { left, right, up, down, leftArrow, rightArrow, upArrow, downArrow } = this.cursors;
 
     this.setVelocity(0);
-    this.shadow.setPosition(this.x, this.y + this.height / 1.97);
     this.moving = false;
 
     if (left.isDown || leftArrow.isDown) {

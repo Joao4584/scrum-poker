@@ -8,20 +8,20 @@ export type ChatBubble = {
 };
 
 const MAX_WIDTH = 200;
-const PADDING_X = 4;
-const PADDING_Y = 3;
+const PADDING_X = 8;
+const PADDING_Y = 6;
 const OFFSET_Y = 54;
 
 export function createChatBubble(scene: Phaser.Scene, message: string, x: number, y: number) {
   const safeMessage = sanitizeChatMessage(message);
   const background = scene.add.graphics();
   const text = scene.add.text(0, 0, safeMessage, {
-    fontFamily: "PixelFont, monospace",
+    fontFamily: "Arial, sans-serif",
     fontSize: "16px",
-    color: "#0b1220",
+    color: "#0f172a",
     strokeThickness: 0,
     align: "left",
-    resolution: 100,
+    resolution: 2,
     wordWrap: { width: MAX_WIDTH - PADDING_X * 2 },
   });
   text.setOrigin(0, 0);
@@ -42,24 +42,33 @@ export function updateChatBubble(bubble: ChatBubble, message: string) {
   bubble.container.setVisible(!!safeMessage);
 }
 
-export function positionChatBubble(bubble: ChatBubble, x: number, y: number, smoothing = 1) {
+export function positionChatBubble(bubble: ChatBubble, x: number, y: number, smoothing = 0.15) {
   const width = bubble.text.width + PADDING_X * 2;
   const height = bubble.text.height + PADDING_Y * 2;
   const targetPx = x - width / 2;
   const targetPy = y - OFFSET_Y - height;
-  const useSmooth = smoothing > 0 && smoothing < 1;
-  const px = useSmooth
-    ? Phaser.Math.Linear(bubble.container.x, targetPx, smoothing)
-    : Math.round(targetPx);
-  const py = useSmooth
-    ? Phaser.Math.Linear(bubble.container.y, targetPy, smoothing)
-    : Math.round(targetPy);
 
-  if (bubble.container.x !== px || bubble.container.y !== py) {
-    bubble.container.setPosition(px, py);
+  const smooth = Phaser.Math.Clamp(smoothing, 0, 1);
+  const px =
+    smooth > 0 && smooth < 1
+      ? Phaser.Math.Linear(bubble.container.x, targetPx, smooth)
+      : targetPx;
+  const py =
+    smooth > 0 && smooth < 1
+      ? Phaser.Math.Linear(bubble.container.y, targetPy, smooth)
+      : targetPy;
+
+  const snapPx = Math.abs(px - targetPx) < 0.25 ? targetPx : px;
+  const snapPy = Math.abs(py - targetPy) < 0.25 ? targetPy : py;
+
+  const finalPx = Math.round(snapPx);
+  const finalPy = Math.round(snapPy);
+
+  if (bubble.container.x !== finalPx || bubble.container.y !== finalPy) {
+    bubble.container.setPosition(finalPx, finalPy);
   }
 
-  const depth = Math.round(targetPy + 10);
+  const depth = Math.round(y + 5);
   if (bubble.container.depth !== depth) {
     bubble.container.setDepth(depth);
   }
@@ -88,17 +97,14 @@ function layoutBubble(
   const height = Math.round(text.height + PADDING_Y * 2);
 
   background.clear();
-  // Outer stroke for a pixelated border
   background.fillStyle(0x0b1220, 1);
-  background.fillRect(-1, -1, width + 2, height + 2);
-  // Main body
+  background.fillRoundedRect(-1, -1, width + 2, height + 2, 6);
   background.fillStyle(0xf8fafc, 1);
-  background.fillRect(0, 0, width, height);
-  // Tail (small pixel triangle)
-  const tailX = Math.round(width / 2) - 3;
-  const tailY = height;
+  background.fillRoundedRect(0, 0, width, height, 6);
+  const tailX = Math.round(width / 2) - 4;
+  const tailY = height - 1;
   background.fillStyle(0x0b1220, 1);
-  background.fillRect(tailX - 1, tailY, 6, 3);
+  background.fillTriangle(tailX - 2, tailY, tailX + 10, tailY, tailX + 4, tailY + 8);
   background.fillStyle(0xf8fafc, 1);
-  background.fillRect(tailX, tailY, 4, 2);
+  background.fillTriangle(tailX, tailY, tailX + 8, tailY, tailX + 4, tailY + 6);
 }

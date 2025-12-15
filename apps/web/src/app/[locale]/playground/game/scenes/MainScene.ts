@@ -33,6 +33,7 @@ export class MainScene extends Phaser.Scene {
   private selfMessageSeenAt = 0;
   private selfStateMessage = "";
   private hiddenMessage?: string;
+  private syncSelfBubble?: () => void;
 
   constructor() {
     super({ key: "game" });
@@ -105,8 +106,19 @@ export class MainScene extends Phaser.Scene {
     );
     this.registerNetworkListeners();
     this.selfBubble = createChatBubble(this, "", localSpawn.x, localSpawn.y);
+    const syncSelfBubble = () => {
+      if (this.selfBubble) {
+        positionChatBubble(this.selfBubble, this.player.x, this.player.y, 0);
+      }
+    };
+    this.events.on(Phaser.Scenes.Events.POST_UPDATE, syncSelfBubble);
+    this.syncSelfBubble = syncSelfBubble;
 
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      if (this.syncSelfBubble) {
+        this.events.off(Phaser.Scenes.Events.POST_UPDATE, this.syncSelfBubble);
+        this.syncSelfBubble = undefined;
+      }
       this.remotes?.destroy();
       this.room = undefined;
       this.room?.leave();
@@ -136,7 +148,6 @@ export class MainScene extends Phaser.Scene {
     const selfState = this.room?.state.players.get(this.room?.sessionId ?? "");
     const nextMessage = sanitizeChatMessage(selfState?.message ?? "");
     if (this.selfBubble) {
-      positionChatBubble(this.selfBubble, this.player.x, this.player.y);
       const changed = nextMessage !== this.selfStateMessage;
       const hiddenSame = this.hiddenMessage !== undefined && nextMessage === this.hiddenMessage;
 

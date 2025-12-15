@@ -1,27 +1,28 @@
-'use client';
+"use client";
 
-import React, { useEffect, useRef, useState } from 'react';
-import * as Phaser from 'phaser';
-import { Client, type Room } from 'colyseus.js';
-import { MainScene } from './scenes/MainScene';
-import Preloader from './scenes/preloader';
-import type { PlaygroundState } from './network/types';
-import { startBot } from './network/bot';
-import { useRoomStore } from './room-store';
+import React, { useEffect, useRef, useState } from "react";
+import * as Phaser from "phaser";
+import { Client, type Room } from "colyseus.js";
+import { MainScene } from "./scenes/MainScene";
+import Preloader from "./scenes/preloader";
+import type { PlaygroundState } from "./network/types";
+import { startBot } from "./network/bot";
+import { useRoomStore } from "./room-store";
+import Image from "next/image";
 
 function resolveServerUrl() {
   if (process.env.NEXT_PUBLIC_GAME_SERVER_URL) {
     return process.env.NEXT_PUBLIC_GAME_SERVER_URL;
   }
 
-  if (typeof window !== 'undefined') {
-    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+  if (typeof window !== "undefined") {
+    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
     const host = window.location.hostname;
-    const port = process.env.NEXT_PUBLIC_GAME_SERVER_PORT ?? '2567';
+    const port = process.env.NEXT_PUBLIC_GAME_SERVER_PORT ?? "2567";
     return `${protocol}://${host}:${port}`;
   }
 
-  return 'ws://localhost:2567';
+  return "ws://localhost:2567";
 }
 
 function randomName() {
@@ -45,9 +46,9 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, userId, botCount }
   const setKeyboardToggle = useRoomStore((s) => s.setKeyboardToggle);
 
   const focusGame = () => {
-    const canvas = gameRef.current?.querySelector('canvas');
+    const canvas = gameRef.current?.querySelector("canvas");
     if (canvas) {
-      canvas.setAttribute('tabindex', '0');
+      canvas.setAttribute("tabindex", "0");
       (canvas as HTMLCanvasElement).focus();
     }
   };
@@ -63,9 +64,9 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, userId, botCount }
         hash |= 0;
       }
       const hue = Math.abs(hash) % 360;
-      return `#${Phaser.Display.Color.HSLToColor(hue / 360, 0.55, 0.6).color
-        .toString(16)
-        .padStart(6, '0')}`;
+      return `#${Phaser.Display.Color.HSLToColor(hue / 360, 0.55, 0.6)
+        .color.toString(16)
+        .padStart(6, "0")}`;
     };
     return { id, name, color: colorFromId() };
   };
@@ -79,8 +80,8 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, userId, botCount }
       console.log("[colyseus] joined", room.roomId, "session", room.sessionId);
       phaserGameRef.current = new Phaser.Game({
         type: Phaser.AUTO,
-        width: '100%',
-        height: '100%',
+        width: "100%",
+        height: "100%",
         pixelArt: true,
         render: {
           pixelArt: true,
@@ -89,7 +90,7 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, userId, botCount }
         },
         parent: gameRef.current || undefined,
         physics: {
-          default: 'arcade',
+          default: "arcade",
           arcade: {
             gravity: { y: 0, x: 0 },
           },
@@ -101,7 +102,7 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, userId, botCount }
         },
         callbacks: {
           postBoot: (game) => {
-            game.registry.set('room', room);
+            game.registry.set("room", room);
             console.log("[phaser] booted, room set in registry");
           },
         },
@@ -110,15 +111,16 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, userId, botCount }
       setFocusGame(() => focusGame);
       setKeyboardToggle(() => (enabled: boolean) => {
         if (gameRef.current) {
-          const canvas = gameRef.current.querySelector('canvas') as HTMLCanvasElement | null;
+          const canvas = gameRef.current.querySelector("canvas") as HTMLCanvasElement | null;
           if (canvas) {
-            if (!canvas.hasAttribute('tabindex')) canvas.setAttribute('tabindex', '0');
+            if (!canvas.hasAttribute("tabindex")) canvas.setAttribute("tabindex", "0");
             if (enabled) {
               canvas.focus();
             }
           }
         }
-        phaserGameRef.current?.input?.keyboard && (phaserGameRef.current.input.keyboard.enabled = enabled);
+        phaserGameRef.current?.input?.keyboard &&
+          (phaserGameRef.current.input.keyboard.enabled = enabled);
       });
     };
 
@@ -126,9 +128,7 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, userId, botCount }
       const bots = botCount;
       if (bots <= 0) return;
       try {
-        const cleanups = await Promise.all(
-          Array.from({ length: bots }, () => startBot()),
-        );
+        const cleanups = await Promise.all(Array.from({ length: bots }, () => startBot()));
         if (!cancelled) {
           botCleanupRef.current = cleanups;
           console.log("[bot] started", bots);
@@ -136,7 +136,7 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, userId, botCount }
           cleanups.forEach((fn) => fn());
         }
       } catch (botErr) {
-        console.warn('Bot spawn failed', botErr);
+        console.warn("Bot spawn failed", botErr);
       }
     };
 
@@ -144,7 +144,7 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, userId, botCount }
       try {
         const client = new Client(resolveServerUrl());
         const identity = buildIdentity();
-        const room = await client.joinOrCreate<PlaygroundState>('playground', {
+        const room = await client.joinOrCreate<PlaygroundState>("playground", {
           id: identity.id ?? undefined,
           name: identity.name,
           color: identity.color,
@@ -161,9 +161,9 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, userId, botCount }
         startGame(room);
         void spawnBots();
       } catch (err) {
-        console.error('[colyseus] connection failed', err);
+        console.error("[colyseus] connection failed", err);
         if (!cancelled) {
-          setError('Não foi possível conectar ao game-server.');
+          setError("Não foi possível conectar ao game-server.");
         }
       }
     };
@@ -192,10 +192,8 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, userId, botCount }
   }
 
   return (
-    <div
-      id="phaser-game-container"
-      ref={gameRef}
-      style={{ width: '100%', height: '100%' }}
-    />
+    <React.Fragment>
+      <div id="phaser-game-container" ref={gameRef} style={{ width: "100%", height: "100%" }} />
+    </React.Fragment>
   );
 };

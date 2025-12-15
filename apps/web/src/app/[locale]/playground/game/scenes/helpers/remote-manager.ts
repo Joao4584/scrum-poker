@@ -50,7 +50,7 @@ export class RemoteManager {
 
     const initialMessage = sanitizeChatMessage(player.message ?? "");
     const bubble = createChatBubble(this.scene, initialMessage, spawn.x, spawn.y);
-    positionChatBubble(bubble, spawn.x, spawn.y);
+    positionChatBubble(bubble, spawn.x, spawn.y, 0);
     this.bubbles.set(sessionId, bubble);
     this.messages.set(sessionId, initialMessage);
     if (initialMessage) {
@@ -209,8 +209,10 @@ export class RemoteManager {
     allowTextUpdate = false,
   ) {
     const bubble = this.bubbles.get(sessionId);
-    if (!bubble) return;
-    positionChatBubble(bubble, x, y, 0.35);
+    const sprite = this.sprites.get(sessionId);
+    if (!bubble || !sprite) return;
+    // Bubble follows the rendered sprite position with light smoothing
+    positionChatBubble(bubble, sprite.x, sprite.y, 0.15);
     const now = this.scene.time.now;
     if (allowTextUpdate && typeof message === "string") {
       const safeMessage = sanitizeChatMessage(message);
