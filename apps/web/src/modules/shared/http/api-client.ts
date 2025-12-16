@@ -1,45 +1,54 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { getCookie } from 'cookies-next';
-import ky from 'ky';
-import { redirect } from 'next/navigation';
+import { deleteCookie, getCookie } from "cookies-next";
+import ky from "ky";
 
-import { storageKey } from '../config/storage-key';
-import { env } from '@scrum-poker/env';
+import { storageKey } from "../config/storage-key";
 
-const isRunningOnServer = typeof window === 'undefined';
+type ApiErrorResponse = {
+  code?: string;
+  message?: string;
+  [key: string]: unknown;
+};
+
+const isServer = typeof window === "undefined";
+const clientPrefix = "/backend";
+const serverPrefix = process.env.BACKEND_URL ?? "http://localhost:4000";
 
 export const api = ky.create({
-  prefixUrl: env.PORT_NEST ? `http://localhost:${env.PORT_NEST}` : '',
+  prefixUrl: isServer ? serverPrefix : clientPrefix,
+  credentials: "include",
   hooks: {
     beforeRequest: [
-      async (request, options) => {
-        let token: string | undefined;
-
-        if (isRunningOnServer) {
-          const { cookies } = await import('next/headers');
-          const cookieStore = await cookies();
-          token = cookieStore.get(`${storageKey}session`)?.value;
-        } else {
-          token = getCookie(`${storageKey}session`);
-        }
-
+      async (request) => {
+        if (isServer) return;
+        const token = getCookie(`${storageKey}session`);
         if (token) {
-          request.headers.set('Authorization', `Bearer ${token}`);
+          request.headers.set("Authorization", `Bearer ${token}`);
         }
       },
     ],
     afterResponse: [
       async (_request, _options, response) => {
-        if (response.status === 400) {
-          const errorData = await response.json();
-          console.log('Erro 400 na API (JSON):', errorData);
-        }
-        if (response.status === 401 && response.url.indexOf('/auth') === -1) {
-          const redirectUrl = `/auth`;
-          if (isRunningOnServer) {
-            redirect(redirectUrl);
-          } else {
-            window.location.href = redirectUrl;
+        if (response.status === 400 || response.status === 401) {
+          let body: ApiErrorResponse = {};
+          try {
+            body = await response.clone().json<ApiErrorResponse>();
+          } catch {
+            // ignore JSON parse errors
+          }
+
+          if (response.status === 400) {
+            // eslint-disable-next-line no-console
+            console.warn("API 400", body);
+          }
+
+          if (
+            response.status === 401 &&
+            (body.code === "UNAUTHORIZED" || body.code === "UNAUTHENTICATED")
+          ) {
+            deleteCookie(`${storageKey}session`);
+            if (!isServer) {
+              window.location.href = "/auth";
+            }
           }
         }
       },

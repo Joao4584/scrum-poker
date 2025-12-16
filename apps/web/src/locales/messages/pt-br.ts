@@ -40,8 +40,10 @@ export default {
   },
   dashboard: {
     menu: {
-      overview: "Inicio",
+      recent: "Recentes",
       projects: "Projetos",
+      friends: "Social",
+      trash: "Lixeira",
     },
   },
 } as const;

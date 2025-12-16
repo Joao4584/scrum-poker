@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Input } from "../../ui/input";
+import { Input } from "@/modules/shared/ui/input";
 import Image from "next/image";
 import UserProfileHeader from "../profile/profile-header";
 

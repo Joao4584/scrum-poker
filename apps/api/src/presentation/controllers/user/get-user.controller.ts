@@ -3,7 +3,7 @@ import { User } from '@/presentation/decorators/user.decorator';
 import { User as UserEntity } from '@/infrastructure/entities/user.entity';
 import { AppErrors } from '@/presentation/errors';
 
-@Controller('user')
+@Controller('user/me')
 export class GetUserController {
   @Get()
   async getUser(@User() user: UserEntity) {

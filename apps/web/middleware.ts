@@ -54,7 +54,7 @@ export function middleware(request: NextRequest) {
   }
 
   // Never localize API routes
-  if (pathname.startsWith("/api")) {
+  if (pathname.startsWith("/api") || pathname.startsWith("/backend")) {
     return NextResponse.next();
   }
 
@@ -109,5 +109,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|static|.*\\..*|_next|favicon.ico|robots.txt).*)"],
+  matcher: ["/((?!api|backend|static|.*\\..*|_next|favicon.ico|robots.txt).*)"],
 };

@@ -10,7 +10,7 @@ export type ChatBubble = {
 const MAX_WIDTH = 200;
 const PADDING_X = 8;
 const PADDING_Y = 6;
-const OFFSET_Y = 54;
+const OFFSET_Y = 51;
 
 export function createChatBubble(scene: Phaser.Scene, message: string, x: number, y: number) {
   const safeMessage = sanitizeChatMessage(message);
@@ -50,13 +50,9 @@ export function positionChatBubble(bubble: ChatBubble, x: number, y: number, smo
 
   const smooth = Phaser.Math.Clamp(smoothing, 0, 1);
   const px =
-    smooth > 0 && smooth < 1
-      ? Phaser.Math.Linear(bubble.container.x, targetPx, smooth)
-      : targetPx;
+    smooth > 0 && smooth < 1 ? Phaser.Math.Linear(bubble.container.x, targetPx, smooth) : targetPx;
   const py =
-    smooth > 0 && smooth < 1
-      ? Phaser.Math.Linear(bubble.container.y, targetPy, smooth)
-      : targetPy;
+    smooth > 0 && smooth < 1 ? Phaser.Math.Linear(bubble.container.y, targetPy, smooth) : targetPy;
 
   const snapPx = Math.abs(px - targetPx) < 0.25 ? targetPx : px;
   const snapPy = Math.abs(py - targetPy) < 0.25 ? targetPy : py;

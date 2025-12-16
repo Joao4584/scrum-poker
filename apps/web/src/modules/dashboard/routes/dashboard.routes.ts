@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Bell, Kanban, PanelsLeftBottom } from "lucide-react";
+import { Bell, Kanban, PanelsLeftBottom, Clock8, Trash2, Users } from "lucide-react";
 
 export interface RouteProps {
   title: string;
@@ -30,29 +30,26 @@ export type RouteDefinitionConfig = RoutePropsConfig | RouteGroupConfig;
 
 export const routeDashboardConfig: RouteDefinitionConfig[] = [
   {
-    titleKey: "dashboard.menu.overview",
-    fallback: "Inicio",
-    icon: PanelsLeftBottom,
+    titleKey: "dashboard.menu.recent",
+    fallback: "recent",
+    icon: Clock8,
     path: "/",
   },
-  // Example for future items:
   {
-    titleKey: "dashboard.menu.notifications",
-    fallback: "Notificacoes",
-    icon: Bell,
-    path: "/notification",
+    titleKey: "dashboard.menu.friends",
+    fallback: "friends",
+    icon: Users,
+    path: "/friends",
   },
   {
-    titleKey: "dashboard.menu.projects",
-    fallback: "Projetos",
-    icon: Kanban,
-    path: "/projects",
+    titleKey: "dashboard.menu.trash",
+    fallback: "trash",
+    icon: Trash2,
+    path: "/trash",
   },
 ];
 
-export function getDashboardRoutes(
-  t: (key: string, params?: Record<string, unknown>) => string,
-): RouteDefinition[] {
+export function getDashboardRoutes(t: (key: string, params?: Record<string, unknown>) => string): RouteDefinition[] {
   const translateRoute = (route: RoutePropsConfig): RouteProps => ({
     title: t(route.titleKey) ?? route.fallback,
     icon: route.icon,

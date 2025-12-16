@@ -4,10 +4,10 @@ import type React from "react";
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { cn } from "../../utils";
-import { Button } from "../../ui/button";
-import { Divider } from "../../ui/divider";
-import MenuList from "./menu";
+import { cn } from "@/modules/shared/utils";
+import { Button } from "@/modules/shared/ui/button";
+import { Divider } from "@/modules/shared/ui/divider";
+import MenuList from "./menu/menu";
 
 interface SidebarItem {
   id: string;

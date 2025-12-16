@@ -28,9 +28,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
-} from "../../ui/dropdown-menu";
+} from "@/modules/shared/ui/dropdown-menu";
 import { deleteCookie } from "cookies-next";
-import { storageKey } from "../../config/storage-key";
+import { storageKey } from "@/modules/shared/config/storage-key";
 
 export function ListContentDropDown(): ReactElement {
   const { theme, setTheme } = useTheme();
@@ -45,7 +45,7 @@ export function ListContentDropDown(): ReactElement {
     setTheme(theme === "dark" ? "light" : "dark");
   };
   return (
-    <DropdownMenuContent align="end" sideOffset={8} flushCorner="top-right" className="w-64 mr-6">
+    <DropdownMenuContent align="end" sideOffset={12} flushCorner="top-right" className="w-64 mr-6">
       <DropdownMenuLabel className="">Minha Conta</DropdownMenuLabel>
       <DropdownMenuSeparator />
       <DropdownMenuGroup>

@@ -10,6 +10,7 @@ import { Toaster } from "@/modules/shared/ui/sonner";
 import { queryClient } from "@/modules/shared/config/react-query";
 import { LocaleSync } from "@/modules/shared/utils/locale-sync";
 import { LocalePersist } from "@/modules/shared/utils/locale-persist";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 type ProviderProps = {
   locale: string;
@@ -37,6 +38,7 @@ export function Providers({ locale, children }: ProviderProps) {
           </I18nProviderClient>
         </ThemeProvider>
       </NuqsAdapter>
+      <ReactQueryDevtools initialIsOpen={true} />
     </QueryClientProvider>
   );
 }
