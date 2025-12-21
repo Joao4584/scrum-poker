@@ -14,6 +14,14 @@ const cyberGrapePalette = {
   "950": "#120D1A",
 };
 
+const appGrays = {
+  "gray-header": "#272d3a",
+  "gray-header-input": "#202430",
+  "gray-main-1": "#0E1117",
+  "gray-main-2": "#11141B",
+  "gray-btn-card": "#222632",
+};
+
 const config: Config = {
   darkMode: ["class"],
   content: [
@@ -32,9 +40,17 @@ const config: Config = {
       height: {
         "100": "24rem",
       },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
@@ -51,10 +67,6 @@ const config: Config = {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
         },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
@@ -63,9 +75,10 @@ const config: Config = {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
         },
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
         chart: {
           "1": "hsl(var(--chart-1))",
           "2": "hsl(var(--chart-2))",
@@ -75,20 +88,11 @@ const config: Config = {
         },
       },
       backgroundColor: {
-        "gray-header": "#272d3a",
-        "gray-header-input": "#202430",
-        "gray-main-1": "#0E1117",
-        "gray-main-2": "#11141B",
-        "gray-btn-card": "#222632",
+        ...appGrays,
         "cyber-grape": cyberGrapePalette,
       },
       boxShadowColor: {
         "cyber-grape": cyberGrapePalette,
-      },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
         "accordion-down": {

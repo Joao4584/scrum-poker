@@ -10,26 +10,11 @@ export default function DefaultLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="h-screen bg-background overflow-x-hidden">
-      {/* Sidebar */}
       <PatternBackgroundContainer />
       <Header />
-      {/* Main Content */}
       <div className="flex h-[calc(100vh-69px)]">
         <Sidebar onItemClick={() => setShowProfile(false)} />
-        {/* Content Area */}
-        <main className="w-full flex-2 overflow-y-auto">
-          <div className="relative ">
-            {children}
-
-            {/* Profile Dropdown */}
-            {showProfile && (
-              <div className="absolute top-4 right-4 z-50">
-                {/* UserDropdown component should be imported if needed */}
-                {/* <UserDropdown onClose={() => setShowProfile(false)} /> */}
-              </div>
-            )}
-          </div>
-        </main>
+        <main className="w-full flex-2 overflow-y-auto p-2.5">{children}</main>
       </div>
     </div>
   );

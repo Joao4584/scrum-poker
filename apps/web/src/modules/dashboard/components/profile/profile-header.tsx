@@ -35,7 +35,7 @@ export default function UserProfileHeader(props: UserProfileProps) {
               />
             </div>
           </div>
-          <div className="flex justify-center flex-col gap-1.5 w-24">
+          <div className="flex  justify-center flex-col gap-1.5">
             {displayName ? (
               <React.Fragment>
                 <span className="text-xs text-slate-300">{getCurrentGreating()}</span>

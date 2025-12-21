@@ -1,15 +1,24 @@
 import Image from "next/image";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import type React from "react";
 
 import LogoSvg from "@public/meta-rtc-logo.png";
 import { getI18n } from "@/locales/server";
+import { storageKey } from "@/modules/shared/config/storage-key";
 
 export default async function DefaultLayout({
   children,
+  params,
 }: {
   children: ReactNode;
+  params: { locale: string };
 }) {
+  const session = cookies().get(`${storageKey}session`);
+  if (session?.value) {
+    redirect(`/${params.locale}/app`);
+  }
   const t = await getI18n();
   return (
     <section className="bg-cover bg-no-repeat bg-center bg-[url('/banners/auth.gif')] dark:bg-[url('/banners/auth-dark.gif')] w-full h-full ">

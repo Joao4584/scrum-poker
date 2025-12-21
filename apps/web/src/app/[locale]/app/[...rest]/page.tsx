@@ -16,8 +16,7 @@ export default function NotFoundLandingFallback() {
           className="animate-fade-in-up text-base leading-7 text-gray-600 dark:text-gray-300"
           style={{ animationDelay: "0.12s" }}
         >
-          Desculpe, a pagina que voce procura saiu do ar ou nunca existiu. Volte para o app e
-          continue a jornada.
+          Desculpe, a pagina que voce procura saiu do ar ou nunca existiu. Volte para o app e continue a jornada.
         </p>
 
         <div
@@ -32,7 +31,7 @@ export default function NotFoundLandingFallback() {
             Ir para o Dashboard
           </Link>
           <Link
-            href="https://lucide.dev"
+            href="https://github.com/joao4584"
             className="inline-flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-gray-200 hover:text-sky-600 dark:hover:text-sky-400"
           >
             <BookOpen className="h-4 w-4" />
