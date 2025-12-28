@@ -11,6 +11,7 @@ import {
 import { Room } from './room.entity';
 import { Vote } from './vote.entity';
 import { RoomParticipant } from './room-participant.entity';
+import { Friends } from './friends.entity';
 
 export enum Language {
   en_us = 'en_us',
@@ -80,4 +81,10 @@ export class User {
 
   @OneToMany(() => Vote, (vote) => vote.user)
   votes: Vote[];
+
+  @OneToMany(() => Friends, (friends) => friends.user)
+  friendsSent: Friends[];
+
+  @OneToMany(() => Friends, (friends) => friends.friend)
+  friendsReceived: Friends[];
 }

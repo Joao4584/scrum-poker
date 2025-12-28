@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  HttpStatus,
-  HttpException,
-  Post,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Body, Controller, HttpStatus, HttpException, Post, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CreateUserUseCase } from '@/application/user/create-user.use-case';
 import { IntegrationUserRequest } from '@/presentation/requests/user/integration-user.request';
 import { LoadUserIntegrationUseCase } from '@/application/user/load-user-integration.use-case';
@@ -24,12 +16,9 @@ export class RegisterIntegrationUserController {
   @UsePipes(new ValidationPipe({ transform: true }))
   async authUser(@Body() dataRequest: IntegrationUserRequest) {
     try {
-      const existingUser =
-        await this.loadUserIntegrationUseCase.execute(dataRequest);
+      const existingUser = await this.loadUserIntegrationUseCase.execute(dataRequest);
 
-      const user =
-        existingUser ?? (await this.createUserUseCase.execute(dataRequest));
-
+      const user = existingUser ?? (await this.createUserUseCase.execute(dataRequest));
       const token = await this.createJwtUserUseCase.execute(user);
 
       return {

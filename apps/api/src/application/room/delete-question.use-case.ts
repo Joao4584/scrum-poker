@@ -1,14 +1,10 @@
-import { Inject, Injectable } from '@nestjs/common';
-import {
-  QUESTION_REPOSITORY,
-  QuestionRepository,
-} from '@/domain/room/repositories/question.repository';
+import { Injectable } from '@nestjs/common';
+import { QuestionTypeOrmRepository } from '@/infrastructure/repositories/question.repository';
 
 @Injectable()
 export class DeleteQuestionUseCase {
   constructor(
-    @Inject(QUESTION_REPOSITORY)
-    private readonly questionRepository: QuestionRepository,
+    private readonly questionRepository: QuestionTypeOrmRepository,
   ) {}
 
   async execute(publicId: string): Promise<void> {

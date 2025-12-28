@@ -2,15 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RoomParticipant } from '../entities/room-participant.entity';
-import {
-  CreateRoomParticipantInput,
-  RoomParticipantRepository,
-} from '@/domain/room/repositories/room-participant.repository';
+export interface CreateRoomParticipantInput {
+  public_id: string;
+  room_id: number;
+  user_id: number;
+  joined_at: Date;
+  is_admin?: boolean;
+}
 
 @Injectable()
-export class RoomParticipantTypeOrmRepository
-  implements RoomParticipantRepository
-{
+export class RoomParticipantTypeOrmRepository {
   constructor(
     @InjectRepository(RoomParticipant)
     private readonly roomParticipantRepository: Repository<RoomParticipant>,

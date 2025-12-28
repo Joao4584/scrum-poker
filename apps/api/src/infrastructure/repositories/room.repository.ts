@@ -2,13 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Room } from '../entities/room.entity';
-import {
-  CreateRoomInput,
-  RoomRepository,
-} from '@/domain/room/repositories/room.repository';
+import { VotingScale } from '@/shared/enums/voting-scale.enum';
+export interface CreateRoomInput {
+  public_id: string;
+  name: string;
+  description?: string | null;
+  owner_id: number;
+  is_public: boolean;
+  voting_scale?: VotingScale | null;
+  status?: string;
+  password?: string | null;
+}
 
 @Injectable()
-export class RoomTypeOrmRepository implements RoomRepository {
+export class RoomTypeOrmRepository {
   constructor(
     @InjectRepository(Room)
     private readonly roomRepository: Repository<Room>,

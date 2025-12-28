@@ -1,17 +1,13 @@
-import { Injectable, NestMiddleware, Inject } from '@nestjs/common';
+import { Injectable, NestMiddleware } from '@nestjs/common';
 import { FastifyRequest, FastifyReply, HookHandlerDoneFunction } from 'fastify';
 import * as jwt from 'jsonwebtoken';
-import {
-  USER_REPOSITORY,
-  UserRepository,
-} from '@/domain/user/user.repository';
+import { UserTypeOrmRepository } from '@/infrastructure/repositories/user.repository';
 import { AppErrors } from '@/presentation/errors';
 
 @Injectable()
 export class JwtAuthMiddleware implements NestMiddleware {
   constructor(
-    @Inject(USER_REPOSITORY)
-    private readonly usersRepository: UserRepository,
+    private readonly usersRepository: UserTypeOrmRepository,
   ) {}
 
   async use(

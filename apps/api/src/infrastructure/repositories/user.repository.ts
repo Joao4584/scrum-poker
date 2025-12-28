@@ -2,22 +2,43 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
-import {
-  CreateUserInput,
-  UserRepository,
-} from '@/domain/user/user.repository';
-import { IntegrationUser } from '@/domain/user/integration-user';
+import { UlidService } from '@/shared/ulid/ulid.service';
+
+export type IntegrationProvider = 'google' | 'github';
+
+export interface IntegrationUser {
+  type: IntegrationProvider;
+  email: string;
+  name: string;
+  avatar_url: string;
+  password?: string;
+  id?: string;
+  github_link?: string;
+  bio?: string;
+}
+
+export interface CreateUserInput {
+  email: string;
+  name: string;
+  avatar_url?: string;
+  password?: string;
+  github_id?: string;
+  github_link?: string;
+  bio?: string;
+  google_id?: string;
+}
 
 @Injectable()
-export class UserTypeOrmRepository implements UserRepository {
+export class UserTypeOrmRepository {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly ulidService: UlidService,
   ) {}
 
   async create(data: CreateUserInput): Promise<User> {
     const newUser = this.userRepository.create({
-      public_id: data.public_id,
+      public_id: this.ulidService.generateId(),
       email: data.email,
       name: data.name || 'Unknown',
       avatar_url: data.avatar_url,

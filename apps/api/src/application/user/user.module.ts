@@ -7,21 +7,17 @@ import { CreateJwtUserUseCase } from './create-jwt-user.use-case';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../../infrastructure/entities/user.entity';
 import { UlidModule } from '@/shared/ulid/ulid.module';
-import { USER_REPOSITORY } from '@/domain/user/user.repository';
 import { GetUserController } from '@/presentation/controllers/user/get-user.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]), UlidModule],
   providers: [
-    {
-      provide: USER_REPOSITORY,
-      useClass: UserTypeOrmRepository,
-    },
+    UserTypeOrmRepository,
     CreateUserUseCase,
     LoadUserIntegrationUseCase,
     CreateJwtUserUseCase,
   ],
   controllers: [RegisterIntegrationUserController, GetUserController],
-  exports: [USER_REPOSITORY],
+  exports: [UserTypeOrmRepository],
 })
 export class UserModule {}

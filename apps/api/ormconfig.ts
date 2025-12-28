@@ -1,20 +1,21 @@
 import 'reflect-metadata';
-import 'dotenv/config';
 import { DataSource } from 'typeorm';
+import { env } from '@scrum-poker/env';
 import { User } from './src/infrastructure/entities/user.entity';
 import { Room } from './src/infrastructure/entities/room.entity';
 import { RoomParticipant } from './src/infrastructure/entities/room-participant.entity';
 import { Question } from './src/infrastructure/entities/question.entity';
 import { Vote } from './src/infrastructure/entities/vote.entity';
+import { Friends } from './src/infrastructure/entities/friends.entity';
 
 export default new DataSource({
   type: 'postgres',
-  host: process.env.DB_HOST,
-  port: Number(process.env.DB_PORT),
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
-  entities: [User, Room, RoomParticipant, Question, Vote],
+  host: env.DB_HOST,
+  port: env.DB_PORT,
+  username: env.DB_USERNAME,
+  password: env.DB_PASSWORD,
+  database: env.DB_DATABASE,
+  entities: [User, Room, RoomParticipant, Question, Vote, Friends],
   migrations: ['./src/infrastructure/migrations/*.ts'],
   synchronize: false,
 });

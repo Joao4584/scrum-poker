@@ -2,13 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Vote } from '@/infrastructure/entities/vote.entity';
-import {
-  CreateVoteInput,
-  VoteRepository,
-} from '@/domain/room/repositories/vote.repository';
+export interface CreateVoteInput {
+  public_id: string;
+  question_id: number;
+  user_id: number;
+  value: string;
+}
 
 @Injectable()
-export class VoteTypeOrmRepository implements VoteRepository {
+export class VoteTypeOrmRepository {
   constructor(
     @InjectRepository(Vote)
     private readonly repository: Repository<Vote>,

@@ -1,15 +1,11 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UpdateQuestionRequest } from '@/presentation/requests/room/update-question.request';
-import {
-  QUESTION_REPOSITORY,
-  QuestionRepository,
-} from '@/domain/room/repositories/question.repository';
+import { QuestionTypeOrmRepository } from '@/infrastructure/repositories/question.repository';
 
 @Injectable()
 export class UpdateQuestionUseCase {
   constructor(
-    @Inject(QUESTION_REPOSITORY)
-    private readonly questionRepository: QuestionRepository,
+    private readonly questionRepository: QuestionTypeOrmRepository,
   ) {}
 
   async execute(publicId: string, data: UpdateQuestionRequest): Promise<void> {

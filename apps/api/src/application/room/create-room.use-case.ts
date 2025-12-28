@@ -1,16 +1,12 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UlidService } from '@/shared/ulid/ulid.service';
-import {
-  ROOM_REPOSITORY,
-  RoomRepository,
-} from '@/domain/room/repositories/room.repository';
+import { RoomTypeOrmRepository } from '@/infrastructure/repositories/room.repository';
 import { VotingScale } from '@/shared/enums/voting-scale.enum';
 
 @Injectable()
 export class CreateRoomUseCase {
   constructor(
-    @Inject(ROOM_REPOSITORY) private readonly roomsRepository: RoomRepository,
-    @Inject(UlidService)
+    private readonly roomsRepository: RoomTypeOrmRepository,
     private readonly ulidService: UlidService,
   ) {}
   async execute(data: {

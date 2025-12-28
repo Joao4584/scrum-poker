@@ -19,14 +19,7 @@ export function GridPattern({
   return (
     <svg aria-hidden="true" {...props}>
       <defs>
-        <pattern
-          id={patternId}
-          width={width}
-          height={height}
-          patternUnits="userSpaceOnUse"
-          x={x}
-          y={y}
-        >
+        <pattern id={patternId} width={width} height={height} patternUnits="userSpaceOnUse" x={x} y={y}>
           <path d={`M.5 ${height}V.5H${width}`} fill="none" />
         </pattern>
       </defs>
@@ -51,7 +44,7 @@ export function GridPattern({
 
 export function PatternBackgroundContainer() {
   return (
-    <div className="absolute inset-0  mx-0 max-w-none overflow-hidden">
+    <div className="absolute inset-0 -z-0  mx-0 max-w-none overflow-hidden">
       <div className="absolute left-1/2 top-0 ml-[-30rem] h-[35rem] w-[81.25rem] dark:[mask-image:linear-gradient(white,transparent)]">
         <div className="absolute inset-0 bg-gradient-to-r from-[#a3a3a3] to-[#d8d8d838] opacity-20 [mask-image:radial-gradient(farthest-side_at_top,white,transparent)] dark:from-[#9ca9c5]/40 dark:to-[#6e92e7]/40 dark:opacity-100">
           <GridPattern

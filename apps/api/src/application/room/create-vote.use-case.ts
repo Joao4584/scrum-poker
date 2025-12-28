@@ -1,22 +1,15 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UlidService } from '@/shared/ulid/ulid.service';
-import {
-  QUESTION_REPOSITORY,
-  QuestionRepository,
-} from '@/domain/room/repositories/question.repository';
-import {
-  VOTE_REPOSITORY,
-  VoteRepository,
-} from '@/domain/room/repositories/vote.repository';
+import { QuestionTypeOrmRepository } from '@/infrastructure/repositories/question.repository';
+import { VoteTypeOrmRepository } from '@/infrastructure/repositories/vote.repository';
 import { Vote } from '@/infrastructure/entities/vote.entity';
 import { User } from '@/infrastructure/entities/user.entity';
 
 @Injectable()
 export class CreateVoteUseCase {
   constructor(
-    @Inject(QUESTION_REPOSITORY)
-    private readonly questionRepository: QuestionRepository,
-    @Inject(VOTE_REPOSITORY) private readonly voteRepository: VoteRepository,
+    private readonly questionRepository: QuestionTypeOrmRepository,
+    private readonly voteRepository: VoteTypeOrmRepository,
     private readonly ulidService: UlidService,
   ) {}
 

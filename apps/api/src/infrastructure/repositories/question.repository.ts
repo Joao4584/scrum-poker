@@ -2,13 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Question } from '@/infrastructure/entities/question.entity';
-import {
-  CreateQuestionInput,
-  QuestionRepository,
-} from '@/domain/room/repositories/question.repository';
+export interface CreateQuestionInput {
+  public_id: string;
+  room_id: number;
+  text: string;
+  revealed?: boolean;
+  is_active?: boolean;
+}
 
 @Injectable()
-export class QuestionTypeOrmRepository implements QuestionRepository {
+export class QuestionTypeOrmRepository {
   constructor(
     @InjectRepository(Question)
     private readonly repository: Repository<Question>,

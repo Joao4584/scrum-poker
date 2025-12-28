@@ -1,14 +1,13 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { IntegrationUser } from '@/domain/user/integration-user';
+import { Injectable } from '@nestjs/common';
 import {
-  USER_REPOSITORY,
-  UserRepository,
-} from '@/domain/user/user.repository';
+  IntegrationUser,
+  UserTypeOrmRepository,
+} from '@/infrastructure/repositories/user.repository';
 
 @Injectable()
 export class LoadUserIntegrationUseCase {
   constructor(
-    @Inject(USER_REPOSITORY) private readonly usersRepository: UserRepository,
+    private readonly usersRepository: UserTypeOrmRepository,
   ) {}
 
   async execute(data: IntegrationUser) {

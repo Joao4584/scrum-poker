@@ -1,23 +1,15 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UlidService } from '@/shared/ulid/ulid.service';
-import {
-  ROOM_REPOSITORY,
-  RoomRepository,
-} from '@/domain/room/repositories/room.repository';
-import {
-  ROOM_PARTICIPANT_REPOSITORY,
-  RoomParticipantRepository,
-} from '@/domain/room/repositories/room-participant.repository';
+import { RoomTypeOrmRepository } from '@/infrastructure/repositories/room.repository';
+import { RoomParticipantTypeOrmRepository } from '@/infrastructure/repositories/room-participant.repository';
 import { AppErrors } from '@/presentation/errors';
 
 @Injectable()
 export class JoinRoomUseCase {
   constructor(
-    @Inject(ROOM_REPOSITORY)
-    private readonly roomsRepository: RoomRepository,
-    @Inject(ROOM_PARTICIPANT_REPOSITORY)
-    private readonly roomParticipantsRepository: RoomParticipantRepository,
-    @Inject(UlidService) private readonly ulidService: UlidService,
+    private readonly roomsRepository: RoomTypeOrmRepository,
+    private readonly roomParticipantsRepository: RoomParticipantTypeOrmRepository,
+    private readonly ulidService: UlidService,
   ) {}
 
   async execute(room_public_id: string, user_id: number) {

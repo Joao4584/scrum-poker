@@ -1,24 +1,12 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { UlidService } from '@/shared/ulid/ulid.service';
-import {
-  USER_REPOSITORY,
-  UserRepository,
-} from '@/domain/user/user.repository';
-import { IntegrationUser } from '@/domain/user/integration-user';
+import { Injectable } from '@nestjs/common';
+import { IntegrationUser, UserTypeOrmRepository } from '@/infrastructure/repositories/user.repository';
 
 @Injectable()
 export class CreateUserUseCase {
-  constructor(
-    @Inject(USER_REPOSITORY)
-    private readonly usersRepository: UserRepository,
-    @Inject(UlidService)
-    private readonly ulidService: UlidService,
-  ) {}
+  constructor(private readonly usersRepository: UserTypeOrmRepository) {}
 
   async execute(data: IntegrationUser) {
-    const public_id = this.ulidService.generateId();
     return await this.usersRepository.create({
-      public_id,
       email: data.email,
       name: data.name,
       avatar_url: data.avatar_url,

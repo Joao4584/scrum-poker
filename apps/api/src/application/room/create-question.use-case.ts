@@ -1,21 +1,14 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UlidService } from '@/shared/ulid/ulid.service';
-import {
-  ROOM_REPOSITORY,
-  RoomRepository,
-} from '@/domain/room/repositories/room.repository';
-import {
-  QUESTION_REPOSITORY,
-  QuestionRepository,
-} from '@/domain/room/repositories/question.repository';
+import { RoomTypeOrmRepository } from '@/infrastructure/repositories/room.repository';
+import { QuestionTypeOrmRepository } from '@/infrastructure/repositories/question.repository';
 import { Question } from '@/infrastructure/entities/question.entity';
 
 @Injectable()
 export class CreateQuestionUseCase {
   constructor(
-    @Inject(ROOM_REPOSITORY) private readonly roomRepository: RoomRepository,
-    @Inject(QUESTION_REPOSITORY)
-    private readonly questionRepository: QuestionRepository,
+    private readonly roomRepository: RoomTypeOrmRepository,
+    private readonly questionRepository: QuestionTypeOrmRepository,
     private readonly ulidService: UlidService,
   ) {}
 

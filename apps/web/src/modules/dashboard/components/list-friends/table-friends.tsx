@@ -3,7 +3,7 @@
 import React, { useCallback, useState } from "react";
 import { parseAsInteger, useQueryState } from "nuqs";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { Send } from "lucide-react";
+import { Send, Users } from "lucide-react";
 
 import {
   DataTableViewOptions,
@@ -55,7 +55,7 @@ export function FriendListTable() {
   const renderTable = () => {
     if (services?.meta?.total === 0) {
       return (
-        <DataTableEmptyState title={`Nenhum Serviço Encontrado`} description={""} icon={Send}></DataTableEmptyState>
+        <DataTableEmptyState title={`Nenhum Serviço Encontrado`} description={""} icon={Users}></DataTableEmptyState>
       );
     }
 

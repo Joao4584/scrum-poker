@@ -24,10 +24,6 @@ import { CreateVoteUseCase } from './create-vote.use-case';
 import { UpdateVoteUseCase } from './update-vote.use-case';
 import { DeleteVoteUseCase } from './delete-vote.use-case';
 import { VoteController } from '@/presentation/controllers/room/vote.controller';
-import { ROOM_REPOSITORY } from '@/domain/room/repositories/room.repository';
-import { ROOM_PARTICIPANT_REPOSITORY } from '@/domain/room/repositories/room-participant.repository';
-import { QUESTION_REPOSITORY } from '@/domain/room/repositories/question.repository';
-import { VOTE_REPOSITORY } from '@/domain/room/repositories/vote.repository';
 
 @Module({
   imports: [
@@ -35,22 +31,10 @@ import { VOTE_REPOSITORY } from '@/domain/room/repositories/vote.repository';
     UlidModule,
   ],
   providers: [
-    {
-      provide: ROOM_REPOSITORY,
-      useClass: RoomTypeOrmRepository,
-    },
-    {
-      provide: ROOM_PARTICIPANT_REPOSITORY,
-      useClass: RoomParticipantTypeOrmRepository,
-    },
-    {
-      provide: QUESTION_REPOSITORY,
-      useClass: QuestionTypeOrmRepository,
-    },
-    {
-      provide: VOTE_REPOSITORY,
-      useClass: VoteTypeOrmRepository,
-    },
+    RoomTypeOrmRepository,
+    RoomParticipantTypeOrmRepository,
+    QuestionTypeOrmRepository,
+    VoteTypeOrmRepository,
     CreateRoomUseCase,
     GetRoomUseCase,
     DeleteRoomUseCase,
