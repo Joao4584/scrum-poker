@@ -16,6 +16,15 @@ import {
   positionChatBubble,
   updateChatBubble,
 } from "./helpers/chat-bubble";
+import {
+  PlayerRadius,
+  createPlayerRadius,
+  destroyPlayerRadius,
+  positionPlayerRadius,
+  togglePlayerRadius,
+} from "./helpers/player-radius";
+import { getNearbyPlayers } from "./helpers/proximity";
+import { clearNearbyPlayers, setNearbyPlayers } from "../nearby-store";
 
 export class MainScene extends Phaser.Scene {
   private player!: Player;
@@ -34,6 +43,9 @@ export class MainScene extends Phaser.Scene {
   private selfStateMessage = "";
   private hiddenMessage?: string;
   private syncSelfBubble?: () => void;
+  private selfRadius?: PlayerRadius;
+  private radiusToggleKey?: Phaser.Input.Keyboard.Key;
+  private lastNearbyKey = "";
 
   constructor() {
     super({ key: "game" });
@@ -106,6 +118,13 @@ export class MainScene extends Phaser.Scene {
     );
     this.registerNetworkListeners();
     this.selfBubble = createChatBubble(this, "", localSpawn.x, localSpawn.y);
+    this.selfRadius = createPlayerRadius(this);
+    this.radiusToggleKey = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.P);
+    this.radiusToggleKey?.on("down", () => {
+      if (this.selfRadius) {
+        togglePlayerRadius(this.selfRadius);
+      }
+    });
     const syncSelfBubble = () => {
       if (this.selfBubble) {
         positionChatBubble(this.selfBubble, this.player.x, this.player.y, 0);
@@ -126,6 +145,11 @@ export class MainScene extends Phaser.Scene {
         destroyChatBubble(this.selfBubble);
         this.selfBubble = undefined;
       }
+      if (this.selfRadius) {
+        destroyPlayerRadius(this.selfRadius);
+        this.selfRadius = undefined;
+      }
+      clearNearbyPlayers();
     });
   }
 
@@ -137,6 +161,24 @@ export class MainScene extends Phaser.Scene {
     cam.setScroll(Math.round(cam.scrollX), Math.round(cam.scrollY));
     // depth based on y to simulate layering
     this.player.setDepth(this.player.y);
+    if (this.selfRadius) {
+      positionPlayerRadius(this.selfRadius, this.player.x, this.player.y);
+      const shouldDetect = this.selfRadius.graphics.visible;
+      const nearby =
+        shouldDetect && this.remotes
+          ? getNearbyPlayers(
+              this.remotes.getRemoteSummaries(),
+              this.player.x,
+              this.player.y,
+              this.selfRadius.radius,
+            )
+          : [];
+      const key = nearby.join("|");
+      if (key !== this.lastNearbyKey) {
+        setNearbyPlayers(nearby);
+        this.lastNearbyKey = key;
+      }
+    }
     if (this.selfLabel) {
       positionLabel(this.selfLabel, this.player.x, this.player.y);
       const selfState = this.room?.state.players.get(this.room?.sessionId ?? "");

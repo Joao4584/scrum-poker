@@ -1,0 +1,1 @@
+export { SimpleRoom } from "./room";

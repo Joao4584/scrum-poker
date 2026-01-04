@@ -175,6 +175,18 @@ export class RemoteManager {
     this.skins.clear();
   }
 
+  getRemoteSummaries() {
+    return Array.from(this.sprites.entries()).map(([sessionId, sprite]) => {
+      const label = this.labels.get(sessionId);
+      return {
+        id: sessionId,
+        name: label?.text ?? "Player",
+        x: sprite.x,
+        y: sprite.y,
+      };
+    });
+  }
+
   private setRemoteAnimation(
     sprite: Phaser.GameObjects.Sprite,
     dir: "up" | "down" | "left" | "right",

@@ -1,8 +1,5 @@
 
-> game-server@1.0.0 build C:\Users\joaor\Documents\Joao4584\Projetos\scrum-poker\apps\game-server
+
+> game-server@1.0.0 build /home/joaosilva/Documentos/Tests/scrum-poker/apps/game-server
 > npm run clean && tsc
-
-
-> game-server@1.0.0 clean
-> rimraf build
 

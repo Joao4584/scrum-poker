@@ -5,8 +5,8 @@ import { playground } from '@colyseus/playground';
 /**
  * Import your Room files
  */
-import { SimpleRoom } from './rooms/SimpleRoom';
-import { PlaygroundRoom } from './rooms/PlaygroundRoom';
+import { SimpleRoom } from './modules/simple';
+import { PlaygroundRoom } from './modules/playground';
 
 export default config({
   initializeGameServer: (gameServer) => {
