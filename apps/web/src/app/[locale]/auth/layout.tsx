@@ -15,7 +15,8 @@ export default async function DefaultLayout({
   children: ReactNode;
   params: { locale: string };
 }) {
-  const session = cookies().get(`${storageKey}session`);
+  const cookieStore = await cookies();
+  const session = cookieStore.get(`${storageKey}session`);
   if (session?.value) {
     redirect(`/${params.locale}/app`);
   }

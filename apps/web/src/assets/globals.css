@@ -52,7 +52,7 @@
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted-foreground: 215 20.2% 75.1%;
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
@@ -67,7 +67,7 @@
     --chart-5: 340 75% 55%;
   }
   .theme {
-    --animate-ripple: ripple var(--duration,2s) ease calc(var(--i, 0)*.2s) infinite;
+    --animate-ripple: ripple var(--duration, 2s) ease calc(var(--i, 0) * 0.2s) infinite;
   }
 }
 
@@ -158,11 +158,12 @@ body {
 
 @theme inline {
   @keyframes ripple {
-  0%, 100% {
-    transform: translate(-50%, -50%) scale(1);
+    0%,
+    100% {
+      transform: translate(-50%, -50%) scale(1);
     }
-  50% {
-    transform: translate(-50%, -50%) scale(0.9);
+    50% {
+      transform: translate(-50%, -50%) scale(0.9);
     }
   }
 }

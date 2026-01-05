@@ -7,6 +7,7 @@ import { Card } from "@/modules/shared/ui/card";
 import { Skeleton } from "@/modules/shared/ui/skeleton";
 import { toBRFormat } from "@/modules/shared/utils/date-formatter";
 import { useGetRooms } from "../../hooks/use-rooms";
+import { FilterRoom } from "./filters-room";
 
 export function RoomList() {
   const { data, isLoading } = useGetRooms();
@@ -18,12 +19,7 @@ export function RoomList() {
 
   return (
     <div className="h-full">
-      <div className="mb-3 flex w-full justify-between">
-        <div className="flex items-end gap-2">
-          <h2 className="text-base font-semibold">Salas</h2>
-          <span className="text-sm text-muted-foreground">{rooms.length} salas</span>
-        </div>
-      </div>
+      <FilterRoom roomLength={rooms.length} />
 
       {rooms.length === 0 ? (
         <DataTableEmptyState
