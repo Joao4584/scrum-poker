@@ -1,5 +1,5 @@
 import { Room, Client } from "@colyseus/core";
-import { Player, State } from "./schema/SimpleRoomState";
+import { Player, State } from "./state";
 
 export class SimpleRoom extends Room<State> {
   onCreate(options: any) {

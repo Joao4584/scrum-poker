@@ -10,14 +10,19 @@ export type ChatBubble = {
 const MAX_WIDTH = 200;
 const PADDING_X = 8;
 const PADDING_Y = 6;
+const BUBBLE_RADIUS = 3;
+const SHADOW_OFFSET = 2;
+const SHADOW_ALPHA = 0.2;
+const SHADOW_COLOR = 0x0b1220;
 const OFFSET_Y = 51;
 
 export function createChatBubble(scene: Phaser.Scene, message: string, x: number, y: number) {
   const safeMessage = sanitizeChatMessage(message);
+  const fontFamily = resolveGeistFontFamily();
   const background = scene.add.graphics();
   const text = scene.add.text(0, 0, safeMessage, {
-    fontFamily: "Arial, sans-serif",
-    fontSize: "16px",
+    fontFamily,
+    fontSize: "13px",
     color: "#0f172a",
     strokeThickness: 0,
     align: "left",
@@ -64,7 +69,7 @@ export function positionChatBubble(bubble: ChatBubble, x: number, y: number, smo
     bubble.container.setPosition(finalPx, finalPy);
   }
 
-  const depth = Math.round(y + 5);
+  const depth = Math.round(y + 200);
   if (bubble.container.depth !== depth) {
     bubble.container.setDepth(depth);
   }
@@ -72,6 +77,17 @@ export function positionChatBubble(bubble: ChatBubble, x: number, y: number, smo
 
 export function destroyChatBubble(bubble: ChatBubble) {
   bubble.container.destroy();
+}
+
+function resolveGeistFontFamily() {
+  if (typeof document === "undefined") {
+    return "system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif";
+  }
+  const geist = getComputedStyle(document.body).getPropertyValue("--font-geist-sans").trim();
+  if (geist) {
+    return `${geist}, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+  }
+  return "system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif";
 }
 
 function layoutBubble(
@@ -93,14 +109,27 @@ function layoutBubble(
   const height = Math.round(text.height + PADDING_Y * 2);
 
   background.clear();
-  background.fillStyle(0x0b1220, 1);
-  background.fillRoundedRect(-1, -1, width + 2, height + 2, 6);
+  background.fillStyle(SHADOW_COLOR, SHADOW_ALPHA);
+  background.fillRoundedRect(
+    SHADOW_OFFSET,
+    SHADOW_OFFSET,
+    width,
+    height,
+    BUBBLE_RADIUS,
+  );
   background.fillStyle(0xf8fafc, 1);
-  background.fillRoundedRect(0, 0, width, height, 6);
+  background.fillRoundedRect(0, 0, width, height, BUBBLE_RADIUS);
   const tailX = Math.round(width / 2) - 4;
   const tailY = height - 1;
-  background.fillStyle(0x0b1220, 1);
-  background.fillTriangle(tailX - 2, tailY, tailX + 10, tailY, tailX + 4, tailY + 8);
+  background.fillStyle(SHADOW_COLOR, SHADOW_ALPHA);
+  background.fillTriangle(
+    tailX + SHADOW_OFFSET,
+    tailY + SHADOW_OFFSET,
+    tailX + 8 + SHADOW_OFFSET,
+    tailY + SHADOW_OFFSET,
+    tailX + 4 + SHADOW_OFFSET,
+    tailY + 6 + SHADOW_OFFSET,
+  );
   background.fillStyle(0xf8fafc, 1);
   background.fillTriangle(tailX, tailY, tailX + 8, tailY, tailX + 4, tailY + 6);
 }

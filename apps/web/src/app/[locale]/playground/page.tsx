@@ -1,21 +1,64 @@
 "use client";
 
-import React from "react";
 import dynamic from "next/dynamic";
 import { useRoomStore } from "./game/room-store";
+import { useNearbyStore } from "./game/nearby-store";
 import { useEffect, useRef, useState } from "react";
 import { useQueryState } from "nuqs";
-import { CHAT_MESSAGE_MAX_CHARS, sanitizeChatMessage } from "./game/chat-config";
+import { sanitizeChatMessage } from "./game/chat-config";
+import { ChatCard } from "./layout/chat-card";
+import { PingCard } from "./layout/ping-card";
+import { UpdateNameCard } from "./layout/update-name-card";
 
-const DynamicPhaserGame = dynamic(
-  () => import("./game/PhaserGame").then((mod) => mod.PhaserGame),
-  { ssr: false },
-);
+const DynamicPhaserGame = dynamic(() => import("./game/PhaserGame").then((mod) => mod.PhaserGame), {
+  ssr: false,
+});
+
+type FocusReturnButtonProps = {
+  visible: boolean;
+  onClick: () => void;
+};
+
+function FocusReturnButton({ visible, onClick }: FocusReturnButtonProps) {
+  if (!visible) return null;
+  return (
+    <button
+      onClick={onClick}
+      className="absolute top-4 right-4 z-50 px-3 py-2 text-xs font-semibold bg-slate-800/90 text-slate-100 border border-slate-700 rounded shadow hover:bg-slate-700 transition"
+    >
+      Voltar ao jogo
+    </button>
+  );
+}
+
+type NearbyPlayersProps = {
+  players: string[];
+};
+
+function NearbyPlayers({ players }: NearbyPlayersProps) {
+  if (players.length === 0) return null;
+  return (
+    <div className="absolute bottom-4 left-4 z-50 bg-slate-900/90 border border-slate-800 px-3 py-2 rounded-md shadow-xl min-w-[180px]">
+      <div className="text-[11px] uppercase tracking-wide text-slate-400">Perto de voce</div>
+      <div className="mt-2 flex flex-wrap gap-2">
+        {players.map((name, index) => (
+          <span
+            key={`${name}-${index}`}
+            className="px-2 py-1 text-xs font-semibold bg-slate-800 text-slate-100 rounded border border-slate-700"
+          >
+            {name}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function TestPage() {
   const room = useRoomStore((s) => s.room);
   const focusGame = useRoomStore((s) => s.focusGame);
   const keyboardToggle = useRoomStore((s) => s.keyboardToggle);
+  const nearbyPlayers = useNearbyStore((s) => s.nearbyPlayers);
   const [isGameFocused, setIsGameFocused] = useState(true);
   const [skinParam] = useQueryState("skin");
   const [idParam] = useQueryState("id");
@@ -84,70 +127,27 @@ export default function TestPage() {
       >
         <DynamicPhaserGame skin={skin} userId={userId} botCount={botCount} />
       </div>
-      <div
-        ref={overlayRef}
-        data-focus-target
-        className="absolute top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-slate-900/80 border border-slate-700/60 px-3 py-2 rounded-lg shadow-lg"
-      >
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Seu nome"
-          onFocus={() => setGameFocus(false)}
-          onBlur={() => setGameFocus(true)}
-          onKeyDownCapture={(e) => {
-            e.stopPropagation();
-            e.nativeEvent.stopImmediatePropagation();
-          }}
-          className="px-3 py-2 bg-slate-800 text-slate-100 text-sm rounded border border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-400/60"
-        />
-        <button
-          onClick={updateName}
-          className="px-3 py-2 text-sm font-semibold bg-emerald-500 text-slate-900 rounded hover:bg-emerald-400 transition disabled:opacity-50"
-          disabled={!room}
-        >
-          Atualizar
-        </button>
-      </div>
-      {!isGameFocused && (
-        <button
-          onClick={() => {
-            setGameFocus(true);
-          }}
-          className="absolute top-4 right-4 z-50 px-3 py-2 text-xs font-semibold bg-slate-800/90 text-slate-100 border border-slate-700 rounded shadow hover:bg-slate-700 transition"
-        >
-          Voltar ao jogo
-        </button>
-      )}
-      <div className="absolute bottom-4 right-4 z-50 flex items-center gap-2 bg-slate-900/90 border border-slate-800 px-3 py-2 rounded-md shadow-xl">
-        <input
-          value={chatMessage}
-          onChange={(e) => {
-            const next = e.target.value.slice(0, CHAT_MESSAGE_MAX_CHARS);
-            setChatMessage(next);
-          }}
-          maxLength={CHAT_MESSAGE_MAX_CHARS}
-          placeholder="Mensagem"
-          onFocus={() => setGameFocus(false)}
-          onBlur={() => setGameFocus(true)}
-          onKeyDownCapture={(e) => {
-            e.stopPropagation();
-            e.nativeEvent.stopImmediatePropagation();
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              sendChat();
-            }
-          }}
-          className="px-3 py-2 bg-slate-800 text-slate-100 text-sm rounded border border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-400/60"
-        />
-        <button
-          onClick={sendChat}
-          className="px-3 py-2 text-sm font-semibold bg-emerald-500 text-slate-900 rounded hover:bg-emerald-400 transition disabled:opacity-50"
-          disabled={!room}
-        >
-          Enviar
-        </button>
-      </div>
+      <UpdateNameCard
+        name={name}
+        overlayRef={overlayRef}
+        setName={setName}
+        updateName={updateName}
+        setGameFocus={setGameFocus}
+      />
+      <FocusReturnButton
+        visible={!isGameFocused}
+        onClick={() => {
+          setGameFocus(true);
+        }}
+      />
+      <PingCard />
+      <NearbyPlayers players={nearbyPlayers} />
+      <ChatCard
+        chatMessage={chatMessage}
+        setChatMessage={setChatMessage}
+        sendChat={sendChat}
+        setGameFocus={setGameFocus}
+      />
     </div>
   );
 }
