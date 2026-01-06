@@ -46,6 +46,16 @@ export class RoomTypeOrmRepository {
     options: { order?: 'ASC' | 'DESC'; owner_only?: boolean },
   ): Promise<Room[]> {
     const query = this.roomRepository.createQueryBuilder('room');
+    query.select([
+      'room.public_id',
+      'room.name',
+      'room.description',
+      'room.is_public',
+      'room.voting_scale',
+      'room.status',
+      'room.created_at',
+      'room.updated_at',
+    ]);
 
     if (options.owner_only) {
       query.where('room.owner_id = :user_id', { user_id });
@@ -56,10 +66,7 @@ export class RoomTypeOrmRepository {
         .orWhere('participants.user_id = :user_id', { user_id });
     }
 
-    query.loadRelationCountAndMap(
-      'room.participants_count',
-      'room.participants',
-    );
+    query.loadRelationCountAndMap('room.participants_count', 'room.participants');
 
     if (options.order) {
       query.orderBy('room.created_at', options.order);

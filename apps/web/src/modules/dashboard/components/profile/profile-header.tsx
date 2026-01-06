@@ -31,7 +31,7 @@ export default function UserProfileHeader(props: UserProfileProps) {
                 alt="Perfil"
                 width={40}
                 height={40}
-                onLoadingComplete={() => setAvatarLoaded(true)}
+                onLoad={() => setAvatarLoaded(true)}
               />
             </div>
           </div>

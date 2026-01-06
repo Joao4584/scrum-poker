@@ -5,16 +5,21 @@ import { Users } from "lucide-react";
 import { DataTableEmptyState } from "@/modules/shared/components/data-table";
 import { Card } from "@/modules/shared/ui/card";
 import { Skeleton } from "@/modules/shared/ui/skeleton";
-import { toBRFormat } from "@/modules/shared/utils/date-formatter";
 import { useGetRooms } from "../../hooks/use-rooms";
 import { FilterRoom } from "./filters-room";
+import { RoomDetailsDialog } from "./room-details-dialog";
 
 export function RoomList() {
   const { data, isLoading } = useGetRooms();
-  const rooms = data?.data ?? [];
+  const rooms = data ?? [];
 
   if (isLoading) {
-    return <LoadingCardSkeleton />;
+    return (
+      <div className="h-full">
+        <FilterRoom roomLength={rooms.length} />
+        <LoadingCardSkeleton />
+      </div>
+    );
   }
 
   return (
@@ -26,30 +31,12 @@ export function RoomList() {
           title="Nenhuma sala encontrada"
           description="Crie uma sala para comecar uma nova votacao."
           icon={Users}
+          disabledBackground
         />
       ) : (
-        <div className="flex w-full h-[calc(100%-20px)] pb-10 pr-2 overflow-y-auto flex-wrap items-start justify-start gap-6">
+        <div className="flex w-full h-[calc(100%-30px)] pb-10 pr-2 overflow-y-auto flex-wrap items-start justify-start gap-6">
           {rooms.map((room) => (
-            <Card
-              key={room.id}
-              className="h-[250px] w-full max-w-[600px] basis-[calc(33.333%-16px)] overflow-hidden border-muted"
-            >
-              <div className="h-[150px] w-full">
-                <img src={room.imageUrl} alt={room.title} className="h-full w-full object-cover" />
-              </div>
-              <div className="flex h-[100px] flex-col justify-between p-4">
-                <div className="space-y-1">
-                  <h3 className="text-base font-semibold">{room.title}</h3>
-                  <p className="text-xs text-muted-foreground">Criacao: {toBRFormat(room.createdAt)}</p>
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Jogadores:{" "}
-                  <span className="font-medium text-foreground">
-                    {room.playersCurrent}/{room.playersMax}
-                  </span>
-                </div>
-              </div>
-            </Card>
+            <RoomDetailsDialog key={room.public_id} room={room} />
           ))}
         </div>
       )}
@@ -58,20 +45,20 @@ export function RoomList() {
 }
 
 const LoadingCardSkeleton = () => (
-  <div className="h-full overflow-y-auto">
-    <div className="flex w-full flex-wrap items-start justify-start gap-6">
+  <div className="h-[calc(100%-30px)] overflow-y-auto">
+    <div className="flex w-full  flex-wrap items-start justify-start gap-6">
       {Array.from({ length: 6 }).map((_, index) => (
         <Card
           key={`room-skeleton-${index}`}
           className="h-[250px] w-full max-w-[600px] min-w-[300px] basis-[calc(33.333%-16px)] overflow-hidden border-muted"
         >
-          <Skeleton className="h-[150px] w-full rounded-none" />
+          <Skeleton className="h-[150px] w-full rounded-none dark:opacity-30" />
           <div className="flex h-[100px] flex-col justify-between p-4">
             <div className="space-y-2">
-              <Skeleton className="h-4 w-2/3" />
-              <Skeleton className="h-3 w-1/2" />
+              <Skeleton className="h-4 w-2/3 dark:opacity-30" />
+              <Skeleton className="h-3 w-1/2 dark:opacity-30" />
             </div>
-            <Skeleton className="h-3 w-1/3" />
+            <Skeleton className="h-3 w-1/3 dark:opacity-30" />
           </div>
         </Card>
       ))}

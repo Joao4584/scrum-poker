@@ -12,12 +12,23 @@ type DataTableEmptyStateProps = {
   description: string;
   totalRecords?: number;
   children?: ReactNode;
+  disabledBackground?: boolean;
 };
 
-export function DataTableEmptyState({ icon: Icon, title, description, children }: DataTableEmptyStateProps) {
+export function DataTableEmptyState({
+  icon: Icon,
+  title,
+  description,
+  children,
+  disabledBackground,
+}: DataTableEmptyStateProps) {
   return (
-    <div className="relative bg-white dark:bg-background flex w-full flex-col items-center !rounded-xl border bg-center bg-no-repeat shadow-inner">
-      <div className="relative flex h-[325px] w-full items-center justify-center bg-background backdrop-blur-xl">
+    <div
+      className={`relative ${disabledBackground! ?? "bg-white dark:bg-background border shadow-inner"}  flex w-full flex-col items-center !rounded-xl  bg-center bg-no-repeat `}
+    >
+      <div
+        className={`relative flex h-[485px] w-full items-center justify-center ${disabledBackground! ?? "bg-background backdrop-blur-xl h-[325px]"} `}
+      >
         <Ripple mainCircleSize={140} mainCircleOpacity={0.18} className="w-full h-full" />
         <div className="grid aspect-square size-14 place-items-center rounded-2xl border border-[#CED5E0] dark:border-[#1E293B]">
           <Icon className="size-6" />

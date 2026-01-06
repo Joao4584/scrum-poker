@@ -29,7 +29,7 @@ export function FilterRoom(props: FilterRoomProps) {
         <div className="flex items-center gap-2">
           <Label className="text-xs text-muted-foreground">Ordenar</Label>
           <Select value={sortBy} onValueChange={(value) => setSortBy(value as RoomSort)}>
-            <SelectTrigger className="h-8 w-[170px]">
+            <SelectTrigger className="h-8 w-[170px] bg-secondary">
               <SelectValue placeholder="Ordenar" />
             </SelectTrigger>
             <SelectContent>
@@ -43,13 +43,13 @@ export function FilterRoom(props: FilterRoomProps) {
         <div className="flex items-center gap-2">
           <Label className="text-xs text-muted-foreground">Status</Label>
           <Select value={status} onValueChange={(value) => setStatus(value as RoomStatus)}>
-            <SelectTrigger className="h-8 w-[210px]">
+            <SelectTrigger className="h-8 w-[210px] bg-secondary">
               <SelectValue placeholder="Filtrar por status" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todas as salas</SelectItem>
               <SelectItem value="mine">Minhas salas</SelectItem>
-              <SelectItem value="joined">Salas que eu ja entrei</SelectItem>
+              <SelectItem value="joined">Participantes</SelectItem>
             </SelectContent>
           </Select>
         </div>

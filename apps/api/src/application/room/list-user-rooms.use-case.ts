@@ -3,9 +3,7 @@ import { RoomTypeOrmRepository } from '@/infrastructure/repositories/room.reposi
 
 @Injectable()
 export class ListUserRoomsUseCase {
-  constructor(
-    private readonly roomsRepository: RoomTypeOrmRepository,
-  ) {}
+  constructor(private readonly roomsRepository: RoomTypeOrmRepository) {}
   async execute(
     user_id: number,
     options: {

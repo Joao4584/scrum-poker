@@ -1,15 +1,4 @@
-import {
-  Controller,
-  Post,
-  Body,
-  Get,
-  Param,
-  Delete,
-  HttpCode,
-  HttpStatus,
-  Inject,
-  Query,
-} from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Delete, HttpCode, HttpStatus, Inject, Query } from '@nestjs/common';
 import { ValidationRequestPipe } from '@/shared/pipes/validation-request.pipe';
 import { CreateRoomRequest } from '@/presentation/requests/room/create-room.request';
 import { ListRecentRoomsQuery } from '@/presentation/requests/room/list-recent-rooms.request';
@@ -32,23 +21,18 @@ export class RoomController {
   ) {}
 
   @Post()
-  async createRoom(
-    @Body(ValidationRequestPipe) data: CreateRoomRequest,
-    @User() user: UserEntity,
-  ) {
+  async createRoom(@Body(ValidationRequestPipe) data: CreateRoomRequest, @User() user: UserEntity) {
     const room = await this.createRoomUseCase.execute({
       ...data,
       owner_id: user.id,
       is_public: data.public,
     });
-    return { message: 'Sala criada com sucesso!', room };
+    const { owner_id, owner, password, id, ...roomResponse } = room;
+    return { message: 'Sala criada com sucesso!', room: roomResponse };
   }
 
   @Get('recent')
-  async getRecentRooms(
-    @User() user: { id: number },
-    @Query(ValidationRequestPipe) query: ListRecentRoomsQuery,
-  ) {
+  async getRecentRooms(@User() user: { id: number }, @Query(ValidationRequestPipe) query: ListRecentRoomsQuery) {
     return await this.listUserRoomsUseCase.execute(user.id, query);
   }
 

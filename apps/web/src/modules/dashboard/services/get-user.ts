@@ -1,3 +1,4 @@
+import type { ApiResponse } from "@/modules/shared/@types/api-response";
 import { api } from "@/modules/shared/http/api-client";
 
 interface GetUserOutput {
@@ -6,10 +7,6 @@ interface GetUserOutput {
   avatar_url: string;
   public_id: string;
 }
-
-type ApiResponse<T> = {
-  data: T;
-};
 
 export async function getUser(): Promise<GetUserOutput> {
   const response = await api.get("user/me").json<ApiResponse<GetUserOutput>>();
