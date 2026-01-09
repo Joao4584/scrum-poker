@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { Button } from "@/modules/shared/ui/button";
@@ -24,9 +24,14 @@ import {
 } from "@/modules/shared/ui/select";
 import { VotingScale } from "@/modules/shared/enums/voting-scale.enum";
 import { createRoom } from "../../services/create-room";
+import {
+  DetailsRoom,
+  type DetailsRoomHandle,
+} from "../details-room/details-room";
 
 export function CreateRoom() {
   const queryClient = useQueryClient();
+  const detailsRoomRef = useRef<DetailsRoomHandle>(null);
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -55,7 +60,7 @@ export function CreateRoom() {
     setError(null);
 
     try {
-      await createRoom({
+      const response = await createRoom({
         name: trimmedName,
         description: description.trim() || undefined,
         public: isPublic === "true",
@@ -64,6 +69,9 @@ export function CreateRoom() {
       await queryClient.invalidateQueries({ queryKey: ["rooms:list"] });
       setOpen(false);
       resetForm();
+      if (response.room?.public_id) {
+        detailsRoomRef.current?.open(response.room.public_id);
+      }
     } catch {
       setError("Nao foi possivel criar a sala. Tente novamente.");
     } finally {
@@ -164,6 +172,7 @@ export function CreateRoom() {
           </DialogFooter>
         </form>
       </DialogContent>
+      <DetailsRoom ref={detailsRoomRef} />
     </Dialog>
   );
 }

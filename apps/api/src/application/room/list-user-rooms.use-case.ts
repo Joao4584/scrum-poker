@@ -8,6 +8,7 @@ export class ListUserRoomsUseCase {
     user_id: number,
     options: {
       order?: 'ASC' | 'DESC';
+      sort?: 'recent' | 'alphabetical' | 'players';
       owner_only?: number | boolean | string;
     },
   ) {

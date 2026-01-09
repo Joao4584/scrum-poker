@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { getRooms } from "../services/get-rooms";
+import { getRooms, type GetRoomsOptions } from "../services/get-rooms";
 
-export function useGetRooms() {
+export function useGetRooms(options?: GetRoomsOptions) {
+  const sortKey = options?.sort ?? "recent";
   return useQuery({
-    queryKey: ["rooms:list"],
-    queryFn: getRooms,
+    queryKey: ["rooms:list", sortKey],
+    queryFn: () => getRooms(options),
   });
 }

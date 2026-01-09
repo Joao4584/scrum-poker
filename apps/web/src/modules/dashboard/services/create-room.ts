@@ -10,7 +10,9 @@ export type CreateRoomInput = {
 
 export type CreateRoomResponse = {
   message: string;
-  room: Record<string, unknown>;
+  room: {
+    public_id: string;
+  };
 };
 
 export async function createRoom(data: CreateRoomInput) {

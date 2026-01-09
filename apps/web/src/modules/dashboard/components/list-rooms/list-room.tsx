@@ -1,22 +1,30 @@
 "use client";
 
-import React from "react";
+import React, { useRef, useState } from "react";
 import { Users } from "lucide-react";
 import { DataTableEmptyState } from "@/modules/shared/components/data-table";
 import { Card } from "@/modules/shared/ui/card";
 import { Skeleton } from "@/modules/shared/ui/skeleton";
+import { toBRFormat } from "@/modules/shared/utils/date-formatter";
 import { useGetRooms } from "../../hooks/use-rooms";
 import { FilterRoom } from "./filters-room";
-import { RoomDetailsDialog } from "./room-details-dialog";
+import { DetailsRoom, type DetailsRoomHandle } from "../details-room/details-room";
+import type { RoomSort } from "../../services/get-rooms";
 
 export function RoomList() {
-  const { data, isLoading } = useGetRooms();
+  const [sortBy, setSortBy] = useState<RoomSort>("recent");
+  const { data, isLoading } = useGetRooms({ sort: sortBy });
   const rooms = data ?? [];
+  const detailsRoomRef = useRef<DetailsRoomHandle>(null);
 
   if (isLoading) {
     return (
       <div className="h-full">
-        <FilterRoom roomLength={rooms.length} />
+        <FilterRoom
+          roomLength={rooms.length}
+          sortBy={sortBy}
+          onSortChange={setSortBy}
+        />
         <LoadingCardSkeleton />
       </div>
     );
@@ -24,7 +32,11 @@ export function RoomList() {
 
   return (
     <div className="h-full">
-      <FilterRoom roomLength={rooms.length} />
+      <FilterRoom
+        roomLength={rooms.length}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
+      />
 
       {rooms.length === 0 ? (
         <DataTableEmptyState
@@ -36,8 +48,26 @@ export function RoomList() {
       ) : (
         <div className="flex w-full h-[calc(100%-30px)] pb-10 pr-2 overflow-y-auto flex-wrap items-start justify-start gap-6">
           {rooms.map((room) => (
-            <RoomDetailsDialog key={room.public_id} room={room} />
+            <Card
+              key={room.public_id}
+              className="h-[250px] w-full max-w-[600px] basis-[calc(33.333%-16px)] overflow-hidden border-muted bg-card/80 cursor-pointer transition-shadow hover:shadow-md"
+              onClick={() => detailsRoomRef.current?.open(room.public_id)}
+            >
+              <div className="h-[150px] w-full">
+                <img src="/banners/auth.gif" alt={room.name} className="h-full w-full object-cover" />
+              </div>
+              <div className="flex h-[100px] flex-col justify-between p-4">
+                <div className="space-y-1">
+                  <h3 className="text-base font-semibold">{room.name}</h3>
+                  <p className="text-xs text-muted-foreground">Criacao: {toBRFormat(room.created_at)}</p>
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Jogadores: <span className="font-medium text-foreground">{room.participants_count}</span>
+                </div>
+              </div>
+            </Card>
           ))}
+          <DetailsRoom ref={detailsRoomRef} />
         </div>
       )}
     </div>

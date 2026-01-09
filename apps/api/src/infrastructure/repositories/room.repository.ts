@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Room } from '../entities/room.entity';
+import { RoomParticipant } from '../entities/room-participant.entity';
 import { VotingScale } from '@/shared/enums/voting-scale.enum';
 export interface CreateRoomInput {
   public_id: string;
@@ -43,7 +44,11 @@ export class RoomTypeOrmRepository {
 
   async findRecentByUserId(
     user_id: number,
-    options: { order?: 'ASC' | 'DESC'; owner_only?: boolean },
+    options: {
+      order?: 'ASC' | 'DESC';
+      sort?: 'recent' | 'alphabetical' | 'players';
+      owner_only?: boolean;
+    },
   ): Promise<Room[]> {
     const query = this.roomRepository.createQueryBuilder('room');
     query.select([
@@ -68,7 +73,21 @@ export class RoomTypeOrmRepository {
 
     query.loadRelationCountAndMap('room.participants_count', 'room.participants');
 
-    if (options.order) {
+    if (options.sort === 'players') {
+      query.addSelect(
+        (subQuery) =>
+          subQuery
+            .select('COUNT(participant.id)', 'participants_count')
+            .from(RoomParticipant, 'participant')
+            .where('participant.room_id = room.id'),
+        'participants_count',
+      );
+      query.orderBy('participants_count', 'DESC');
+    } else if (options.sort === 'alphabetical') {
+      query.orderBy('room.name', 'ASC');
+    } else if (options.sort === 'recent') {
+      query.orderBy('room.created_at', 'DESC');
+    } else if (options.order) {
       query.orderBy('room.created_at', options.order);
     }
 

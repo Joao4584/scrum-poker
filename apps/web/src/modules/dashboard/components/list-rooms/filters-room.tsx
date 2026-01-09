@@ -6,16 +6,17 @@ import { Button } from "@/modules/shared/ui/button";
 import { Label } from "@/modules/shared/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/modules/shared/ui/select";
 import { cn } from "@/modules/shared/utils";
+import type { RoomSort } from "@/modules/dashboard/services/get-rooms";
 
 type FilterRoomProps = {
   roomLength: number;
+  sortBy: RoomSort;
+  onSortChange: (value: RoomSort) => void;
 };
 
-type RoomSort = "recent" | "alphabetical" | "players";
 type RoomStatus = "all" | "mine" | "joined";
 
 export function FilterRoom(props: FilterRoomProps) {
-  const [sortBy, setSortBy] = useState<RoomSort>("recent");
   const [status, setStatus] = useState<RoomStatus>("all");
   const [favoriteOnly, setFavoriteOnly] = useState(false);
 
@@ -28,7 +29,10 @@ export function FilterRoom(props: FilterRoomProps) {
       <div className="flex flex-wrap items-center gap-2">
         <div className="flex items-center gap-2">
           <Label className="text-xs text-muted-foreground">Ordenar</Label>
-          <Select value={sortBy} onValueChange={(value) => setSortBy(value as RoomSort)}>
+          <Select
+            value={props.sortBy}
+            onValueChange={(value) => props.onSortChange(value as RoomSort)}
+          >
             <SelectTrigger className="h-8 w-[170px] bg-secondary">
               <SelectValue placeholder="Ordenar" />
             </SelectTrigger>
