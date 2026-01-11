@@ -72,6 +72,13 @@ export class RoomTypeOrmRepository {
     }
 
     query.loadRelationCountAndMap('room.participants_count', 'room.participants');
+    query.loadRelationCountAndMap(
+      'room.is_favorite',
+      'room.favorites',
+      'favorites',
+      (favoritesQuery) =>
+        favoritesQuery.andWhere('favorites.user_id = :user_id', { user_id }),
+    );
 
     if (options.sort === 'players') {
       query.addSelect(

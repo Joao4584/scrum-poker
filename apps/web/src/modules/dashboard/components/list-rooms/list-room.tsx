@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import { Users } from "lucide-react";
+import { Star, Users } from "lucide-react";
 import { DataTableEmptyState } from "@/modules/shared/components/data-table";
 import { Card } from "@/modules/shared/ui/card";
 import { Skeleton } from "@/modules/shared/ui/skeleton";
@@ -58,7 +58,21 @@ export function RoomList() {
               </div>
               <div className="flex h-[100px] flex-col justify-between p-4">
                 <div className="space-y-1">
-                  <h3 className="text-base font-semibold">{room.name}</h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base font-semibold">{room.name}</h3>
+                    <div className="flex items-center gap-1 text-xs">
+                      <Star
+                        className={
+                          room.is_favorite
+                            ? "h-4 w-4 fill-amber-500 text-amber-500"
+                            : "h-4 w-4 fill-transparent text-muted-foreground"
+                        }
+                      />
+                      <span className="text-muted-foreground">
+                        {room.is_favorite ? "Favorito" : "Nao favorito"}
+                      </span>
+                    </div>
+                  </div>
                   <p className="text-xs text-muted-foreground">Criacao: {toBRFormat(room.created_at)}</p>
                 </div>
                 <div className="text-sm text-muted-foreground">

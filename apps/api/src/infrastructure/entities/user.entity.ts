@@ -12,6 +12,7 @@ import { Room } from './room.entity';
 import { Vote } from './vote.entity';
 import { RoomParticipant } from './room-participant.entity';
 import { Friends } from './friends.entity';
+import { RoomFavorite } from './room-favorite.entity';
 
 export enum Language {
   en_us = 'en_us',
@@ -87,4 +88,7 @@ export class User {
 
   @OneToMany(() => Friends, (friends) => friends.friend)
   friendsReceived: Friends[];
+
+  @OneToMany(() => RoomFavorite, (favorite) => favorite.user)
+  roomFavorites: RoomFavorite[];
 }

@@ -2,11 +2,13 @@
 
 import React, {
   forwardRef,
+  useEffect,
   useImperativeHandle,
   useMemo,
   useState,
 } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { Star } from "lucide-react";
 import { Button } from "@/modules/shared/ui/button";
 import { Skeleton } from "@/modules/shared/ui/skeleton";
 import {
@@ -33,6 +35,7 @@ import { toBRFormat } from "@/modules/shared/utils/date-formatter";
 import type { RoomListItem } from "@/modules/dashboard/services/get-rooms";
 import { useDetailRoom } from "@/modules/dashboard/hooks/use-detail-room";
 import { deleteRoom } from "@/modules/dashboard/services/delete-room";
+import { toggleRoomFavorite } from "@/modules/dashboard/services/toggle-room-favorite";
 
 export type DetailsRoomHandle = {
   open: (publicId: string) => void;
@@ -54,7 +57,9 @@ export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(
   const [open, setOpen] = useState(false);
   const [publicId, setPublicId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isTogglingFavorite, setIsTogglingFavorite] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [favoriteError, setFavoriteError] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const roomsQueries = queryClient.getQueriesData<RoomListItem[]>({
     queryKey: ["rooms:list"],
@@ -76,6 +81,11 @@ export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(
   const votingScale = detailRoom?.voting_scale ?? previewRoom?.voting_scale;
   const description = detailRoom?.description ?? previewRoom?.description;
   const participantsCount = previewRoom?.participants_count ?? 0;
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    setIsFavorite(Boolean(previewRoom?.is_favorite));
+  }, [previewRoom?.is_favorite, publicId]);
 
   const handleDelete = async () => {
     if (!publicId) return;
@@ -110,6 +120,54 @@ export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(
     }
   };
 
+  const handleToggleFavorite = async () => {
+    if (!publicId) return;
+    const togglingId = publicId;
+    const roomQueries = queryClient.getQueriesData<RoomListItem[]>({
+      queryKey: ["rooms:list"],
+    });
+    const previousRooms = roomQueries.map(([key, data]) => [key, data] as const);
+    const optimisticValue = !isFavorite;
+
+    setIsTogglingFavorite(true);
+    setFavoriteError(null);
+    setIsFavorite(optimisticValue);
+    roomQueries.forEach(([key]) => {
+      queryClient.setQueryData<RoomListItem[]>(key, (current) =>
+        current?.map((room) =>
+          room.public_id === togglingId
+            ? { ...room, is_favorite: optimisticValue }
+            : room,
+        ),
+      );
+    });
+
+    try {
+      const result = await toggleRoomFavorite(togglingId);
+      setIsFavorite(result.liked);
+      roomQueries.forEach(([key]) => {
+        queryClient.setQueryData<RoomListItem[]>(key, (current) =>
+          current?.map((room) =>
+            room.public_id === togglingId
+              ? { ...room, is_favorite: result.liked }
+              : room,
+          ),
+        );
+      });
+      await queryClient.invalidateQueries({ queryKey: ["rooms:list"] });
+    } catch {
+      previousRooms.forEach(([key, data]) => {
+        queryClient.setQueryData<RoomListItem[]>(key, data);
+      });
+      setIsFavorite(Boolean(previewRoom?.is_favorite));
+      setFavoriteError(
+        "Nao foi possivel atualizar o favorito. Tente novamente.",
+      );
+    } finally {
+      setIsTogglingFavorite(false);
+    }
+  };
+
   useImperativeHandle(
     ref,
     () => ({
@@ -117,10 +175,12 @@ export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(
         setPublicId(nextPublicId);
         setOpen(true);
         setDeleteError(null);
+        setFavoriteError(null);
       },
       close: () => {
         setOpen(false);
         setPublicId(null);
+        setFavoriteError(null);
       },
     }),
     [],
@@ -134,6 +194,7 @@ export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(
         if (!nextOpen) {
           setPublicId(null);
           setDeleteError(null);
+          setFavoriteError(null);
         }
       }}
     >
@@ -230,7 +291,30 @@ export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(
             </>
           )}
         </div>
+        {favoriteError ? (
+          <p className="text-sm text-destructive">{favoriteError}</p>
+        ) : null}
         <DialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            disabled={isLoading || !publicId || isTogglingFavorite}
+            onClick={handleToggleFavorite}
+            className="gap-2"
+          >
+            <Star
+              className={
+                isFavorite
+                  ? "h-4 w-4 fill-amber-500 text-amber-500"
+                  : "h-4 w-4 fill-transparent text-muted-foreground"
+              }
+            />
+            {isTogglingFavorite
+              ? "Atualizando..."
+              : isFavorite
+                ? "Desfavoritar"
+                : "Favoritar"}
+          </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button
