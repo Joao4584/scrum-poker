@@ -8,6 +8,8 @@ import {
   getDashboardRoutes,
 } from "@/modules/dashboard/routes/dashboard.routes";
 import { motion } from "framer-motion";
+import { cn } from "@/modules/shared/utils";
+import { useSidebarSizeStore } from "@/modules/dashboard/stores/sidebar-size.store";
 import GroupMenu from "./group-menu";
 import SingleMenu from "./single-menu";
 
@@ -19,16 +21,14 @@ interface MenuListProps {
 export default function MenuList({ currentPath, basePath }: MenuListProps) {
   const router = useRouter();
   const t = useI18n();
-  const normalizedBasePath = useMemo(
-    () => (basePath.endsWith("/") ? basePath.slice(0, -1) : basePath),
-    [basePath],
-  );
+  const normalizedBasePath = useMemo(() => (basePath.endsWith("/") ? basePath.slice(0, -1) : basePath), [basePath]);
   const activeSegment = useMemo(() => {
     const relative = (currentPath.split(`${normalizedBasePath}/`)[1] || "").split("/")[0];
     return relative;
   }, [currentPath, normalizedBasePath]);
   const routes = useMemo(() => getDashboardRoutes(t), [t]);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const minimized = useSidebarSizeStore((state) => state.minimized);
 
   useEffect(() => {
     const currentIndex = routes.findIndex(
@@ -44,9 +44,12 @@ export default function MenuList({ currentPath, basePath }: MenuListProps) {
 
   return (
     <div className="mt-4 relative">
-      {activeIndex !== null && (
+      {!minimized && activeIndex !== null && (
         <motion.span
-          className="absolute left-0 bg-sky-600 w-1.5 mt-1.5 mxd:mt-0 h-10 mxd:h-10 rounded-br-xl rounded-tr-xl shadow-sky-700 shadow-md"
+          className={cn(
+            "absolute left-0 bg-sky-600 w-1.5 h-10 rounded-br-xl rounded-tr-xl shadow-sky-700 shadow-md",
+            minimized ? "mt-0" : "mt-1.5 mxd:mt-0",
+          )}
           layoutId="activeIndicator"
           initial={{ y: 0 }}
           animate={{ y: activeIndex * 48 }}

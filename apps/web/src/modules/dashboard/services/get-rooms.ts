@@ -24,9 +24,7 @@ type RoomListItemApi = Omit<RoomListItem, "is_favorite"> & {
   is_favorite?: number | boolean;
 };
 
-export async function getRooms(
-  options: GetRoomsOptions = {},
-): Promise<RoomListItem[]> {
+export async function getRooms(options: GetRoomsOptions = {}): Promise<RoomListItem[]> {
   const rooms = await api
     .get("room/recent", {
       searchParams: options.sort ? { sort: options.sort } : undefined,

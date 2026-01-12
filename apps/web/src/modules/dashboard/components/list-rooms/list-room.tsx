@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Star, Users } from "lucide-react";
 import { DataTableEmptyState } from "@/modules/shared/components/data-table";
 import { Card } from "@/modules/shared/ui/card";
@@ -13,9 +14,14 @@ import type { RoomSort } from "../../services/get-rooms";
 
 export function RoomList() {
   const [sortBy, setSortBy] = useState<RoomSort>("recent");
+  const queryClient = useQueryClient();
   const { data, isLoading } = useGetRooms({ sort: sortBy });
   const rooms = data ?? [];
   const detailsRoomRef = useRef<DetailsRoomHandle>(null);
+  const handleReload = async () => {
+    await queryClient.resetQueries({ queryKey: ["rooms:list"] });
+    await queryClient.refetchQueries({ queryKey: ["rooms:list"] });
+  };
 
   if (isLoading) {
     return (
@@ -24,6 +30,7 @@ export function RoomList() {
           roomLength={rooms.length}
           sortBy={sortBy}
           onSortChange={setSortBy}
+          onReload={handleReload}
         />
         <LoadingCardSkeleton />
       </div>
@@ -36,6 +43,7 @@ export function RoomList() {
         roomLength={rooms.length}
         sortBy={sortBy}
         onSortChange={setSortBy}
+        onReload={handleReload}
       />
 
       {rooms.length === 0 ? (

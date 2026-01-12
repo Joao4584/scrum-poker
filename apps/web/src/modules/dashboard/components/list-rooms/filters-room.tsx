@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Star } from "lucide-react";
+import { RotateCw, Star } from "lucide-react";
 import { Button } from "@/modules/shared/ui/button";
 import { Label } from "@/modules/shared/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/modules/shared/ui/select";
@@ -12,6 +12,7 @@ type FilterRoomProps = {
   roomLength: number;
   sortBy: RoomSort;
   onSortChange: (value: RoomSort) => void;
+  onReload: () => void;
 };
 
 type RoomStatus = "all" | "mine" | "joined";
@@ -68,6 +69,10 @@ export function FilterRoom(props: FilterRoomProps) {
         >
           <Star className={cn("h-4 w-4", favoriteOnly ? "fill-current" : "fill-transparent")} />
           Favoritos
+        </Button>
+        <Button type="button" variant="outline" size="sm" className="h-8 gap-2" onClick={props.onReload}>
+          <RotateCw className="h-4 w-4" />
+          Recarregar
         </Button>
       </div>
     </div>

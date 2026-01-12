@@ -7,6 +7,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { Star } from "lucide-react";
 import { Button } from "@/modules/shared/ui/button";
@@ -54,6 +55,9 @@ export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(
   _props,
   ref,
 ) {
+  const router = useRouter();
+  const params = useParams<{ locale?: string }>();
+  const locale = params?.locale ? `/${params.locale}` : "";
   const [open, setOpen] = useState(false);
   const [publicId, setPublicId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -118,6 +122,11 @@ export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(
     } finally {
       setIsDeleting(false);
     }
+  };
+
+  const handleEnterRoom = () => {
+    if (!publicId) return;
+    router.push(`${locale}/app/room/${publicId}`);
   };
 
   const handleToggleFavorite = async () => {
@@ -354,7 +363,9 @@ export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-          <Button type="button">Entrar na sala</Button>
+          <Button type="button" onClick={handleEnterRoom} disabled={!publicId}>
+            Entrar na sala
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

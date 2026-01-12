@@ -15,22 +15,15 @@ import {
 } from "@/modules/shared/ui/dialog";
 import { Input } from "@/modules/shared/ui/input";
 import { Label } from "@/modules/shared/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/modules/shared/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/modules/shared/ui/select";
 import { VotingScale } from "@/modules/shared/enums/voting-scale.enum";
 import { createRoom } from "../../services/create-room";
-import {
-  DetailsRoom,
-  type DetailsRoomHandle,
-} from "../details-room/details-room";
+import { DetailsRoom, type DetailsRoomHandle } from "../details-room/details-room";
+import { useSidebarSizeStore } from "../../stores/sidebar-size.store";
 
 export function CreateRoom() {
   const queryClient = useQueryClient();
+  const minimized = useSidebarSizeStore((state) => state.minimized);
   const detailsRoomRef = useRef<DetailsRoomHandle>(null);
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
@@ -66,7 +59,9 @@ export function CreateRoom() {
         public: isPublic === "true",
         voting_scale: votingScale === "none" ? undefined : votingScale,
       });
+
       await queryClient.invalidateQueries({ queryKey: ["rooms:list"] });
+
       setOpen(false);
       resetForm();
       if (response.room?.public_id) {
@@ -95,7 +90,7 @@ export function CreateRoom() {
             transition-[background-position] duration-700 ease-in-out hover:bg-[position:100%_50%]"
         >
           <Plus className=" h-4 w-4" />
-          Novo
+          {minimized ? null : "Novo"}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-xl">
@@ -140,23 +135,14 @@ export function CreateRoom() {
             </div>
             <div className="space-y-2">
               <Label>Escala de votacao</Label>
-              <Select
-                value={votingScale}
-                onValueChange={(value) =>
-                  setVotingScale(value as "none" | VotingScale)
-                }
-              >
+              <Select value={votingScale} onValueChange={(value) => setVotingScale(value as "none" | VotingScale)}>
                 <SelectTrigger className="h-9 bg-secondary">
                   <SelectValue placeholder="Opcional" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">Sem escala</SelectItem>
-                  <SelectItem value={VotingScale.FIBONACCI}>
-                    Fibonacci
-                  </SelectItem>
-                  <SelectItem value={VotingScale.POWER_OF_2}>
-                    Power of 2
-                  </SelectItem>
+                  <SelectItem value={VotingScale.FIBONACCI}>Fibonacci</SelectItem>
+                  <SelectItem value={VotingScale.POWER_OF_2}>Power of 2</SelectItem>
                 </SelectContent>
               </Select>
             </div>
