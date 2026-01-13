@@ -3,8 +3,8 @@ import React from "react";
 
 export default function Page() {
   return (
-    <React.Fragment>
+    <main className="p-4">
       <FriendListTable />
-    </React.Fragment>
+    </main>
   );
 }

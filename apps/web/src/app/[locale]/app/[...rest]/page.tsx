@@ -3,7 +3,7 @@ import { ArrowLeft, BookOpen } from "lucide-react";
 
 export default function NotFoundLandingFallback() {
   return (
-    <main className="grid min-h-full place-items-center px-6 py-24 sm:py-32 lg:px-8">
+    <main className="p-4grid min-h-full place-items-center px-6 py-24 sm:py-32 lg:px-8">
       <div className="text-center max-w-lg space-y-6">
         <div className="animate-fade-in-up" style={{ animationDelay: "0s" }}>
           <p className="text-sm font-semibold text-sky-500">404</p>

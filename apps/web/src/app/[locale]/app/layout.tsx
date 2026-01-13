@@ -14,7 +14,7 @@ export default function DefaultLayout({ children }: { children: ReactNode }) {
       <Header />
       <div className="flex h-[calc(100vh-69px)]">
         <Sidebar onItemClick={() => setShowProfile(false)} />
-        <main className="w-full flex-2 overflow-y-auto p-4 z-10">{children}</main>
+        <div className="w-full flex-2 overflow-y-auto z-10">{children}</div>
       </div>
     </div>
   );

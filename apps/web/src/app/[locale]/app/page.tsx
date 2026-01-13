@@ -3,5 +3,9 @@
 import { RoomList } from "@/modules/dashboard/components/list-rooms/list-room";
 
 export default function Page() {
-  return <RoomList />;
+  return (
+    <main className="p-4">
+      <RoomList />
+    </main>
+  );
 }

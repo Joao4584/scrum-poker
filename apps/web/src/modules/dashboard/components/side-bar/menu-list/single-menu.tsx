@@ -36,7 +36,7 @@ const SingleMenu: React.FC<SingleMenuProps> = ({ route, isActive, router, basePa
       ) : minimized ? (
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="flex w-full mt-1 py-3 px-6">
+            <div className="flex w-full mt-1 py-3 px-5">
               <span className="mr-3 icon-menu-svg">
                 <route.icon />
               </span>

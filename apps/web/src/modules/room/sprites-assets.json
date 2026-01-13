@@ -1,0 +1,18 @@
+{
+  "jerry": {
+    "walk": "/sprites/jerry_32x32/jerry_walk.png",
+    "idle": "/sprites/jerry_32x32/jerry_idle.png"
+  },
+  "steve": {
+    "walk": "/sprites/steve_32x32/steve_walk.png",
+    "idle": "/sprites/steve_32x32/steve_idle.png"
+  },
+  "mark": {
+    "walk": "/sprites/mark_32x32/mark_walk.png",
+    "idle": "/sprites/mark_32x32/mark_idle.png"
+  },
+  "sarah": {
+    "walk": "/sprites/sarah_32x32/sarah_walk.png",
+    "idle": "/sprites/sarah_32x32/sarah_idle.png"
+  }
+}
