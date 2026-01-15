@@ -51,7 +51,7 @@ function createPhaserGame({ parent, room }: CreatePhaserGameOptions) {
   });
 }
 
-export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, userId }) => {
+export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, userId, roomPublicId }) => {
   const gameRef = useRef<HTMLDivElement>(null);
   const phaserGameRef = useRef<ReturnType<typeof createPhaserGame> | null>(null);
   const roomRef = useRef<Room<PlaygroundState> | null>(null);
@@ -93,6 +93,7 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, userId }) => {
           name: identity.name,
           color: identity.color,
           skin,
+          roomPublicId,
         });
 
         if (cancelled) {
@@ -122,7 +123,7 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, userId }) => {
       phaserGameRef.current = null;
       setKeyboardToggle(undefined);
     };
-  }, [skin, userId]);
+  }, [skin, userId, roomPublicId]);
 
   if (error) return <div className="w-full h-full flex items-center justify-center text-sm text-red-200 bg-slate-900">{error}</div>;
 

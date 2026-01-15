@@ -66,7 +66,6 @@ export function LoginForm({
                 <Button
                   variant="outline"
                   className="w-full"
-                  disabled
                   onClick={() => handleSocialLogin("google")}
                 >
                   <Image

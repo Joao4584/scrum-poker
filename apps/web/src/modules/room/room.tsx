@@ -37,7 +37,7 @@ export default function RoomPage(props: RoomPageProps) {
           setGameFocus(true);
         }}
       >
-        <DynamicPhaserGame skin={skin} userId={userId} />
+        <DynamicPhaserGame skin={skin} userId={userId} roomPublicId={props.room.public_id} />
       </div>
       <UpdateNameCard />
       <FocusReturnButton />

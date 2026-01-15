@@ -45,7 +45,7 @@ export function ListContentDropDown(): ReactElement {
     setTheme(theme === "dark" ? "light" : "dark");
   };
   return (
-    <DropdownMenuContent align="end" sideOffset={12} flushCorner="top-right" className="w-64 mr-6">
+    <DropdownMenuContent align="end" sideOffset={12} flushCorner="top-right" className="w-64 mr-6 bg-card/70">
       <DropdownMenuLabel className="">Minha Conta</DropdownMenuLabel>
       <DropdownMenuSeparator />
       <DropdownMenuGroup>
@@ -81,10 +81,7 @@ export function ListContentDropDown(): ReactElement {
         <span>API</span>
       </DropdownMenuItem> */}
       <DropdownMenuSeparator />
-      <DropdownMenuItem
-        onClick={disconnectAuth}
-        className="rounded-bl-full dark:rounded-bl-xl rounded-br-full dark:rounded-br-xl"
-      >
+      <DropdownMenuItem onClick={disconnectAuth} className="rounded-bl-full dark:rounded-bl-xl rounded-br-full dark:rounded-br-xl">
         <LogOut className="mr-2 h-4 w-4" />
         <span>Desconectar</span>
       </DropdownMenuItem>
