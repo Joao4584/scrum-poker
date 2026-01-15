@@ -93,7 +93,7 @@ export function handlePlaygroundJoin(room: Room<PlaygroundState>, client: Client
     "[playground] join",
     room.roomId,
     client.sessionId,
-    "userId:",
+    "publicId:",
     player.id,
     "name:",
     player.name,

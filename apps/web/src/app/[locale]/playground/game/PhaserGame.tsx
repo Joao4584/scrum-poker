@@ -181,7 +181,7 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, userId, botCount }
       phaserGameRef.current = null;
       setKeyboardToggle(undefined);
     };
-  }, []);
+  }, [botCount, skin, userId]);
 
   if (error) {
     return (

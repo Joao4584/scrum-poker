@@ -9,6 +9,7 @@ import { sanitizeChatMessage } from "./game/chat-config";
 import { ChatCard } from "./layout/chat-card";
 import { PingCard } from "./layout/ping-card";
 import { UpdateNameCard } from "./layout/update-name-card";
+import { useUser } from "@/modules/dashboard/hooks/use-user";
 
 const DynamicPhaserGame = dynamic(() => import("./game/PhaserGame").then((mod) => mod.PhaserGame), {
   ssr: false,
@@ -59,6 +60,7 @@ export default function TestPage() {
   const focusGame = useRoomStore((s) => s.focusGame);
   const keyboardToggle = useRoomStore((s) => s.keyboardToggle);
   const nearbyPlayers = useNearbyStore((s) => s.nearbyPlayers);
+  const { data: user } = useUser();
   const [isGameFocused, setIsGameFocused] = useState(true);
   const [skinParam] = useQueryState("skin");
   const [idParam] = useQueryState("id");
@@ -69,7 +71,7 @@ export default function TestPage() {
   const overlayRef = useRef<HTMLDivElement>(null);
 
   const skin = (skinParam ?? "steve").toString().toLowerCase();
-  const userId = idParam ? idParam.toString().slice(0, 32) : null;
+  const userId = user?.public_id ?? (idParam ? idParam.toString().slice(0, 32) : null);
   const botCount = (() => {
     const num = botParam ? Number(botParam) : 0;
     if (!Number.isFinite(num) || num <= 0) return 0;

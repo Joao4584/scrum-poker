@@ -122,7 +122,7 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, userId }) => {
       phaserGameRef.current = null;
       setKeyboardToggle(undefined);
     };
-  }, []);
+  }, [skin, userId]);
 
   if (error) return <div className="w-full h-full flex items-center justify-center text-sm text-red-200 bg-slate-900">{error}</div>;
 

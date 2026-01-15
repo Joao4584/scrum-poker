@@ -8,18 +8,26 @@ import { FocusReturnButton } from "./components/focus-return-button";
 import { NearbyPlayers } from "./components/nearby-players";
 import { PingCard } from "./components/ping-card";
 import { UpdateNameCard } from "./components/update-name-card";
+import { useUser } from "@/modules/dashboard/hooks/use-user";
+import type { RoomDetail } from "../dashboard/services/get-room-detail";
 
 const DynamicPhaserGame = dynamic(() => import("./PhaserGame").then((mod) => mod.PhaserGame), {
   ssr: false,
 });
 
-export default function TestPage() {
+interface RoomPageProps {
+  room: RoomDetail;
+}
+
+export default function RoomPage(props: RoomPageProps) {
   const [skinParam] = useQueryState("skin");
   const [idParam] = useQueryState("id");
   const { setGameFocus } = useRoomActions();
 
+  const { data: user } = useUser();
+
   const skin = (skinParam ?? "steve").toString().toLowerCase();
-  const userId = idParam ? idParam.toString().slice(0, 32) : null;
+  const userId = user?.public_id ?? (idParam ? idParam.toString().slice(0, 32) : null);
 
   return (
     <div className="w-full h-full flex justify-center items-center overflow-hidden relative">
