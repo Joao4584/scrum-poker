@@ -1,14 +1,13 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { FastifyRequest, FastifyReply, HookHandlerDoneFunction } from 'fastify';
+import '@fastify/cookie';
 import * as jwt from 'jsonwebtoken';
 import { UserTypeOrmRepository } from '@/infrastructure/repositories/user.repository';
 import { AppErrors } from '@/presentation/errors';
 
 @Injectable()
 export class JwtAuthMiddleware implements NestMiddleware {
-  constructor(
-    private readonly usersRepository: UserTypeOrmRepository,
-  ) {}
+  constructor(private readonly usersRepository: UserTypeOrmRepository) {}
 
   async use(
     req: FastifyRequest,
@@ -16,11 +15,18 @@ export class JwtAuthMiddleware implements NestMiddleware {
     next: HookHandlerDoneFunction,
   ) {
     const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw AppErrors.unauthorized('Token não fornecido');
+    const cookieToken =
+      typeof req.cookies?.['meta-session'] === 'string'
+        ? req.cookies['meta-session']
+        : undefined;
+    const token = authHeader?.startsWith('Bearer ')
+      ? authHeader.split(' ')[1]
+      : cookieToken;
+
+    if (!token) {
+      throw AppErrors.unauthorized('Token nÃ£o fornecido');
     }
 
-    const token = authHeader.split(' ')[1];
     try {
       const decoded: any = jwt.verify(
         token,
@@ -29,7 +35,6 @@ export class JwtAuthMiddleware implements NestMiddleware {
       console.log('Decoded Token:', decoded);
 
       const user = await this.usersRepository.findByPublicId(decoded.public_id);
-      console.log('Found User:', user);
 
       const lastLoginIat =
         user?.last_login_iat !== null && user?.last_login_iat !== undefined
@@ -40,7 +45,7 @@ export class JwtAuthMiddleware implements NestMiddleware {
         console.log(
           'Invalid or expired token: User not found or token expired',
         );
-        throw AppErrors.unauthorized('Token inválido ou expirado');
+        throw AppErrors.unauthorized('Token invÃ¡lido ou expirado');
       }
 
       req['user'] = user;
@@ -51,7 +56,7 @@ export class JwtAuthMiddleware implements NestMiddleware {
       next();
     } catch (error) {
       console.log('JWT Verification Error:', error.message);
-      throw AppErrors.unauthorized('Token inválido ou expirado');
+      throw AppErrors.unauthorized('Token invÃ¡lido ou expirado');
     }
   }
 }

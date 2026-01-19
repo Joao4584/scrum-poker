@@ -1,4 +1,24 @@
-import { Controller, Post, Body, Get, Param, Delete, HttpCode, HttpStatus, Inject, Query } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  Inject,
+  Query,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ValidationRequestPipe } from '@/shared/pipes/validation-request.pipe';
 import { CreateRoomRequest } from '@/presentation/requests/room/create-room.request';
 import { ListRecentRoomsQuery } from '@/presentation/requests/room/list-recent-rooms.request';
@@ -10,7 +30,10 @@ import { ToggleRoomFavoriteUseCase } from '@/application/room/toggle-room-favori
 import { User as UserEntity } from '@/infrastructure/entities/user.entity';
 import { User } from '@/presentation/decorators/user.decorator';
 import { AppErrors } from '@/presentation/errors';
+import { RoomDocs } from './room.doc';
 
+@ApiTags(RoomDocs.tags)
+@ApiBearerAuth()
 @Controller('room')
 export class RoomController {
   constructor(
@@ -23,6 +46,9 @@ export class RoomController {
   ) {}
 
   @Post()
+  @ApiOperation(RoomDocs.create.operation)
+  @ApiBody(RoomDocs.create.body)
+  @ApiResponse(RoomDocs.create.response)
   async createRoom(@Body(ValidationRequestPipe) data: CreateRoomRequest, @User() user: UserEntity) {
     const room = await this.createRoomUseCase.execute({
       ...data,
@@ -34,11 +60,17 @@ export class RoomController {
   }
 
   @Get('recent')
+  @ApiOperation(RoomDocs.recent.operation)
+  @ApiQuery(RoomDocs.recent.query)
+  @ApiResponse(RoomDocs.recent.response)
   async getRecentRooms(@User() user: { id: number }, @Query(ValidationRequestPipe) query: ListRecentRoomsQuery) {
     return await this.listUserRoomsUseCase.execute(user.id, query);
   }
 
   @Get(':public_id')
+  @ApiOperation(RoomDocs.get.operation)
+  @ApiParam(RoomDocs.get.param)
+  @ApiResponse(RoomDocs.get.response)
   async getRoom(@Param('public_id') public_id: string) {
     const room = await this.getRoomUseCase.execute(public_id);
     if (!room) {
@@ -49,11 +81,17 @@ export class RoomController {
 
   @Delete(':public_id')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation(RoomDocs.remove.operation)
+  @ApiParam(RoomDocs.remove.param)
+  @ApiResponse(RoomDocs.remove.response)
   async deleteRoom(@Param('public_id') public_id: string) {
     await this.deleteRoomUseCase.execute(public_id);
   }
 
   @Post(':public_id/favorite')
+  @ApiOperation(RoomDocs.favorite.operation)
+  @ApiParam(RoomDocs.favorite.param)
+  @ApiResponse(RoomDocs.favorite.response)
   async toggleFavoriteRoom(
     @Param('public_id') public_id: string,
     @User() user: UserEntity,
@@ -68,3 +106,4 @@ export class RoomController {
     };
   }
 }
+

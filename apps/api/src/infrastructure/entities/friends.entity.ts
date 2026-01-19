@@ -31,10 +31,13 @@ export class Friends {
   @UpdateDateColumn({ name: 'updated_at' })
   updated_at: Date;
 
-  @DeleteDateColumn({ type: 'timestamp', nullable: true, name: 'deleted_at' })
+  @DeleteDateColumn({ type: 'timestamp', nullable: true, name: 'deleted_at' })  
   deleted_at?: Date;
 
-  @ManyToOne(() => User, (user) => user.friendsSent, { onDelete: 'CASCADE' })
+  @Column({ type: 'timestamp', nullable: true, name: 'accepted_at' })
+  accepted_at?: Date;
+
+  @ManyToOne(() => User, (user) => user.friendsSent, { onDelete: 'CASCADE' })   
   @JoinColumn({ name: 'user_id' })
   user: User;
 

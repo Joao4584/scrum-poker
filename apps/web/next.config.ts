@@ -12,10 +12,8 @@ const nextConfig: NextConfig = {
   },
   images: {
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'avatars.githubusercontent.com',
-      },
+      { protocol: 'https', hostname: '**', pathname: '/**' },
+      { protocol: 'http', hostname: '**', pathname: '/**' },
     ],
   },
   async rewrites() {
@@ -29,3 +27,4 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+

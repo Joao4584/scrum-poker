@@ -35,18 +35,18 @@ export const routeDashboardConfig: RouteDefinitionConfig[] = [
     icon: Clock8,
     path: "/",
   },
-  {
-    titleKey: "dashboard.menu.friends",
-    fallback: "friends",
-    icon: Users,
-    path: "/friends",
-  },
-  {
-    titleKey: "dashboard.menu.trash",
-    fallback: "trash",
-    icon: Trash2,
-    path: "/trash",
-  },
+  // {
+  //   titleKey: "dashboard.menu.friends",
+  //   fallback: "friends",
+  //   icon: Users,
+  //   path: "/friends",
+  // },
+  // {
+  //   titleKey: "dashboard.menu.trash",
+  //   fallback: "trash",
+  //   icon: Trash2,
+  //   path: "/trash",
+  // },
 ];
 
 export function getDashboardRoutes(t: (key: string, params?: Record<string, unknown>) => string): RouteDefinition[] {

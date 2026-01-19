@@ -20,7 +20,7 @@ export function Header({ onSearch }: HeaderProps) {
         </div>
 
         {/* Search */}
-        <div className="flex-1 max-w-md">
+        {/* <div className="flex-1 max-w-md">
           <div className="relative">
             <Input
               type="text"
@@ -36,7 +36,7 @@ export function Header({ onSearch }: HeaderProps) {
               Ctrl K
             </span>
           </div>
-        </div>
+        </div> */}
 
         {/* Icons */}
         <div className="flex items-center gap-1">

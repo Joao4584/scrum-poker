@@ -1,5 +1,6 @@
 import { IsString, IsOptional, MinLength, IsEnum, IsIn } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { VotingScale } from '@/shared/enums/voting-scale.enum';
 
 export interface CreateRoomDto {
@@ -10,16 +11,19 @@ export interface CreateRoomDto {
 }
 
 export class CreateRoomRequest implements CreateRoomDto {
+  @ApiProperty()
   @IsString()
   @MinLength(3, {
     message: 'O nome da sala deve ter pelo menos 3 caracteres.',
   })
   name: string;
 
+  @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   description?: string;
 
+  @ApiProperty({ type: Boolean })
   @Transform(({ value }) => {
     if (value === 1 || value === '1' || value === true) {
       return true;
@@ -29,6 +33,7 @@ export class CreateRoomRequest implements CreateRoomDto {
   @IsIn([0, 1, true, false])
   public: boolean;
 
+  @ApiPropertyOptional({ enum: VotingScale })
   @IsOptional()
   @IsEnum(VotingScale, {
     message: `A escala de votação deve ser uma das seguintes: ${Object.values(

@@ -21,10 +21,7 @@ export function Sidebar({ onItemClick, basePath = "/app" }: SidebarProps) {
 
   return (
     <aside
-      className={cn(
-        "bg-card/40 border-r border-border relative top-0 h-full overflow-y-auto transition-[width] duration-200",
-        minimized ? "w-16" : "w-72",
-      )}
+      className={cn("bg-card/40 border-r border-border relative top-0 h-full overflow-y-auto transition-[width] duration-200", minimized ? "w-16" : "w-72")}
     >
       <nav className="flex-1 py-3 space-y-1 ">
         <div className="flex justify-center py-2">

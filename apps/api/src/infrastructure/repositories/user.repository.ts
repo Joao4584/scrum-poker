@@ -57,7 +57,7 @@ export class UserTypeOrmRepository {
     return user;
   }
 
-  async findByIntegration(data: IntegrationUser): Promise<User | null> {
+  async findByIntegration(data: IntegrationUser): Promise<User | null> {        
     const { type, id } = data;
     if (!id) {
       return null;
@@ -71,6 +71,17 @@ export class UserTypeOrmRepository {
 
     const user = await this.userRepository.findOne(query);
     return user;
+  }
+
+  async searchByName(term: string, limit = 10): Promise<User[]> {
+    return await this.userRepository
+      .createQueryBuilder('user')
+      .select(['user.public_id', 'user.name', 'user.email', 'user.avatar_url'])
+      .where('user.name ILIKE :term OR user.email ILIKE :term', {
+        term: `%${term}%`,
+      })
+      .take(limit)
+      .getMany();
   }
 
   async exists(user_id: number): Promise<boolean> {

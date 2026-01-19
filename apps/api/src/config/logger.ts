@@ -2,6 +2,10 @@ import { ConsoleLogger } from '@nestjs/common';
 import chalk from 'chalk';
 
 export class CustomLogger extends ConsoleLogger {
+  constructor(context?: string) {
+    super(context, { timestamp: true });
+  }
+
   log(message: any, context?: string) {
     super.log(chalk.greenBright(message), context);
   }
