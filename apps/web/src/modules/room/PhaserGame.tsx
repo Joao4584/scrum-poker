@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import * as Phaser from "phaser";
 import { Client, type Room } from "colyseus.js";
 import type { PlaygroundState } from "./@types/player";
-import { useRoomStore } from "./store/room-store";
+import { useRoomStore } from "./stores/room-store";
 import { buildIdentity } from "./utils/identity";
 import { resolveServerUrl } from "./utils/server-url";
 import { MainScene } from "./scenes/MainScene";

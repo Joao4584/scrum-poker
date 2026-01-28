@@ -31,6 +31,7 @@ import {
 } from "@/modules/shared/ui/dropdown-menu";
 import { deleteCookie } from "cookies-next";
 import { storageKey } from "@/modules/shared/config/storage-key";
+import { ProfileCharacterSelect } from "./profile-character-select";
 
 export function ListContentDropDown(): ReactElement {
   const { theme, setTheme } = useTheme();
@@ -46,6 +47,8 @@ export function ListContentDropDown(): ReactElement {
   };
   return (
     <DropdownMenuContent align="end" sideOffset={12} flushCorner="top-right" className="w-64 mr-6 bg-card/70">
+      <ProfileCharacterSelect />
+      <DropdownMenuSeparator />
       <DropdownMenuLabel className="">Minha Conta</DropdownMenuLabel>
       <DropdownMenuSeparator />
       <DropdownMenuGroup>

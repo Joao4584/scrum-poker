@@ -21,7 +21,7 @@ import {
   togglePlayerRadius,
 } from "@/modules/shared/config/phaser-js/scenes/helpers/player-radius";
 import { getNearbyPlayers } from "@/modules/shared/config/phaser-js/scenes/helpers/proximity";
-import { clearNearbyPlayers, setNearbyPlayers } from "../store/nearby-store";
+import { clearNearbyPlayers, setNearbyPlayers } from "../stores/nearby-store";
 
 export class MainScene extends Phaser.Scene {
   private player!: Player;
@@ -57,11 +57,7 @@ export class MainScene extends Phaser.Scene {
     this.floorLayer = floorLayer;
     this.colliderLayer = colliderLayer;
 
-    this.worldBounds = MapManager.getWorldBounds(
-      map,
-      [floorLayer, colliderLayer, wallLayer, wallTopLayer, blocksLayer],
-      4,
-    );
+    this.worldBounds = MapManager.getWorldBounds(map, [floorLayer, colliderLayer, wallLayer, wallTopLayer, blocksLayer], 4);
 
     const center = new Phaser.Math.Vector2(map.widthInPixels / 2, map.heightInPixels / 2);
     const spawnFromMap = MapManager.findSpawnOnFloor(floorLayer, colliderLayer) ?? this.findNearestWalkable(center.x, center.y) ?? center;

@@ -1,12 +1,6 @@
 "use client";
 
-import React, {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useState,
-} from "react";
+import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { Star } from "lucide-react";
@@ -23,14 +17,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/modules/shared/ui/alert-dialog";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/modules/shared/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/modules/shared/ui/dialog";
 import { VotingScale } from "@/modules/shared/enums/voting-scale.enum";
 import { toBRFormat } from "@/modules/shared/utils/date-formatter";
 import type { RoomListItem } from "@/modules/dashboard/services/get-rooms";
@@ -43,18 +30,13 @@ export type DetailsRoomHandle = {
   close: () => void;
 };
 
-const getVotingScaleLabel = (
-  value: RoomListItem["voting_scale"] | null | undefined,
-) => {
+const getVotingScaleLabel = (value: RoomListItem["voting_scale"] | null | undefined) => {
   if (value === VotingScale.FIBONACCI) return "Fibonacci";
   if (value === VotingScale.POWER_OF_2) return "Power of 2";
   return "Sem escala";
 };
 
-export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(
-  _props,
-  ref,
-) {
+export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(_props, ref) {
   const router = useRouter();
   const params = useParams<{ locale?: string }>();
   const locale = params?.locale ? `/${params.locale}` : "";
@@ -68,14 +50,8 @@ export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(
   const roomsQueries = queryClient.getQueriesData<RoomListItem[]>({
     queryKey: ["rooms:list"],
   });
-  const rooms = useMemo(
-    () => roomsQueries.flatMap(([, data]) => data ?? []),
-    [roomsQueries],
-  );
-  const previewRoom = useMemo(
-    () => rooms.find((item) => item.public_id === publicId),
-    [rooms, publicId],
-  );
+  const rooms = useMemo(() => roomsQueries.flatMap(([, data]) => data ?? []), [roomsQueries]);
+  const previewRoom = useMemo(() => rooms.find((item) => item.public_id === publicId), [rooms, publicId]);
   const { data: detailRoom, isLoading } = useDetailRoom(publicId, open);
 
   const roomName = detailRoom?.name ?? previewRoom?.name ?? "Sala";
@@ -101,9 +77,7 @@ export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(
     setIsDeleting(true);
     setDeleteError(null);
     roomQueries.forEach(([key]) => {
-      queryClient.setQueryData<RoomListItem[]>(key, (current) =>
-        current?.filter((room) => room.public_id !== deletingId),
-      );
+      queryClient.setQueryData<RoomListItem[]>(key, (current) => current?.filter((room) => room.public_id !== deletingId));
     });
     setOpen(false);
     setPublicId(null);
@@ -147,11 +121,7 @@ export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(
     setIsFavorite(optimisticValue);
     roomQueries.forEach(([key]) => {
       queryClient.setQueryData<RoomListItem[]>(key, (current) =>
-        current?.map((room) =>
-          room.public_id === togglingId
-            ? { ...room, is_favorite: optimisticValue }
-            : room,
-        ),
+        current?.map((room) => (room.public_id === togglingId ? { ...room, is_favorite: optimisticValue } : room)),
       );
     });
 
@@ -160,11 +130,7 @@ export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(
       setIsFavorite(result.liked);
       roomQueries.forEach(([key]) => {
         queryClient.setQueryData<RoomListItem[]>(key, (current) =>
-          current?.map((room) =>
-            room.public_id === togglingId
-              ? { ...room, is_favorite: result.liked }
-              : room,
-          ),
+          current?.map((room) => (room.public_id === togglingId ? { ...room, is_favorite: result.liked } : room)),
         );
       });
       await queryClient.invalidateQueries({ queryKey: ["rooms:list"] });
@@ -173,9 +139,7 @@ export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(
         queryClient.setQueryData<RoomListItem[]>(key, data);
       });
       setIsFavorite(Boolean(previewRoom?.is_favorite));
-      setFavoriteError(
-        "Nao foi possivel atualizar o favorito. Tente novamente.",
-      );
+      setFavoriteError("Nao foi possivel atualizar o favorito. Tente novamente.");
     } finally {
       setIsTogglingFavorite(false);
     }
@@ -213,35 +177,22 @@ export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(
     >
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>
-            {isLoading ? <Skeleton className="h-6 w-48" /> : roomName}
-          </DialogTitle>
-          <DialogDescription>
-            {isLoading
-              ? "Carregando informacoes da sala..."
-              : "Informacoes da sala."}
-          </DialogDescription>
+          <DialogTitle>{isLoading ? <Skeleton className="h-6 w-48" /> : roomName}</DialogTitle>
+          <DialogDescription>{isLoading ? "Carregando informacoes da sala..." : "Informacoes da sala."}</DialogDescription>
         </DialogHeader>
         <div className="space-y-5">
           {isLoading ? (
             <Skeleton className="h-48 w-full rounded-md" />
           ) : (
             <div className="h-48 w-full overflow-hidden rounded-md border border-border">
-              <img
-                src="/banners/auth.gif"
-                alt={`Imagem da sala ${roomName}`}
-                className="h-full w-full object-cover"
-              />
+              <img src="/banners/auth.gif" alt={`Imagem da sala ${roomName}`} className="h-full w-full object-cover" />
             </div>
           )}
           {isLoading ? (
             <div className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
                 {Array.from({ length: 5 }).map((_, index) => (
-                  <div
-                    key={`detail-room-skeleton-${index}`}
-                    className="space-y-2"
-                  >
+                  <div key={`detail-room-skeleton-${index}`} className="space-y-2">
                     <Skeleton className="h-3 w-20" />
                     <Skeleton className="h-4 w-32" />
                   </div>
@@ -257,97 +208,51 @@ export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(
             <>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1">
-                  <p className="text-xs uppercase text-muted-foreground">
-                    Criacao
-                  </p>
-                  <p className="text-sm font-medium">
-                    {createdAt ? toBRFormat(createdAt) : "-"}
-                  </p>
+                  <p className="text-xs uppercase text-muted-foreground">Criacao</p>
+                  <p className="text-sm font-medium">{createdAt ? toBRFormat(createdAt) : "-"}</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs uppercase text-muted-foreground">
-                    Status
-                  </p>
+                  <p className="text-xs uppercase text-muted-foreground">Status</p>
                   <p className="text-sm font-medium">{status}</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs uppercase text-muted-foreground">
-                    Visibilidade
-                  </p>
-                  <p className="text-sm font-medium">
-                    {isPublic ? "Publica" : "Privada"}
-                  </p>
+                  <p className="text-xs uppercase text-muted-foreground">Visibilidade</p>
+                  <p className="text-sm font-medium">{isPublic ? "Publica" : "Privada"}</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs uppercase text-muted-foreground">
-                    Escala
-                  </p>
-                  <p className="text-sm font-medium">
-                    {getVotingScaleLabel(votingScale)}
-                  </p>
+                  <p className="text-xs uppercase text-muted-foreground">Escala</p>
+                  <p className="text-sm font-medium">{getVotingScaleLabel(votingScale)}</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs uppercase text-muted-foreground">
-                    Participantes
-                  </p>
+                  <p className="text-xs uppercase text-muted-foreground">Participantes</p>
                   <p className="text-sm font-medium">{participantsCount}</p>
                 </div>
               </div>
               <div className="space-y-2">
-                <p className="text-xs uppercase text-muted-foreground">
-                  Descricao
-                </p>
-                <p className="text-sm text-foreground">
-                  {description ? description : "Sem descricao."}
-                </p>
+                <p className="text-xs uppercase text-muted-foreground">Descricao</p>
+                <p className="text-sm text-foreground">{description ? description : "Sem descricao."}</p>
               </div>
             </>
           )}
         </div>
-        {favoriteError ? (
-          <p className="text-sm text-destructive">{favoriteError}</p>
-        ) : null}
+        {favoriteError ? <p className="text-sm text-destructive">{favoriteError}</p> : null}
         <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            disabled={isLoading || !publicId || isTogglingFavorite}
-            onClick={handleToggleFavorite}
-            className="gap-2"
-          >
-            <Star
-              className={
-                isFavorite
-                  ? "h-4 w-4 fill-amber-500 text-amber-500"
-                  : "h-4 w-4 fill-transparent text-muted-foreground"
-              }
-            />
-            {isTogglingFavorite
-              ? "Atualizando..."
-              : isFavorite
-                ? "Desfavoritar"
-                : "Favoritar"}
+          <Button type="button" variant="outline" disabled={isLoading || !publicId || isTogglingFavorite} onClick={handleToggleFavorite} className="gap-2">
+            <Star className={isFavorite ? "h-4 w-4 fill-amber-500 text-amber-500" : "h-4 w-4 fill-transparent text-muted-foreground"} />
+            {isTogglingFavorite ? "Atualizando..." : isFavorite ? "Desfavoritar" : "Favoritar"}
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button
-                type="button"
-                variant="destructive"
-                disabled={isLoading || !publicId}
-              >
-                Excluir sala
+              <Button type="button" variant="destructive" disabled={isLoading || !publicId}>
+                Excluir
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Excluir sala?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Essa acao remove a sala permanentemente.
-                </AlertDialogDescription>
+                <AlertDialogDescription>Essa acao remove a sala permanentemente.</AlertDialogDescription>
               </AlertDialogHeader>
-              {deleteError ? (
-                <p className="text-sm text-destructive">{deleteError}</p>
-              ) : null}
+              {deleteError ? <p className="text-sm text-destructive">{deleteError}</p> : null}
               <AlertDialogFooter>
                 <AlertDialogCancel asChild>
                   <Button type="button" variant="outline">
@@ -355,12 +260,7 @@ export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(
                   </Button>
                 </AlertDialogCancel>
                 <AlertDialogAction asChild>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    onClick={handleDelete}
-                    disabled={isDeleting}
-                  >
+                  <Button type="button" variant="destructive" onClick={handleDelete} disabled={isDeleting}>
                     {isDeleting ? "Excluindo..." : "Excluir sala"}
                   </Button>
                 </AlertDialogAction>

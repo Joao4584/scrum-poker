@@ -2,8 +2,8 @@
 
 import { CHAT_MESSAGE_MAX_CHARS } from "@/modules/shared/config/phaser-js/chat-config";
 import { useRoomActions } from "../hooks/use-room-actions";
-import { useRoomStore } from "../store/room-store";
-import { useRoomUiStore } from "../store/room-ui-store";
+import { useRoomStore } from "../stores/room-store";
+import { useRoomUiStore } from "../stores/room-ui-store";
 
 export function ChatCard() {
   const room = useRoomStore((s) => s.room);

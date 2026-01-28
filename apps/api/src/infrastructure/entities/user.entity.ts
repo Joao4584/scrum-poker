@@ -65,6 +65,9 @@ export class User {
   @Column({ name: 'last_online', type: 'timestamp', nullable: true })
   last_online?: Date;
 
+  @Column({ name: 'character_key', type: 'varchar', length: 15, nullable: true })
+  character_key?: string;
+
   @CreateDateColumn({ name: 'created_at' })
   created_at: Date;
 

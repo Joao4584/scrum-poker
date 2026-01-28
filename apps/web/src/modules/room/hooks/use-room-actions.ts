@@ -1,6 +1,6 @@
 import { sanitizeChatMessage } from "@/modules/shared/config/phaser-js/chat-config";
-import { useRoomStore } from "../store/room-store";
-import { useRoomUiStore } from "../store/room-ui-store";
+import { useRoomStore } from "../stores/room-store";
+import { useRoomUiStore } from "../stores/room-ui-store";
 
 export function useRoomActions() {
   const room = useRoomStore((s) => s.room);

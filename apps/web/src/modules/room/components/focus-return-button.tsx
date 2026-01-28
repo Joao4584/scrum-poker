@@ -1,7 +1,7 @@
 "use client";
 
 import { useRoomActions } from "../hooks/use-room-actions";
-import { useRoomUiStore } from "../store/room-ui-store";
+import { useRoomUiStore } from "../stores/room-ui-store";
 
 export function FocusReturnButton() {
   const isGameFocused = useRoomUiStore((s) => s.isGameFocused);
