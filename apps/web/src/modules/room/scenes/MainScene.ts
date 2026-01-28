@@ -53,11 +53,15 @@ export class MainScene extends Phaser.Scene {
   }
 
   create() {
-    const { map, colliderLayer, floorLayer, wallLayer, wallTopLayer } = MapManager.createMap(this);
+    const { map, colliderLayer, floorLayer, wallLayer, wallTopLayer, blocksLayer } = MapManager.createMap(this);
     this.floorLayer = floorLayer;
     this.colliderLayer = colliderLayer;
 
-    this.worldBounds = MapManager.getWorldBounds(map, [floorLayer, colliderLayer, wallLayer, wallTopLayer], 4);
+    this.worldBounds = MapManager.getWorldBounds(
+      map,
+      [floorLayer, colliderLayer, wallLayer, wallTopLayer, blocksLayer],
+      4,
+    );
 
     const center = new Phaser.Math.Vector2(map.widthInPixels / 2, map.heightInPixels / 2);
     const spawnFromMap = MapManager.findSpawnOnFloor(floorLayer, colliderLayer) ?? this.findNearestWalkable(center.x, center.y) ?? center;
@@ -82,7 +86,8 @@ export class MainScene extends Phaser.Scene {
     this.cameras.main.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
     this.cameras.main.roundPixels = true;
     this.cameras.main.setRoundPixels(true);
-    this.cameras.main.setBackgroundColor("#0b1220");
+    const background = (this.game.registry.get("room-background") as string | undefined) ?? "#0b1220";
+    this.cameras.main.setBackgroundColor(background);
 
     const { width: gameWidth, height: gameHeight } = this.scale;
     const mapWidth = bounds.width;
@@ -92,8 +97,7 @@ export class MainScene extends Phaser.Scene {
     const zoomY = gameHeight / mapHeight;
     const fitZoom = Math.max(zoomX, zoomY);
     const rawZoom = Phaser.Math.Clamp(fitZoom * 1.25, 0.4, 2);
-    // Snap zoom to quarter steps to avoid subpixel gaps between tiles
-    const zoom = Math.max(0.5, Math.round(rawZoom * 4) / 4);
+    const zoom = Math.max(1, Math.round(rawZoom));
 
     this.cameras.main.setZoom(zoom);
 

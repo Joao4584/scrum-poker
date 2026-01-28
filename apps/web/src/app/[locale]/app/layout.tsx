@@ -1,8 +1,8 @@
 "use client";
 
-import { Header } from "@/modules/dashboard/components/header/header";
+import { Header } from "@/modules/dashboard/components/layout/header/header";
 import { PatternBackgroundContainer } from "@/modules/shared/components/pattern-background-container";
-import { Sidebar } from "@/modules/dashboard/components/side-bar/side-bar";
+import { Sidebar } from "@/modules/dashboard/components/layout/side-bar/side-bar";
 import { useState, type ReactNode } from "react";
 
 export default function DefaultLayout({ children }: { children: ReactNode }) {

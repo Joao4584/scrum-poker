@@ -10,9 +10,14 @@ function randomName() {
   return `Guest-${Math.floor(Math.random() * 9_000 + 1_000)}`;
 }
 
-export function buildIdentity(userId?: string | null): Identity {
+export function buildIdentity(userId?: string | null, displayName?: string | null): Identity {
   const id = userId ?? null;
-  const name = id ? `User-${id}` : randomName();
+  const normalizedName = displayName?.trim();
+  const name = normalizedName && normalizedName.length > 0
+    ? normalizedName
+    : id
+      ? `User-${id}`
+      : randomName();
   const colorFromId = () => {
     if (!id) return undefined;
     let hash = 0;

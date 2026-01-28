@@ -3,7 +3,7 @@
 import React from "react";
 import { usePathname } from "next/navigation";
 import { Divider } from "@/modules/shared/ui/divider";
-import { CreateRoom } from "../create-room/create-room";
+import { CreateRoom } from "../../create-room/create-room";
 import MenuList from "./menu-list/menu";
 import { Button } from "@/modules/shared/ui/button";
 import { cn } from "@/modules/shared/utils";

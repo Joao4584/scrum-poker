@@ -126,6 +126,10 @@ export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(
 
   const handleEnterRoom = () => {
     if (!publicId) return;
+    setOpen(false);
+    setPublicId(null);
+    setDeleteError(null);
+    setFavoriteError(null);
     router.push(`${locale}/app/room/${publicId}`);
   };
 

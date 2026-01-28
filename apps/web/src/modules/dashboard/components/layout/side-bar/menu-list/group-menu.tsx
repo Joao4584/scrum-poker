@@ -39,28 +39,15 @@ const GroupMenu: React.FC<GroupMenuProps> = ({ group, activeSegment, basePath, r
                 {group.groupName}
               </TooltipContent>
             </Tooltip>
-            {!minimized ? (
-              <span className="flex-1 mxd:hidden">{group.groupName}</span>
-            ) : null}
-            {!minimized ? (
-              <span className="ml-3 mxd:hidden mt-0.5 icon-menu-svg">
-                {isOpen ? <ChevronsDown /> : <ChevronsRight />}
-              </span>
-            ) : null}
+            {!minimized ? <span className="flex-1 mxd:hidden">{group.groupName}</span> : null}
+            {!minimized ? <span className="ml-3 mxd:hidden mt-0.5 icon-menu-svg">{isOpen ? <ChevronsDown /> : <ChevronsRight />}</span> : null}
           </div>
         </motion.div>
       </li>
       {isOpen &&
         group.routes &&
         group.routes.map((route, index) => (
-          <SingleMenu
-            key={index}
-            route={route}
-            className="pl-3"
-            isActive={"/" + activeSegment === route.path}
-            router={router}
-            basePath={basePath}
-          />
+          <SingleMenu key={index} route={route} className="pl-3" isActive={"/" + activeSegment === route.path} router={router} basePath={basePath} />
         ))}
     </React.Fragment>
   );

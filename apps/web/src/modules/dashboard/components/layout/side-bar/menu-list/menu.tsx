@@ -1,12 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/locales/client";
-import {
-  RouteDefinition,
-  RouteProps,
-  RouteGroup,
-  getDashboardRoutes,
-} from "@/modules/dashboard/routes/dashboard.routes";
+import { RouteDefinition, RouteProps, RouteGroup, getDashboardRoutes } from "@/modules/dashboard/routes/dashboard.routes";
 import { motion } from "framer-motion";
 import { cn } from "@/modules/shared/utils";
 import { useSidebarSizeStore } from "@/modules/dashboard/stores/sidebar-size.store";
@@ -26,7 +21,7 @@ export default function MenuList({ currentPath, basePath }: MenuListProps) {
     const relative = (currentPath.split(`${normalizedBasePath}/`)[1] || "").split("/")[0];
     return relative;
   }, [currentPath, normalizedBasePath]);
-  const routes = useMemo(() => getDashboardRoutes(t), [t]);
+  const routes = useMemo(() => getDashboardRoutes(t as any), [t]);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const minimized = useSidebarSizeStore((state) => state.minimized);
 
@@ -46,10 +41,7 @@ export default function MenuList({ currentPath, basePath }: MenuListProps) {
     <div className="mt-4 relative">
       {!minimized && activeIndex !== null && (
         <motion.span
-          className={cn(
-            "absolute left-0 bg-sky-600 w-1.5 h-10 rounded-br-xl rounded-tr-xl shadow-sky-700 shadow-md",
-            minimized ? "mt-0" : "mt-1.5 mxd:mt-0",
-          )}
+          className={cn("absolute left-0 bg-sky-600 w-1.5 h-10 rounded-br-xl rounded-tr-xl shadow-sky-700 shadow-md", minimized ? "mt-0" : "mt-1.5 mxd:mt-0")}
           layoutId="activeIndicator"
           initial={{ y: 0 }}
           animate={{ y: activeIndex * 48 }}
@@ -60,19 +52,9 @@ export default function MenuList({ currentPath, basePath }: MenuListProps) {
         {routes.map((route, i) => (
           <React.Fragment key={i}>
             {isRouteGroup(route) ? (
-              <GroupMenu
-                group={route as RouteGroup}
-                activeSegment={activeSegment}
-                basePath={normalizedBasePath}
-                router={router}
-              />
+              <GroupMenu group={route as RouteGroup} activeSegment={activeSegment} basePath={normalizedBasePath} router={router} />
             ) : (
-              <SingleMenu
-                route={route as RouteProps}
-                isActive={"/" + activeSegment === route.path}
-                basePath={normalizedBasePath}
-                router={router}
-              />
+              <SingleMenu route={route as RouteProps} isActive={"/" + activeSegment === route.path} basePath={normalizedBasePath} router={router} />
             )}
           </React.Fragment>
         ))}

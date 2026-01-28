@@ -10,6 +10,7 @@ import { resolveServerUrl } from "./utils/server-url";
 import { MainScene } from "./scenes/MainScene";
 import Preloader from "./scenes/preloader";
 import type { CreatePhaserGameOptions, PhaserGameProps } from "./@types/phaser";
+import { useTheme } from "next-themes";
 
 const focusGame = (gameRef: React.RefObject<HTMLDivElement | null>) => {
   const canvas = gameRef.current?.querySelector("canvas");
@@ -19,9 +20,9 @@ const focusGame = (gameRef: React.RefObject<HTMLDivElement | null>) => {
   }
 };
 
-function createPhaserGame({ parent, room }: CreatePhaserGameOptions) {
+function createPhaserGame({ parent, room, backgroundColor }: CreatePhaserGameOptions) {
   return new Phaser.Game({
-    type: Phaser.AUTO,
+    type: Phaser.CANVAS,
     width: "100%",
     height: "100%",
     pixelArt: true,
@@ -45,13 +46,16 @@ function createPhaserGame({ parent, room }: CreatePhaserGameOptions) {
     callbacks: {
       postBoot: (game) => {
         game.registry.set("room", room);
+        if (backgroundColor) {
+          game.registry.set("room-background", backgroundColor);
+        }
         console.log("[phaser] booted, room set in registry");
       },
     },
   });
 }
 
-export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, userId, roomPublicId }) => {
+export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, userId, displayName, roomPublicId }) => {
   const gameRef = useRef<HTMLDivElement>(null);
   const phaserGameRef = useRef<ReturnType<typeof createPhaserGame> | null>(null);
   const roomRef = useRef<Room<PlaygroundState> | null>(null);
@@ -59,15 +63,45 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, userId, roomPublic
   const setRoom = useRoomStore((s) => s.setRoom);
   const setFocusGame = useRoomStore((s) => s.setFocusGame);
   const setKeyboardToggle = useRoomStore((s) => s.setKeyboardToggle);
+  const { resolvedTheme, theme } = useTheme();
+  const activeTheme = resolvedTheme ?? theme;
+  const backgroundColor = activeTheme === "light" ? "#4fbeff" : "#0b1220";
+
+  useEffect(() => {
+    const game = phaserGameRef.current;
+    if (game) {
+      game.registry.set("room-background", backgroundColor);
+      const scene = game.scene.getScene("game") as Phaser.Scene | null;
+      scene?.cameras?.main?.setBackgroundColor(backgroundColor);
+    }
+  }, [backgroundColor]);
+
+  useEffect(() => {
+    if (!gameRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+      const { width, height } = entry.contentRect;
+      const game = phaserGameRef.current;
+      if (game && width > 0 && height > 0) {
+        game.scale.resize(Math.floor(width), Math.floor(height));
+      }
+    });
+
+    observer.observe(gameRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
-
     const startGame = (room: Room<PlaygroundState>) => {
       if (phaserGameRef.current) return;
 
       console.log("[colyseus] joined", room.roomId, "session", room.sessionId);
-      phaserGameRef.current = createPhaserGame({ parent: gameRef.current, room });
+      phaserGameRef.current = createPhaserGame({ parent: gameRef.current, room, backgroundColor });
       setTimeout(() => focusGame(gameRef), 100);
       setFocusGame(() => () => focusGame(gameRef));
       setKeyboardToggle(() => (enabled: boolean) => {
@@ -87,7 +121,7 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, userId, roomPublic
     const connect = async () => {
       try {
         const client = new Client(resolveServerUrl());
-        const identity = buildIdentity(userId);
+        const identity = buildIdentity(userId, displayName);
         const room = await client.joinOrCreate<PlaygroundState>("playground", {
           id: identity.id ?? undefined,
           name: identity.name,
@@ -105,9 +139,13 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, userId, roomPublic
         setRoom(room);
         startGame(room);
       } catch (err) {
-        console.error("[colyseus] connection failed", err);
         if (!cancelled) {
-          setError("Não foi possível conectar ao game-server.");
+          const isAlreadyConnected = err instanceof Error && err.message.includes("ALREADY_CONNECTED");
+          if (!isAlreadyConnected) {
+            console.error("[colyseus] connection failed", err);
+          }
+          const message = isAlreadyConnected ? "Ja existe outra guia aberta nesta sala." : "Nao foi possivel conectar ao game-server.";
+          setError(message);
         }
       }
     };

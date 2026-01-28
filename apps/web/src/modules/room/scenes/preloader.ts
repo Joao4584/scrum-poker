@@ -9,9 +9,10 @@ export default class Preloader extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("room-wall", "/tiles/room_wall_32x32.png");
+    this.load.image("room_wall_32x32", "/tiles/room_wall_32x32.png");
     this.load.image("block_builder_32x32", "/tiles/block_builder_32x32.png");
-    this.load.tilemapTiledJSON("wall-room", "/tiles/wall-room.json");
+    this.load.image("Interiors_32x32", "/tiles/Interiors_32x32.png");
+    this.load.tilemapTiledJSON("wall-room", "/tiles/wall-room-v2.json");
 
     Object.entries(spriteAssets).forEach(([skin, paths]) => {
       this.load.spritesheet(`${skin}-walk`, paths.walk, {

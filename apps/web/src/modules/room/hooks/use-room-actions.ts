@@ -6,7 +6,6 @@ export function useRoomActions() {
   const room = useRoomStore((s) => s.room);
   const focusGame = useRoomStore((s) => s.focusGame);
   const keyboardToggle = useRoomStore((s) => s.keyboardToggle);
-  const name = useRoomUiStore((s) => s.name);
   const chatMessage = useRoomUiStore((s) => s.chatMessage);
   const lastChatAt = useRoomUiStore((s) => s.lastChatAt);
   const setChatMessage = useRoomUiStore((s) => s.setChatMessage);
@@ -26,12 +25,6 @@ export function useRoomActions() {
     }
   };
 
-  const updateName = () => {
-    const trimmed = name.trim();
-    if (!trimmed || !room) return;
-    room.send("rename", { name: trimmed });
-  };
-
   const sendChat = () => {
     const trimmed = sanitizeChatMessage(chatMessage);
     if (!trimmed || !room) return;
@@ -42,5 +35,5 @@ export function useRoomActions() {
     setLastChatAt(now);
   };
 
-  return { sendChat, setGameFocus, updateName };
+  return { sendChat, setGameFocus };
 }

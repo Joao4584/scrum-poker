@@ -4,35 +4,71 @@ export class MapManager {
   public static createMap(scene: Phaser.Scene) {
     const map = scene.make.tilemap({ key: "wall-room" });
 
-    const tileset1 = map.addTilesetImage("room-wall", "room-wall", 32, 32);
-    const tileset2 = map.addTilesetImage("block_builder_32x32", "block_builder_32x32", 32, 32);
+    map.addTilesetImage("block_builder_32x32", "block_builder_32x32", 32, 32);
+    map.addTilesetImage("room_wall_32x32", "room_wall_32x32", 32, 32);
+    map.addTilesetImage("Interiors_32x32", "Interiors_32x32", 32, 32);
 
-    const allTilesets = [tileset1, tileset2].filter(Boolean) as Phaser.Tilemaps.Tileset[];
+    const allTilesets = map.tilesets.filter((tileset) => Boolean(tileset.image));
 
-    const createIfExists = (name: string) => {
-      const idx = map.getLayerIndex(name);
-      if (idx === null || idx === -1) return null;
-      return map.createLayer(name, allTilesets, 0, 0);
+    const createIfExists = (names: string[]) => {
+      for (const name of names) {
+        const idx = map.getLayerIndex(name);
+        if (idx === null || idx === -1) continue;
+        return map.createLayer(name, allTilesets, 0, 0);
+      }
+      return null;
     };
 
-    const floorLayer = createIfExists("floor");
-    const wallLayer = createIfExists("wall/wall");
-    const wallTopLayer = createIfExists("wall/wall-top");
+    const floorLayer = createIfExists(["floor"]);
+    const wallLayer = createIfExists(["wall"]);
+    const wallTopLayer = createIfExists(["wall-top"]);
+    const blocksLayer = createIfExists(["blocks"]);
+
+    const alignLayerByName = (
+      layer: Phaser.Tilemaps.TilemapLayer | null,
+      layerName: string,
+      targetName: string,
+    ) => {
+      if (!layer) return;
+      const layerData = map.getLayer(layerName);
+      const targetData = map.getLayer(targetName);
+      if (!layerData || !targetData) return;
+      const deltaX = (layerData.startX - targetData.startX) * map.tileWidth;
+      const deltaY = (layerData.startY - targetData.startY) * map.tileHeight;
+      if (deltaX !== 0 || deltaY !== 0) {
+        layer.setPosition(deltaX, deltaY);
+      }
+    };
+
+    alignLayerByName(wallTopLayer, "wall-top", "wall");
+    alignLayerByName(wallTopLayer, "wall-top", "wall");
 
     floorLayer?.setDepth(0);
     wallLayer?.setDepth(1);
-    wallTopLayer?.setDepth(1 * 9999);
+    blocksLayer?.setDepth(3);
+    const overlayBaseDepth = 10000;
+    wallTopLayer?.setDepth(overlayBaseDepth);
 
     const cullPad = 4;
-    floorLayer?.setCullPadding(cullPad, cullPad);
-    wallLayer?.setCullPadding(cullPad, cullPad);
-    wallTopLayer?.setCullPadding(cullPad, cullPad);
+    const layers = [floorLayer, wallLayer, wallTopLayer, blocksLayer];
+    const normalizeLayer = (layer: Phaser.Tilemaps.TilemapLayer | null) => {
+      if (!layer) return;
+      layer.setScrollFactor(1, 1);
+      layer.setOrigin(0, 0);
+      layer.setPosition(0, 0);
+      if (layer.layer) {
+        layer.layer.parallaxX = 1;
+        layer.layer.parallaxY = 1;
+        layer.layer.x = 0;
+        layer.layer.y = 0;
+      }
+    };
+    layers.forEach((layer) => normalizeLayer(layer));
+    layers.forEach((layer) => layer?.setCullPadding(cullPad, cullPad));
     // Avoid aggressive culling to prevent edge seams
-    floorLayer?.setSkipCull(true);
-    wallLayer?.setSkipCull(true);
-    wallTopLayer?.setSkipCull(true);
+    layers.forEach((layer) => layer?.setSkipCull(true));
 
-    const collider = createIfExists("collider");
+    const collider = createIfExists(["collider", "objects/collider"]);
     collider?.setCollisionByExclusion([-1]);
     collider?.setVisible(false);
 
@@ -42,6 +78,7 @@ export class MapManager {
       floorLayer,
       wallLayer,
       wallTopLayer,
+      blocksLayer,
     };
   }
 
@@ -84,10 +121,7 @@ export class MapManager {
     return new Phaser.Geom.Rectangle(x - padX, y - padY, width + padX * 2, height + padY * 2);
   }
 
-  public static findSpawnOnFloor(
-    floorLayer: Phaser.Tilemaps.TilemapLayer | null | undefined,
-    colliderLayer?: Phaser.Tilemaps.TilemapLayer | null,
-  ) {
+  public static findSpawnOnFloor(floorLayer: Phaser.Tilemaps.TilemapLayer | null | undefined, colliderLayer?: Phaser.Tilemaps.TilemapLayer | null) {
     if (!floorLayer) {
       return new Phaser.Math.Vector2(0, 0);
     }
@@ -108,10 +142,7 @@ export class MapManager {
     });
 
     if (!walkableTiles.length) {
-      return new Phaser.Math.Vector2(
-        floorLayer.tilemap.widthInPixels / 2,
-        floorLayer.tilemap.heightInPixels / 2,
-      );
+      return new Phaser.Math.Vector2(floorLayer.tilemap.widthInPixels / 2, floorLayer.tilemap.heightInPixels / 2);
     }
 
     const selectedTile = Phaser.Utils.Array.GetRandom(walkableTiles);

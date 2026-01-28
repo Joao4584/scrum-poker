@@ -6,7 +6,7 @@ import { DropdownMenu, DropdownMenuTrigger } from "@/modules/shared/ui/dropdown-
 import { Skeleton } from "@/modules/shared/ui/skeleton";
 import { getCurrentGreating } from "@/modules/shared/utils/get-current-greeting";
 import { ListContentDropDown } from "./profile-content-dropdown";
-import { useUser } from "../../hooks/use-user";
+import { useUser } from "../../../hooks/use-user";
 
 interface UserProfileProps {
   className?: string;

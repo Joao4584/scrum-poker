@@ -32,6 +32,20 @@ export class PlaygroundRoom extends Room<PlaygroundState> {
     registerPlaygroundMessageHandlers(this, this.messageTimers);
   }
 
+  onAuth(_client: Client, options: PlaygroundJoinOptions) {
+    const publicId = options?.id;
+    if (!publicId) return true;
+
+    const hasDuplicate = Array.from(this.state.players.values()).some(
+      (player) => player.id === publicId,
+    );
+    if (hasDuplicate) {
+      throw new Error("ALREADY_CONNECTED");
+    }
+
+    return true;
+  }
+
   onJoin(client: Client, options: PlaygroundJoinOptions) {
     handlePlaygroundJoin(this, client, options);
   }
