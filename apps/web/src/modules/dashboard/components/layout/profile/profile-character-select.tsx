@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/modules/shared/ui/select";
 import spriteAssets from "@/app/[locale]/playground/game/sprites/sprites-assets.json";
 import { useCharacterStore } from "@/modules/room/stores/character.store";
+import { updateUserCharacter } from "@/modules/dashboard/services/update-user-character";
 
 const SPRITE_FRAME_SIZE = 32;
 const SPRITE_SHEET_WIDTH = 768;
@@ -34,10 +36,12 @@ function SpriteThumb({ src, label, size }: { src: string; label: string; size: n
 }
 
 export function ProfileCharacterSelect() {
+  const queryClient = useQueryClient();
   const spriteEntries = useMemo(() => Object.entries(spriteAssets), []);
   const { characterKey, setCharacterKey } = useCharacterStore();
   const fallbackKey = spriteEntries[0]?.[0] ?? "";
   const selectedCharacterKey = characterKey && spriteAssets[characterKey as keyof typeof spriteAssets] ? characterKey : fallbackKey;
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const selectedSprite = spriteAssets[selectedCharacterKey as keyof typeof spriteAssets];
   useEffect(() => {
@@ -46,10 +50,36 @@ export function ProfileCharacterSelect() {
     }
   }, [characterKey, selectedCharacterKey, setCharacterKey]);
 
+  const handleCharacterChange = async (nextKey: string) => {
+    if (!nextKey || nextKey === characterKey || isUpdating) {
+      return;
+    }
+
+    const previousKey = characterKey;
+    const previousUser = queryClient.getQueryData<{ character_key?: string | null }>(["user"]);
+
+    if (previousUser) {
+      queryClient.setQueryData(["user"], { ...previousUser, character_key: nextKey });
+    }
+    setCharacterKey(nextKey);
+    setIsUpdating(true);
+
+    try {
+      await updateUserCharacter({ character_key: nextKey });
+    } catch {
+      if (previousUser) {
+        queryClient.setQueryData(["user"], previousUser);
+      }
+      setCharacterKey(previousUser?.character_key ?? previousKey ?? fallbackKey);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   return (
     <div className="px-3 pt-3 pb-2">
       <p className="text-xs text-muted-foreground">Personagem</p>
-      <Select value={selectedCharacterKey} onValueChange={setCharacterKey}>
+      <Select value={selectedCharacterKey} onValueChange={handleCharacterChange} disabled={isUpdating}>
         <SelectTrigger className="mt-2 h-10 bg-secondary/70">
           <div className="flex items-center gap-2">
             {selectedSprite?.idle && <SpriteThumb src={selectedSprite.idle} label={selectedCharacterKey} size={32} />}

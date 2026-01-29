@@ -6,6 +6,7 @@ interface GetUserOutput {
   email: string;
   avatar_url: string;
   public_id: string;
+  character_key: string | null;
 }
 
 export async function getUser(): Promise<GetUserOutput> {
