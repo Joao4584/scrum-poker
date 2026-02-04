@@ -12,6 +12,14 @@ import Preloader from "./scenes/preloader";
 import type { CreatePhaserGameOptions, PhaserGameProps } from "./@types/phaser";
 import { useTheme } from "next-themes";
 
+const BASE_GAME_WIDTH = 1280;
+const BASE_GAME_HEIGHT = 720;
+const TILE_SIZE = 32;
+const USE_DYNAMIC_SCALE = process.env.NEXT_PUBLIC_PHASER_DYNAMIC_SCALE === "true";
+const USE_QUANTIZED_DYNAMIC = process.env.NEXT_PUBLIC_PHASER_DYNAMIC_SCALE_QUANTIZED !== "false";
+
+const quantizeToTile = (value: number) => Math.max(TILE_SIZE, Math.floor(value / TILE_SIZE) * TILE_SIZE);
+
 const focusGame = (gameRef: React.RefObject<HTMLDivElement | null>) => {
   const canvas = gameRef.current?.querySelector("canvas");
   if (canvas) {
@@ -21,16 +29,26 @@ const focusGame = (gameRef: React.RefObject<HTMLDivElement | null>) => {
 };
 
 function createPhaserGame({ parent, room, backgroundColor }: CreatePhaserGameOptions) {
+  const parentRect = parent?.getBoundingClientRect();
+  const rawInitialWidth = parentRect?.width ? Math.floor(parentRect.width) : BASE_GAME_WIDTH;
+  const rawInitialHeight = parentRect?.height ? Math.floor(parentRect.height) : BASE_GAME_HEIGHT;
+  const initialWidth =
+    USE_DYNAMIC_SCALE && USE_QUANTIZED_DYNAMIC ? quantizeToTile(rawInitialWidth) : rawInitialWidth;
+  const initialHeight =
+    USE_DYNAMIC_SCALE && USE_QUANTIZED_DYNAMIC ? quantizeToTile(rawInitialHeight) : rawInitialHeight;
+
   return new Phaser.Game({
     type: Phaser.CANVAS,
-    width: "100%",
-    height: "100%",
+    resolution: 1,
+    width: USE_DYNAMIC_SCALE ? initialWidth : BASE_GAME_WIDTH,
+    height: USE_DYNAMIC_SCALE ? initialHeight : BASE_GAME_HEIGHT,
     pixelArt: true,
     render: {
       pixelArt: true,
       antialias: false,
       roundPixels: true,
     },
+    canvasStyle: "image-rendering: pixelated; image-rendering: crisp-edges;",
     parent: parent || undefined,
     physics: {
       default: "arcade",
@@ -39,10 +57,17 @@ function createPhaserGame({ parent, room, backgroundColor }: CreatePhaserGameOpt
       },
     },
     scene: [Preloader, MainScene],
-    scale: {
-      mode: Phaser.Scale.RESIZE,
-      autoCenter: Phaser.Scale.CENTER_BOTH,
-    },
+    scale: USE_DYNAMIC_SCALE
+      ? {
+          mode: Phaser.Scale.RESIZE,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          autoRound: true,
+        }
+      : {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          autoRound: true,
+        },
     callbacks: {
       postBoot: (game) => {
         game.registry.set("room", room);
@@ -84,7 +109,16 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, userId, displayNam
       const { width, height } = entry.contentRect;
       const game = phaserGameRef.current;
       if (game && width > 0 && height > 0) {
-        game.scale.resize(Math.floor(width), Math.floor(height));
+        const parentWidth = Math.floor(width);
+        const parentHeight = Math.floor(height);
+        if (USE_DYNAMIC_SCALE) {
+          const nextWidth = USE_QUANTIZED_DYNAMIC ? quantizeToTile(parentWidth) : parentWidth;
+          const nextHeight = USE_QUANTIZED_DYNAMIC ? quantizeToTile(parentHeight) : parentHeight;
+          game.scale.resize(nextWidth, nextHeight);
+        } else {
+          game.scale.setParentSize?.(parentWidth, parentHeight);
+          game.scale.refresh?.();
+        }
       }
     });
 
@@ -165,5 +199,13 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, userId, displayNam
 
   if (error) return <div className="w-full h-full flex items-center justify-center text-sm text-red-200 bg-slate-900">{error}</div>;
 
-  return <div id="phaser-game-container" ref={gameRef} style={{ width: "100%", height: "100%" }} />;
+  const scaleMode = USE_DYNAMIC_SCALE ? (USE_QUANTIZED_DYNAMIC ? "quantized" : "dynamic") : "fixed";
+  return (
+    <div
+      id="phaser-game-container"
+      data-scale-mode={scaleMode}
+      ref={gameRef}
+      style={{ width: "100%", height: "100%", backgroundColor }}
+    />
+  );
 };

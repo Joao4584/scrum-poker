@@ -105,6 +105,31 @@ body {
     sans-serif;
 }
 
+#phaser-game-container {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+#phaser-game-container[data-scale-mode="dynamic"] canvas,
+#phaser-game-container[data-scale-mode="fixed"] canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+#phaser-game-container[data-scale-mode="quantized"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#phaser-game-container[data-scale-mode="quantized"] canvas {
+  width: auto;
+  height: auto;
+  display: block;
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

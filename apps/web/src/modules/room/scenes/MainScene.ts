@@ -85,17 +85,10 @@ export class MainScene extends Phaser.Scene {
     const background = (this.game.registry.get("room-background") as string | undefined) ?? "#0b1220";
     this.cameras.main.setBackgroundColor(background);
 
-    const { width: gameWidth, height: gameHeight } = this.scale;
-    const mapWidth = bounds.width;
-    const mapHeight = bounds.height;
-
-    const zoomX = gameWidth / mapWidth;
-    const zoomY = gameHeight / mapHeight;
-    const fitZoom = Math.max(zoomX, zoomY);
-    const rawZoom = Phaser.Math.Clamp(fitZoom * 1.25, 0.4, 2);
-    const zoom = Math.max(1, Math.round(rawZoom));
-
-    this.cameras.main.setZoom(zoom);
+    this.updateCameraZoom(bounds);
+    this.scale.on(Phaser.Scale.Events.RESIZE, () => {
+      this.updateCameraZoom(bounds);
+    });
 
     this.syncInitialPosition(localSpawn);
     this.remotes = new RemoteManager(this, (x, y) => this.coerceToWalkable(x, y, this.fallbackSpawn), this.fallbackSpawn);
@@ -134,6 +127,20 @@ export class MainScene extends Phaser.Scene {
       }
       clearNearbyPlayers();
     });
+  }
+
+  private updateCameraZoom(bounds: Phaser.Geom.Rectangle) {
+    const { width: gameWidth, height: gameHeight } = this.scale;
+    const mapWidth = bounds.width;
+    const mapHeight = bounds.height;
+
+    const zoomX = gameWidth / mapWidth;
+    const zoomY = gameHeight / mapHeight;
+    const fitZoom = Math.max(zoomX, zoomY);
+    const rawZoom = Phaser.Math.Clamp(fitZoom * 1.25, 0.4, 2);
+    const zoom = Math.max(1, Math.round(rawZoom));
+
+    this.cameras.main.setZoom(zoom);
   }
 
   update() {
