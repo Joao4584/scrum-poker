@@ -1,9 +1,9 @@
 import { Module, forwardRef } from '@nestjs/common';
-import { CreateUserUseCase } from './create-user.use-case';
+import { CreateUserUseCase } from './use-case/create-user.use-case';
 import { RegisterIntegrationUserController } from '../../presentation/controllers/user/auth-user.controller';
-import { LoadUserIntegrationUseCase } from './load-user-integration.use-case';
+import { LoadUserIntegrationUseCase } from './use-case/load-user-integration.use-case';
 import { UserTypeOrmRepository } from '../../infrastructure/repositories/user.repository';
-import { CreateJwtUserUseCase } from './create-jwt-user.use-case';
+import { CreateJwtUserUseCase } from './use-case/create-jwt-user.use-case';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../../infrastructure/entities/user.entity';
 import { UlidModule } from '@/shared/ulid/ulid.module';

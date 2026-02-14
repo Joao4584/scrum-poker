@@ -7,6 +7,7 @@ import { Vote } from '@/infrastructure/entities/vote.entity';
 import { User } from '@/infrastructure/entities/user.entity';
 import { Friends } from '@/infrastructure/entities/friends.entity';
 import { RoomFavorite } from '@/infrastructure/entities/room-favorite.entity';
+import { UploadFile } from '@/infrastructure/entities/upload-file.entity';
 import { env } from '@scrum-poker/env';
 
 @Module({
@@ -18,7 +19,16 @@ import { env } from '@scrum-poker/env';
       username: env.DB_USERNAME,
       password: env.DB_PASSWORD,
       database: env.DB_DATABASE,
-      entities: [User, Room, RoomParticipant, RoomFavorite, Question, Vote, Friends],
+      entities: [
+        User,
+        Room,
+        RoomParticipant,
+        RoomFavorite,
+        Question,
+        Vote,
+        Friends,
+        UploadFile,
+      ],
       synchronize: false,
     }),
   ],

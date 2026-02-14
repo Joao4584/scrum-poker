@@ -10,10 +10,10 @@ import {
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import type { FastifyReply } from 'fastify';
-import { CreateUserUseCase } from '@/application/user/create-user.use-case';
+import { CreateUserUseCase } from '@/application/user/use-case/create-user.use-case';
 import { IntegrationUserRequest } from '@/presentation/requests/user/integration-user.request';
-import { LoadUserIntegrationUseCase } from '@/application/user/load-user-integration.use-case';
-import { CreateJwtUserUseCase } from '@/application/user/create-jwt-user.use-case';
+import { LoadUserIntegrationUseCase } from '@/application/user/use-case/load-user-integration.use-case';
+import { CreateJwtUserUseCase } from '@/application/user/use-case/create-jwt-user.use-case';
 import { AuthUserDocs } from './auth-user.doc';
 
 @ApiTags(AuthUserDocs.tags)

@@ -22,11 +22,11 @@ import {
 import { ValidationRequestPipe } from '@/shared/pipes/validation-request.pipe';
 import { CreateRoomRequest } from '@/presentation/requests/room/create-room.request';
 import { ListRecentRoomsQuery } from '@/presentation/requests/room/list-recent-rooms.request';
-import { CreateRoomUseCase } from '@/application/room/create-room.use-case';
-import { GetRoomUseCase } from '@/application/room/get-room.use-case';
-import { DeleteRoomUseCase } from '@/application/room/delete-room.use-case';
-import { ListUserRoomsUseCase } from '@/application/room/list-user-rooms.use-case';
-import { ToggleRoomFavoriteUseCase } from '@/application/room/toggle-room-favorite.use-case';
+import { CreateRoomUseCase } from '@/application/room/use-case/create-room.use-case';
+import { GetRoomUseCase } from '@/application/room/use-case/get-room.use-case';
+import { DeleteRoomUseCase } from '@/application/room/use-case/delete-room.use-case';
+import { ListUserRoomsUseCase } from '@/application/room/use-case/list-user-rooms.use-case';
+import { ToggleRoomFavoriteUseCase } from '@/application/room/use-case/toggle-room-favorite.use-case';
 import { User as UserEntity } from '@/infrastructure/entities/user.entity';
 import { User } from '@/presentation/decorators/user.decorator';
 import { AppErrors } from '@/presentation/errors';

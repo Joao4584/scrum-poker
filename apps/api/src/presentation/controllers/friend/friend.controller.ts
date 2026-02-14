@@ -20,9 +20,9 @@ import { User } from '@/presentation/decorators/user.decorator';
 import { User as UserEntity } from '@/infrastructure/entities/user.entity';
 import { SendFriendRequest } from '@/presentation/requests/friend/send-friend-request.request';
 import { ValidationRequestPipe } from '@/shared/pipes/validation-request.pipe';
-import { SendFriendRequestUseCase } from '@/application/friend/send-friend-request.use-case';
-import { AcceptFriendRequestUseCase } from '@/application/friend/accept-friend-request.use-case';
-import { DeleteFriendUseCase } from '@/application/friend/delete-friend.use-case';
+import { SendFriendRequestUseCase } from '@/application/friend/use-case/send-friend-request.use-case';
+import { AcceptFriendRequestUseCase } from '@/application/friend/use-case/accept-friend-request.use-case';
+import { DeleteFriendUseCase } from '@/application/friend/use-case/delete-friend.use-case';
 import { FriendDocs } from './friend.doc';
 
 @ApiTags(FriendDocs.tags)

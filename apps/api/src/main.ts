@@ -8,6 +8,7 @@ import { WsAdapter } from '@nestjs/platform-ws';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import chalk from 'chalk';
 import fastifyCookie from '@fastify/cookie';
+import fastifyMultipart from '@fastify/multipart';
 
 import { ValidationRequestPipe } from '@/shared/pipes/validation-request.pipe';
 import { AppModule } from './app.module';
@@ -27,6 +28,7 @@ async function bootstrap() {
 
   app.enableCors(corsConfig);
   await app.register(fastifyCookie as any);
+  await app.register(fastifyMultipart as any);
   app.useWebSocketAdapter(new WsAdapter(app));
   app.useGlobalPipes(new ValidationRequestPipe());
   const swaggerConfig = new DocumentBuilder()
@@ -40,6 +42,7 @@ async function bootstrap() {
     .addTag('Friends', 'Friendship requests and connections')
     .addTag('Questions', 'Questions in rooms')
     .addTag('Votes', 'Voting endpoints')
+    .addTag('Uploads', 'Upload endpoints')
     .addBearerAuth()
     .addCookieAuth('meta-session')
     .build();

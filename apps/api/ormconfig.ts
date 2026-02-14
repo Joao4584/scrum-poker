@@ -8,6 +8,7 @@ import { Question } from './src/infrastructure/entities/question.entity';
 import { Vote } from './src/infrastructure/entities/vote.entity';
 import { Friends } from './src/infrastructure/entities/friends.entity';
 import { RoomFavorite } from './src/infrastructure/entities/room-favorite.entity';
+import { UploadFile } from './src/infrastructure/entities/upload-file.entity';
 
 export default new DataSource({
   type: 'postgres',
@@ -16,7 +17,7 @@ export default new DataSource({
   username: env.DB_USERNAME,
   password: env.DB_PASSWORD,
   database: env.DB_DATABASE,
-  entities: [User, Room, RoomParticipant, RoomFavorite, Question, Vote, Friends],
+  entities: [User, Room, RoomParticipant, RoomFavorite, Question, Vote, Friends, UploadFile],
   migrations: ['./src/infrastructure/migrations/*.ts'],
   synchronize: false,
 });

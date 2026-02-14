@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CreateVoteUseCase } from '@/application/room/create-vote.use-case';
-import { UpdateVoteUseCase } from '@/application/room/update-vote.use-case';
-import { DeleteVoteUseCase } from '@/application/room/delete-vote.use-case';
+import { CreateVoteUseCase } from '@/application/room/use-case/create-vote.use-case';
+import { UpdateVoteUseCase } from '@/application/room/use-case/update-vote.use-case';
+import { DeleteVoteUseCase } from '@/application/room/use-case/delete-vote.use-case';
 import { CreateVoteRequest } from '@/presentation/requests/room/create-vote.request';
 import { UpdateVoteRequest } from '@/presentation/requests/room/update-vote.request';
 import { VoteDocs } from './vote.doc';

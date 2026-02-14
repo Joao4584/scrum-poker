@@ -20,8 +20,8 @@ export default function UserProfileHeader(props: UserProfileProps) {
   const { data, isLoading, isError } = useUser();
   const { characterKey, setCharacterKey } = useCharacterStore();
   const { level, xpToNextLevel } = useExperience(xp);
-  const fullName = data?.name?.trim();
 
+  const fullName = data?.name?.trim();
   const displayName = fullName ? fullName.split(/\s+/).slice(0, 2).join(" ") : null;
 
   useEffect(() => {

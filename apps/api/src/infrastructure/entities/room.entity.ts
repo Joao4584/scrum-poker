@@ -13,6 +13,7 @@ import { User } from './user.entity';
 import { RoomParticipant } from './room-participant.entity';
 import { Question } from './question.entity';
 import { RoomFavorite } from './room-favorite.entity';
+import { UploadFile } from './upload-file.entity';
 
 @Entity('room')
 export class Room {
@@ -55,6 +56,9 @@ export class Room {
 
   @OneToMany(() => RoomFavorite, (favorite) => favorite.room)
   favorites: RoomFavorite[];
+
+  @OneToMany(() => UploadFile, (uploadFile) => uploadFile.room)
+  upload_files: UploadFile[];
 
   @CreateDateColumn({ name: 'created_at' })
   created_at: Date;

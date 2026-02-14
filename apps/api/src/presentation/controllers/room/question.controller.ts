@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CreateQuestionUseCase } from '@/application/room/create-question.use-case';
-import { DeleteQuestionUseCase } from '@/application/room/delete-question.use-case';
-import { UpdateQuestionUseCase } from '@/application/room/update-question.use-case';
+import { CreateQuestionUseCase } from '@/application/room/use-case/create-question.use-case';
+import { DeleteQuestionUseCase } from '@/application/room/use-case/delete-question.use-case';
+import { UpdateQuestionUseCase } from '@/application/room/use-case/update-question.use-case';
 import { CreateQuestionRequest } from '@/presentation/requests/room/create-question.request';
 import { UpdateQuestionRequest } from '@/presentation/requests/room/update-question.request';
 import { QuestionDocs } from './question.doc';

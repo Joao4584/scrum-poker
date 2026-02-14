@@ -1,6 +1,6 @@
 import { Controller, Post, Param, Inject } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { JoinRoomUseCase } from '@/application/room/join-room.use-case';
+import { JoinRoomUseCase } from '@/application/room/use-case/join-room.use-case';
 import { User } from '@/presentation/decorators/user.decorator';
 import { User as UserEntity } from '@/infrastructure/entities/user.entity';
 import { RoomParticipantsDocs } from './room-participants.doc';

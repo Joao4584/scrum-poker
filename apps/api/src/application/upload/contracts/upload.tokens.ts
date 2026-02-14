@@ -1,0 +1,2 @@
+export const UPLOAD_FILE_REPOSITORY = Symbol('UPLOAD_FILE_REPOSITORY');
+export const UPLOAD_STORAGE = Symbol('UPLOAD_STORAGE');
