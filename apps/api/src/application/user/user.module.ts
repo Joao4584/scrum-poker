@@ -4,6 +4,7 @@ import { RegisterIntegrationUserController } from '../../presentation/controller
 import { LoadUserIntegrationUseCase } from './use-case/load-user-integration.use-case';
 import { UserTypeOrmRepository } from '../../infrastructure/repositories/user.repository';
 import { CreateJwtUserUseCase } from './use-case/create-jwt-user.use-case';
+import { AddUserXpUseCase } from './use-case/add-user-xp.use-case';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../../infrastructure/entities/user.entity';
 import { UlidModule } from '@/shared/ulid/ulid.module';
@@ -22,6 +23,7 @@ import { FriendModule } from '@/application/friend/friend.module';
     CreateUserUseCase,
     LoadUserIntegrationUseCase,
     CreateJwtUserUseCase,
+    AddUserXpUseCase,
   ],
   controllers: [RegisterIntegrationUserController, GetUserController, SearchUserController],
   exports: [UserTypeOrmRepository],

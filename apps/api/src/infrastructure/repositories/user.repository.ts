@@ -57,6 +57,10 @@ export class UserTypeOrmRepository {
     return user;
   }
 
+  async findById(id: number): Promise<User | null> {
+    return await this.userRepository.findOne({ where: { id } });
+  }
+
   async findByIntegration(data: IntegrationUser): Promise<User | null> {        
     const { type, id } = data;
     if (!id) {

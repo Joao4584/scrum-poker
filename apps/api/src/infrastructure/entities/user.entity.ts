@@ -68,6 +68,9 @@ export class User {
   @Column({ name: 'character_key', type: 'varchar', length: 15, nullable: true })
   character_key?: string;
 
+  @Column({ name: 'xp', type: 'int', default: 0 })
+  xp: number;
+
   @CreateDateColumn({ name: 'created_at' })
   created_at: Date;
 

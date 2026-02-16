@@ -7,6 +7,7 @@ interface GetUserOutput {
   avatar_url: string;
   public_id: string;
   character_key: string | null;
+  xp: number;
 }
 
 export async function getUser(): Promise<GetUserOutput> {

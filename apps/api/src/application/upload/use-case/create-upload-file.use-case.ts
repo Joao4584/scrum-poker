@@ -4,11 +4,11 @@ import { UlidService } from '@/shared/ulid/ulid.service';
 import { UploadFile } from '@/infrastructure/entities/upload-file.entity';
 import { AppErrors } from '@/presentation/errors';
 import { buildUploadFileName, getExtensionFromMimeType } from '../upload-file.helpers';
-import {
-  UploadFileRepository,
-} from '../contracts/upload-file-repository.interface';
+import { UploadFileRepository } from '../contracts/upload-file-repository.interface';
 import { UploadStorage } from '../contracts/upload-storage.interface';
 import { UPLOAD_FILE_REPOSITORY, UPLOAD_STORAGE } from '../contracts/upload.tokens';
+
+const SNAPSHOT_REUSE_WINDOW_MS = 4 * 60 * 1000;
 
 export interface CreateUploadFileInput {
   buffer: Buffer;
@@ -32,6 +32,22 @@ export class CreateUploadFileUseCase {
       throw AppErrors.badRequest('Apenas arquivos de imagem sao permitidos');
     }
 
+    const roomId = data.room_id ?? null;
+    if (roomId) {
+      const latestRoomSnapshot = await this.uploadFileRepository.findLatestByRoomId(roomId);
+
+      if (latestRoomSnapshot) {
+        const elapsedMs = Date.now() - latestRoomSnapshot.created_at.getTime();
+
+        if (elapsedMs <= SNAPSHOT_REUSE_WINDOW_MS) {
+          return latestRoomSnapshot;
+        }
+
+        await this.uploadStorage.deleteFile(latestRoomSnapshot.url).catch(() => null);
+        await this.uploadFileRepository.softDeleteByPublicId(latestRoomSnapshot.public_id);
+      }
+    }
+
     const publicId = this.ulidService.generateId();
     const extensionFromName = extname(data.original_name || '');
     const extensionFromMime = getExtensionFromMimeType(data.mime_type);
@@ -48,7 +64,7 @@ export class CreateUploadFileUseCase {
         public_id: publicId,
         url: storedFile.url,
         type: data.mime_type,
-        room_id: data.room_id ?? null,
+        room_id: roomId,
       });
     } catch (error) {
       await this.uploadStorage.deleteFile(storedFile.url).catch(() => null);

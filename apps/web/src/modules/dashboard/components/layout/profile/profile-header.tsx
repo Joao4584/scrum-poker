@@ -16,9 +16,9 @@ interface UserProfileProps {
 }
 export default function UserProfileHeader(props: UserProfileProps) {
   const [avatarLoaded, setAvatarLoaded] = useState(false);
-  const [xp] = useState(400);
   const { data, isLoading, isError } = useUser();
   const { characterKey, setCharacterKey } = useCharacterStore();
+  const xp = data?.xp ?? 0;
   const { level, xpToNextLevel } = useExperience(xp);
 
   const fullName = data?.name?.trim();

@@ -10,5 +10,7 @@ export interface CreateUploadFileRecordInput {
 export interface UploadFileRepository {
   create(data: CreateUploadFileRecordInput): Promise<UploadFile>;
   findByPublicId(public_id: string, includeDeleted?: boolean): Promise<UploadFile | null>;
+  findLatestByRoomId(room_id: number): Promise<UploadFile | null>;
+  findByRoomPublicId(room_public_id: string): Promise<UploadFile[]>;
   softDeleteByPublicId(public_id: string): Promise<void>;
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useCallback, useEffect } from "react";
 import { useRoomActions } from "./hooks/use-room-actions";
 import { useQueryState } from "nuqs";
 import { ChatCard } from "./components/chat-card";
@@ -10,6 +11,8 @@ import { PingCard } from "./components/ping-card";
 import { useUser } from "@/modules/dashboard/hooks/use-user";
 import type { RoomDetail } from "../dashboard/services/get-room-detail";
 import { useCharacterStore } from "@/modules/room/stores/character.store";
+import { capturePhaserCanvasSnapshot } from "./lib/capture-phaser-canvas-snapshot";
+import { uploadRoomSnapshot } from "./services/upload-room-snapshot";
 
 const DynamicPhaserGame = dynamic(() => import("./PhaserGame").then((mod) => mod.PhaserGame), {
   ssr: false,
@@ -17,6 +20,16 @@ const DynamicPhaserGame = dynamic(() => import("./PhaserGame").then((mod) => mod
 
 interface RoomPageProps {
   room: RoomDetail;
+}
+
+let refetchRoomUploadsHandler: null | (() => Promise<void>) = null;
+
+export async function refetchRoomUploads() {
+  if (!refetchRoomUploadsHandler) {
+    console.warn("[room] refetch handler is not available");
+    return;
+  }
+  await refetchRoomUploadsHandler();
 }
 
 export default function RoomPage(props: RoomPageProps) {
@@ -28,6 +41,37 @@ export default function RoomPage(props: RoomPageProps) {
   const displayName = formatDisplayName(user?.name);
   const { characterKey } = useCharacterStore();
   const skin = characterKey || "steve";
+
+  const fetchRoomUploads = useCallback(
+    async (source: "after_10s" | "manual") => {
+      try {
+        const snapshot = await capturePhaserCanvasSnapshot();
+        const upload = await uploadRoomSnapshot({
+          roomPublicId: props.room.public_id,
+          file: snapshot,
+        });
+        console.log(`[room] snapshot upload (${source})`, props.room.public_id, upload);
+      } catch (error) {
+        console.error("[room] failed to upload snapshot", error);
+      }
+    },
+    [props.room.public_id],
+  );
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      fetchRoomUploads("after_10s");
+    }, 10000);
+
+    refetchRoomUploadsHandler = async () => {
+      await fetchRoomUploads("manual");
+    };
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      refetchRoomUploadsHandler = null;
+    };
+  }, [fetchRoomUploads]);
 
   return (
     <div className="w-full h-full flex justify-center items-center overflow-hidden relative">

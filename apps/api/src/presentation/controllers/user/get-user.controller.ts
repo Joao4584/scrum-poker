@@ -5,15 +5,21 @@ import { User as UserEntity } from '@/infrastructure/entities/user.entity';
 import { AppErrors } from '@/presentation/errors';
 import { GetUserDocs } from './get-user.doc';
 import { UpdateUserCharacterDocs } from './update-user-character.doc';
+import { UpdateUserXpDocs } from './update-user-xp.doc';
 import { UpdateUserCharacterRequest } from '@/presentation/requests/user/update-user-character.request';
+import { UpdateUserXpRequest } from '@/presentation/requests/user/update-user-xp.request';
 import { ValidationRequestPipe } from '@/shared/pipes/validation-request.pipe';
 import { UserTypeOrmRepository } from '@/infrastructure/repositories/user.repository';
+import { AddUserXpUseCase } from '@/application/user/use-case/add-user-xp.use-case';
 
 @ApiTags(GetUserDocs.tags)
 @ApiBearerAuth()
 @Controller('user/me')
 export class GetUserController {
-  constructor(private readonly usersRepository: UserTypeOrmRepository) {}
+  constructor(
+    private readonly usersRepository: UserTypeOrmRepository,
+    private readonly addUserXpUseCase: AddUserXpUseCase,
+  ) {}
 
   @Get()
   @ApiOperation(GetUserDocs.operation)
@@ -29,6 +35,7 @@ export class GetUserController {
         avatar_url: user.avatar_url,
         public_id: user.public_id,
         character_key: user.character_key,
+        xp: user.xp ?? 0,
       },
     };
   }
@@ -52,6 +59,26 @@ export class GetUserController {
     return {
       data: {
         character_key: updated.character_key,
+      },
+    };
+  }
+
+  @Patch('xp/add')
+  @ApiOperation(UpdateUserXpDocs.operation)
+  @ApiBody(UpdateUserXpDocs.body)
+  @ApiResponse(UpdateUserXpDocs.response)
+  async addXp(
+    @Body(ValidationRequestPipe) body: UpdateUserXpRequest,
+    @User() user: UserEntity,
+  ) {
+    if (!user) {
+      throw AppErrors.unauthorized('Usuario nao autenticado');
+    }
+
+    const updated = await this.addUserXpUseCase.execute(user.id, body.amount);
+    return {
+      data: {
+        xp: updated.xp,
       },
     };
   }

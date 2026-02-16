@@ -31,6 +31,22 @@ export class UploadFileTypeOrmRepository implements UploadFileRepository {
     return uploadFile;
   }
 
+  async findLatestByRoomId(room_id: number): Promise<UploadFile | null> {
+    return await this.repository.findOne({
+      where: { room_id },
+      order: { created_at: 'DESC' },
+    });
+  }
+
+  async findByRoomPublicId(room_public_id: string): Promise<UploadFile[]> {
+    return await this.repository
+      .createQueryBuilder('upload_file')
+      .leftJoinAndSelect('upload_file.room', 'room')
+      .where('room.public_id = :room_public_id', { room_public_id })
+      .orderBy('upload_file.created_at', 'DESC')
+      .getMany();
+  }
+
   async softDeleteByPublicId(public_id: string): Promise<void> {
     await this.repository.softDelete({ public_id });
   }
