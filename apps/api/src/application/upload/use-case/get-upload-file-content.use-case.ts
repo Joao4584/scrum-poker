@@ -1,11 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { basename } from 'path';
 import { AppErrors } from '@/presentation/errors';
-import {
-  UploadFileRepository,
-} from '../contracts/upload-file-repository.interface';
+import { UploadFileTypeOrmRepository } from '@/infrastructure/repositories/upload-file.repository';
 import { UploadStorage } from '../contracts/upload-storage.interface';
-import { UPLOAD_FILE_REPOSITORY, UPLOAD_STORAGE } from '../contracts/upload.tokens';
+import { UPLOAD_STORAGE } from '../contracts/upload.tokens';
 
 export interface UploadFileContentOutput {
   type: string;
@@ -15,8 +13,7 @@ export interface UploadFileContentOutput {
 @Injectable()
 export class GetUploadFileContentUseCase {
   constructor(
-    @Inject(UPLOAD_FILE_REPOSITORY)
-    private readonly uploadFileRepository: UploadFileRepository,
+    private readonly uploadFileRepository: UploadFileTypeOrmRepository,
     @Inject(UPLOAD_STORAGE)
     private readonly uploadStorage: UploadStorage,
   ) {}

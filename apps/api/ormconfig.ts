@@ -17,6 +17,9 @@ export default new DataSource({
   username: env.DB_USERNAME,
   password: env.DB_PASSWORD,
   database: env.DB_DATABASE,
+  extra: {
+    options: `-c timezone=${env.DB_TIMEZONE}`,
+  },
   entities: [User, Room, RoomParticipant, RoomFavorite, Question, Vote, Friends, UploadFile],
   migrations: ['./src/infrastructure/migrations/*.ts'],
   synchronize: false,

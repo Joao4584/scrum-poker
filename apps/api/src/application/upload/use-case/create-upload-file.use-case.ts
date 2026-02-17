@@ -2,11 +2,11 @@ import { Inject, Injectable } from '@nestjs/common';
 import { extname } from 'path';
 import { UlidService } from '@/shared/ulid/ulid.service';
 import { UploadFile } from '@/infrastructure/entities/upload-file.entity';
+import { UploadFileTypeOrmRepository } from '@/infrastructure/repositories/upload-file.repository';
 import { AppErrors } from '@/presentation/errors';
 import { buildUploadFileName, getExtensionFromMimeType } from '../upload-file.helpers';
-import { UploadFileRepository } from '../contracts/upload-file-repository.interface';
 import { UploadStorage } from '../contracts/upload-storage.interface';
-import { UPLOAD_FILE_REPOSITORY, UPLOAD_STORAGE } from '../contracts/upload.tokens';
+import { UPLOAD_STORAGE } from '../contracts/upload.tokens';
 
 const SNAPSHOT_REUSE_WINDOW_MS = 4 * 60 * 1000;
 
@@ -20,8 +20,7 @@ export interface CreateUploadFileInput {
 @Injectable()
 export class CreateUploadFileUseCase {
   constructor(
-    @Inject(UPLOAD_FILE_REPOSITORY)
-    private readonly uploadFileRepository: UploadFileRepository,
+    private readonly uploadFileRepository: UploadFileTypeOrmRepository,
     @Inject(UPLOAD_STORAGE)
     private readonly uploadStorage: UploadStorage,
     private readonly ulidService: UlidService,

@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from "react";
-import { capturePhaserCanvasSnapshot } from "../lib/capture-phaser-canvas-snapshot";
+import { captureCanvasSnapshot } from "@/modules/shared/utils";
 import { uploadRoomSnapshot } from "../services/upload-room-snapshot";
 
 type FetchSource = "enter" | "after_10s" | "manual";
@@ -8,7 +8,10 @@ export function useRoomUploadImages(roomPublicId: string) {
   const fetchRoomUploads = useCallback(
     async (source: FetchSource) => {
       try {
-        const snapshot = await capturePhaserCanvasSnapshot();
+        const snapshot = await captureCanvasSnapshot({
+          selector: "#phaser-game-container canvas",
+          maxWidth: 450,
+        });
         const upload = await uploadRoomSnapshot({
           roomPublicId,
           file: snapshot,

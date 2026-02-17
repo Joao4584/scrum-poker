@@ -18,6 +18,7 @@ const envSchema = z.object({
   DB_USERNAME: z.string().default("postgres"),
   DB_PASSWORD: z.string().default("password"),
   DB_DATABASE: z.string().default("nestdb"),
+  DB_TIMEZONE: z.string().default("America/Sao_Paulo"),
   UPLOAD_STORAGE_PROVIDER: z
     .enum(["file-system", "s3"])
     .default("file-system"),

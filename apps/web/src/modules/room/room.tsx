@@ -11,7 +11,7 @@ import { PingCard } from "./components/ping-card";
 import { useUser } from "@/modules/dashboard/hooks/use-user";
 import type { RoomDetail } from "../dashboard/services/get-room-detail";
 import { useCharacterStore } from "@/modules/room/stores/character.store";
-import { capturePhaserCanvasSnapshot } from "./lib/capture-phaser-canvas-snapshot";
+import { captureCanvasSnapshot } from "@/modules/shared/utils";
 import { uploadRoomSnapshot } from "./services/upload-room-snapshot";
 
 const DynamicPhaserGame = dynamic(() => import("./PhaserGame").then((mod) => mod.PhaserGame), {
@@ -45,7 +45,10 @@ export default function RoomPage(props: RoomPageProps) {
   const fetchRoomUploads = useCallback(
     async (source: "after_10s" | "manual") => {
       try {
-        const snapshot = await capturePhaserCanvasSnapshot();
+        const snapshot = await captureCanvasSnapshot({
+          selector: "#phaser-game-container canvas",
+          maxWidth: 450,
+        });
         const upload = await uploadRoomSnapshot({
           roomPublicId: props.room.public_id,
           file: snapshot,

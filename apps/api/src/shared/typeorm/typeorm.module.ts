@@ -19,6 +19,9 @@ import { env } from '@scrum-poker/env';
       username: env.DB_USERNAME,
       password: env.DB_PASSWORD,
       database: env.DB_DATABASE,
+      extra: {
+        options: `-c timezone=${env.DB_TIMEZONE}`,
+      },
       entities: [
         User,
         Room,

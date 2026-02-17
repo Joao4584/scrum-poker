@@ -2,13 +2,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { UploadFile } from '@/infrastructure/entities/upload-file.entity';
-import {
-  CreateUploadFileRecordInput,
-  UploadFileRepository,
-} from '@/application/upload/contracts/upload-file-repository.interface';
+
+export interface CreateUploadFileRecordInput {
+  public_id: string;
+  url: string;
+  type: string;
+  room_id?: number | null;
+}
 
 @Injectable()
-export class UploadFileTypeOrmRepository implements UploadFileRepository {
+export class UploadFileTypeOrmRepository {
   constructor(
     @InjectRepository(UploadFile)
     private readonly repository: Repository<UploadFile>,
