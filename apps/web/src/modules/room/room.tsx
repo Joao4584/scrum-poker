@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { useRoomActions } from "./hooks/use-room-actions";
 import { useQueryState } from "nuqs";
 import { ChatCard } from "./components/chat-card";
@@ -11,8 +11,7 @@ import { PingCard } from "./components/ping-card";
 import { useUser } from "@/modules/dashboard/hooks/use-user";
 import type { RoomDetail } from "../dashboard/services/get-room-detail";
 import { useCharacterStore } from "@/modules/room/stores/character.store";
-import { captureCanvasSnapshot } from "@/modules/shared/utils";
-import { uploadRoomSnapshot } from "./services/upload-room-snapshot";
+import { useRoomUploadImages } from "./hooks/use-room-upload-images";
 
 const DynamicPhaserGame = dynamic(() => import("./PhaserGame").then((mod) => mod.PhaserGame), {
   ssr: false,
@@ -41,40 +40,22 @@ export default function RoomPage(props: RoomPageProps) {
   const displayName = formatDisplayName(user?.name);
   const { characterKey } = useCharacterStore();
   const skin = characterKey || "steve";
-
-  const fetchRoomUploads = useCallback(
-    async (source: "after_10s" | "manual") => {
-      try {
-        const snapshot = await captureCanvasSnapshot({
-          selector: "#phaser-game-container canvas",
-          maxWidth: 450,
-        });
-        const upload = await uploadRoomSnapshot({
-          roomPublicId: props.room.public_id,
-          file: snapshot,
-        });
-        console.log(`[room] snapshot upload (${source})`, props.room.public_id, upload);
-      } catch (error) {
-        console.error("[room] failed to upload snapshot", error);
-      }
-    },
-    [props.room.public_id],
-  );
+  const { refetchRoomUploads: refetchRoomUploadsFromHook } = useRoomUploadImages(props.room.public_id);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
-      fetchRoomUploads("after_10s");
+      void refetchRoomUploadsFromHook("after_10s");
     }, 10000);
 
     refetchRoomUploadsHandler = async () => {
-      await fetchRoomUploads("manual");
+      await refetchRoomUploadsFromHook("manual");
     };
 
     return () => {
       window.clearTimeout(timeoutId);
       refetchRoomUploadsHandler = null;
     };
-  }, [fetchRoomUploads]);
+  }, [refetchRoomUploadsFromHook]);
 
   return (
     <div className="w-full h-full flex justify-center items-center overflow-hidden relative">

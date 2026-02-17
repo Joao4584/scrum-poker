@@ -24,6 +24,11 @@ export class CreateUploadMultipartPipe implements PipeTransform<FastifyRequest, 
 
     const roomId = this.parseRoomId(file);
     const roomPublicId = this.parseRoomPublicId(file);
+
+    if (roomId === null && !roomPublicId) {
+      throw AppErrors.badRequest('room_id ou room_public_id obrigatorio');
+    }
+
     const room =
       roomId === null && roomPublicId
         ? await this.publicIdEntityResolver.resolve(Room, roomPublicId, {

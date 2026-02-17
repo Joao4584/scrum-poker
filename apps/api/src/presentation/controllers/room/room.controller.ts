@@ -1,24 +1,5 @@
-import {
-  Controller,
-  Post,
-  Body,
-  Get,
-  Param,
-  Delete,
-  HttpCode,
-  HttpStatus,
-  Inject,
-  Query,
-} from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiOperation,
-  ApiParam,
-  ApiQuery,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { Controller, Post, Body, Get, Param, Delete, HttpCode, HttpStatus, Inject, Query } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ValidationRequestPipe } from '@/shared/pipes/validation-request.pipe';
 import { CreateRoomRequest } from '@/presentation/requests/room/create-room.request';
 import { ListRecentRoomsQuery } from '@/presentation/requests/room/list-recent-rooms.request';
@@ -55,7 +36,12 @@ export class RoomController {
       owner_id: user.id,
       is_public: data.public,
     });
-    const { owner_id, owner, password, id, ...roomResponse } = room;
+    const roomResponse = { ...room } as Record<string, unknown>;
+    delete roomResponse.owner_id;
+    delete roomResponse.owner;
+    delete roomResponse.password;
+    delete roomResponse.id;
+
     return { message: 'Sala criada com sucesso!', room: roomResponse };
   }
 
@@ -74,7 +60,7 @@ export class RoomController {
   async getRoom(@Param('public_id') public_id: string) {
     const room = await this.getRoomUseCase.execute(public_id);
     if (!room) {
-      throw AppErrors.notFound('Sala não encontrada');
+      throw AppErrors.notFound('Sala nao encontrada');
     }
     return room;
   }
@@ -92,12 +78,9 @@ export class RoomController {
   @ApiOperation(RoomDocs.favorite.operation)
   @ApiParam(RoomDocs.favorite.param)
   @ApiResponse(RoomDocs.favorite.response)
-  async toggleFavoriteRoom(
-    @Param('public_id') public_id: string,
-    @User() user: UserEntity,
-  ) {
+  async toggleFavoriteRoom(@Param('public_id') public_id: string, @User() user: UserEntity) {
     if (!user) {
-      throw AppErrors.unauthorized('Usuário não autenticado');
+      throw AppErrors.unauthorized('Usuario nao autenticado');
     }
     const result = await this.toggleRoomFavoriteUseCase.execute(public_id, user);
     return {
@@ -106,4 +89,3 @@ export class RoomController {
     };
   }
 }
-

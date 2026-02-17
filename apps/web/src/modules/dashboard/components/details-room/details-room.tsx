@@ -60,6 +60,7 @@ export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(_p
   const isPublic = detailRoom?.is_public ?? previewRoom?.is_public ?? true;
   const votingScale = detailRoom?.voting_scale ?? previewRoom?.voting_scale;
   const description = detailRoom?.description ?? previewRoom?.description;
+  const imageUrl = detailRoom?.url_image ?? previewRoom?.url_image ?? "/banners/auth.gif";
   const participantsCount = previewRoom?.participants_count ?? 0;
   const [isFavorite, setIsFavorite] = useState(false);
 
@@ -185,7 +186,15 @@ export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(_p
             <Skeleton className="h-48 w-full rounded-md" />
           ) : (
             <div className="h-48 w-full overflow-hidden rounded-md border border-border">
-              <img src="/banners/auth.gif" alt={`Imagem da sala ${roomName}`} className="h-full w-full object-cover" />
+              <img
+                src={imageUrl}
+                alt={`Imagem da sala ${roomName}`}
+                className="h-full w-full object-cover"
+                onError={(event) => {
+                  event.currentTarget.onerror = null;
+                  event.currentTarget.src = "/banners/auth.gif";
+                }}
+              />
             </div>
           )}
           {isLoading ? (

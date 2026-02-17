@@ -1,8 +1,8 @@
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { captureCanvasSnapshot } from "@/modules/shared/utils";
 import { uploadRoomSnapshot } from "../services/upload-room-snapshot";
 
-type FetchSource = "enter" | "after_10s" | "manual";
+type FetchSource = "after_10s" | "manual";
 
 export function useRoomUploadImages(roomPublicId: string) {
   const fetchRoomUploads = useCallback(
@@ -10,7 +10,8 @@ export function useRoomUploadImages(roomPublicId: string) {
       try {
         const snapshot = await captureCanvasSnapshot({
           selector: "#phaser-game-container canvas",
-          maxWidth: 450,
+          maxWidth: 900,
+          quality: 1,
         });
         const upload = await uploadRoomSnapshot({
           roomPublicId,
@@ -24,20 +25,12 @@ export function useRoomUploadImages(roomPublicId: string) {
     [roomPublicId],
   );
 
-  const refetchRoomUploads = useCallback(async () => {
-    await fetchRoomUploads("manual");
-  }, [fetchRoomUploads]);
-
-  useEffect(() => {
-    void fetchRoomUploads("enter");
-    const timeoutId = window.setTimeout(() => {
-      void fetchRoomUploads("after_10s");
-    }, 10000);
-
-    return () => {
-      window.clearTimeout(timeoutId);
-    };
-  }, [fetchRoomUploads]);
+  const refetchRoomUploads = useCallback(
+    async (source: FetchSource = "manual") => {
+      await fetchRoomUploads(source);
+    },
+    [fetchRoomUploads],
+  );
 
   return { refetchRoomUploads };
 }

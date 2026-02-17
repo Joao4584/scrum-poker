@@ -2,6 +2,7 @@ export interface CaptureCanvasSnapshotInput {
   selector: string;
   maxWidth?: number;
   mimeType?: string;
+  quality?: number;
 }
 
 function getCanvasBySelector(selector: string): HTMLCanvasElement | null {
@@ -31,6 +32,8 @@ function resizeCanvasIfNeeded(sourceCanvas: HTMLCanvasElement, maxWidth?: number
     throw new Error("Failed to create snapshot canvas context");
   }
 
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = "high";
   context.drawImage(sourceCanvas, 0, 0, targetWidth, targetHeight);
   return resizedCanvas;
 }
@@ -43,9 +46,10 @@ export async function captureCanvasSnapshot(input: CaptureCanvasSnapshotInput): 
 
   const snapshotCanvas = resizeCanvasIfNeeded(canvas, input.maxWidth);
   const mimeType = input.mimeType ?? "image/png";
+  const quality = typeof input.quality === "number" ? input.quality : undefined;
 
   const blob = await new Promise<Blob | null>((resolve) => {
-    snapshotCanvas.toBlob(resolve, mimeType);
+    snapshotCanvas.toBlob(resolve, mimeType, quality);
   });
 
   if (!blob) {

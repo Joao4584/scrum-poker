@@ -1,5 +1,6 @@
 import type { VotingScale } from "@/modules/shared/enums/voting-scale.enum";
 import { api } from "@/modules/shared/http/api-client";
+import { normalizeApiImageUrl } from "./normalize-api-image-url";
 
 export type RoomSort = "recent" | "alphabetical" | "players";
 
@@ -14,6 +15,7 @@ export interface RoomListItem {
   is_public: boolean;
   voting_scale: VotingScale | null;
   status: string;
+  url_image: string | null;
   created_at: string;
   updated_at: string;
   participants_count: number;
@@ -33,6 +35,7 @@ export async function getRooms(options: GetRoomsOptions = {}): Promise<RoomListI
 
   return rooms.map((room) => ({
     ...room,
+    url_image: normalizeApiImageUrl(room.url_image),
     is_favorite: Boolean(room.is_favorite),
   }));
 }

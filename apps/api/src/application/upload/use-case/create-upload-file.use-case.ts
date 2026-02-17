@@ -4,7 +4,7 @@ import { UlidService } from '@/shared/ulid/ulid.service';
 import { UploadFile } from '@/infrastructure/entities/upload-file.entity';
 import { UploadFileTypeOrmRepository } from '@/infrastructure/repositories/upload-file.repository';
 import { AppErrors } from '@/presentation/errors';
-import { buildUploadFileName, getExtensionFromMimeType } from '../upload-file.helpers';
+import { getExtensionFromMimeType } from '../upload-file.helpers';
 import { UploadStorage } from '../contracts/upload-storage.interface';
 import { UPLOAD_STORAGE } from '../contracts/upload.tokens';
 
@@ -51,7 +51,7 @@ export class CreateUploadFileUseCase {
     const extensionFromName = extname(data.original_name || '');
     const extensionFromMime = getExtensionFromMimeType(data.mime_type);
     const extension = extensionFromName || extensionFromMime || '.bin';
-    const fileName = buildUploadFileName(data.original_name, extension);
+    const fileName = `${publicId}${extension.toLowerCase()}`;
     const storedFile = await this.uploadStorage.saveFile({
       file_name: fileName,
       mime_type: data.mime_type,

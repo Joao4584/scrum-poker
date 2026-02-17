@@ -12,6 +12,7 @@ import { CreateUploadMultipartPipe } from '@/shared/pipes/create-upload-multipar
 import { CreateUploadController } from '@/presentation/controllers/upload/create-upload.controller';
 import { DeleteUploadController } from '@/presentation/controllers/upload/delete-upload.controller';
 import { GetUploadFileController } from '@/presentation/controllers/upload/get-upload-file.controller';
+import { GetRoomUploadFileController } from '@/presentation/controllers/upload/get-room-upload-file.controller';
 import { ListUploadByRoomController } from '@/presentation/controllers/upload/list-upload-by-room.controller';
 
 @Module({
@@ -25,6 +26,12 @@ import { ListUploadByRoomController } from '@/presentation/controllers/upload/li
     GetUploadFileContentUseCase,
     GetUploadFilesByRoomPublicIdUseCase,
   ],
-  controllers: [CreateUploadController, DeleteUploadController, GetUploadFileController, ListUploadByRoomController],
+  controllers: [
+    CreateUploadController,
+    DeleteUploadController,
+    GetUploadFileController,
+    GetRoomUploadFileController,
+    ListUploadByRoomController,
+  ],
 })
 export class UploadModule {}

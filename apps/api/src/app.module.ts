@@ -1,9 +1,4 @@
-import {
-  Module,
-  RequestMethod,
-  type MiddlewareConsumer,
-  type NestModule,
-} from '@nestjs/common';
+import { Module, RequestMethod, type MiddlewareConsumer, type NestModule } from '@nestjs/common';
 import { JwtAuthMiddleware } from './presentation/middleware/jwt-auth.middleware';
 import { LoggingMiddleware } from './presentation/middleware/logging.middleware';
 import { UserModule } from './application/user/user.module';
@@ -31,8 +26,8 @@ export class AppModule implements NestModule {
         { path: 'docs/(.*)', method: RequestMethod.GET },
         { path: 'docs-json', method: RequestMethod.GET },
         { path: 'upload/file/(.*)', method: RequestMethod.GET },
+        { path: 'upload/room/(.*)/file', method: RequestMethod.GET },
       )
       .forRoutes('*');
   }
 }
-

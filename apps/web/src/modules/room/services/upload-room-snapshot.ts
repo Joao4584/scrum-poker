@@ -14,8 +14,8 @@ export interface UploadRoomSnapshotInput {
 
 export async function uploadRoomSnapshot(input: UploadRoomSnapshotInput): Promise<RoomUploadSnapshot> {
   const formData = new FormData();
-  formData.append("file", input.file, input.fileName ?? `room-${input.roomPublicId}-${Date.now()}.png`);
   formData.append("room_public_id", input.roomPublicId);
+  formData.append("file", input.file, input.fileName ?? `room-${input.roomPublicId}-${Date.now()}.png`);
 
   return await api.post("upload", { body: formData }).json<RoomUploadSnapshot>();
 }

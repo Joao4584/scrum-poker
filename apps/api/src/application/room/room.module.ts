@@ -27,18 +27,18 @@ import { CreateVoteUseCase } from './use-case/create-vote.use-case';
 import { UpdateVoteUseCase } from './use-case/update-vote.use-case';
 import { DeleteVoteUseCase } from './use-case/delete-vote.use-case';
 import { VoteController } from '@/presentation/controllers/room/vote.controller';
+import { UploadFile } from '@/infrastructure/entities/upload-file.entity';
+import { UploadFileTypeOrmRepository } from '@/infrastructure/repositories/upload-file.repository';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Room, RoomParticipant, RoomFavorite, Question, Vote]),
-    UlidModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Room, RoomParticipant, RoomFavorite, Question, Vote, UploadFile]), UlidModule],
   providers: [
     RoomTypeOrmRepository,
     RoomParticipantTypeOrmRepository,
     RoomFavoriteTypeOrmRepository,
     QuestionTypeOrmRepository,
     VoteTypeOrmRepository,
+    UploadFileTypeOrmRepository,
     CreateRoomUseCase,
     GetRoomUseCase,
     DeleteRoomUseCase,
@@ -52,11 +52,6 @@ import { VoteController } from '@/presentation/controllers/room/vote.controller'
     UpdateVoteUseCase,
     DeleteVoteUseCase,
   ],
-  controllers: [
-    RoomController,
-    RoomParticipantsController,
-    QuestionController,
-    VoteController,
-  ],
+  controllers: [RoomController, RoomParticipantsController, QuestionController, VoteController],
 })
 export class RoomModule {}

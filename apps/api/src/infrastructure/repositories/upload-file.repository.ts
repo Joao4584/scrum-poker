@@ -41,6 +41,20 @@ export class UploadFileTypeOrmRepository {
     });
   }
 
+  async findLatestByRoomIds(roomIds: number[]): Promise<UploadFile[]> {
+    if (roomIds.length === 0) {
+      return [];
+    }
+
+    return await this.repository
+      .createQueryBuilder('upload_file')
+      .where('upload_file.room_id IN (:...roomIds)', { roomIds })
+      .distinctOn(['upload_file.room_id'])
+      .orderBy('upload_file.room_id', 'ASC')
+      .addOrderBy('upload_file.created_at', 'DESC')
+      .getMany();
+  }
+
   async findByRoomPublicId(room_public_id: string): Promise<UploadFile[]> {
     return await this.repository
       .createQueryBuilder('upload_file')
