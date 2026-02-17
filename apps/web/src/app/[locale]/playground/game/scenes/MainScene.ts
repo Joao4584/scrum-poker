@@ -3,26 +3,11 @@ import { Player } from "../sprites/Player";
 import { MapManager } from "../map/MapManager";
 import type { Room } from "colyseus.js";
 import type { PlaygroundState } from "../network/types";
-import {
-  CHAT_HIDE_DELAY_MS,
-  sanitizeChatMessage,
-} from "../chat-config";
+import { CHAT_HIDE_DELAY_MS, sanitizeChatMessage } from "../chat-config";
 import { RemoteManager } from "./helpers/remote-manager";
 import { createNameLabel, positionLabel } from "./helpers/labels";
-import {
-  ChatBubble,
-  createChatBubble,
-  destroyChatBubble,
-  positionChatBubble,
-  updateChatBubble,
-} from "./helpers/chat-bubble";
-import {
-  PlayerRadius,
-  createPlayerRadius,
-  destroyPlayerRadius,
-  positionPlayerRadius,
-  togglePlayerRadius,
-} from "./helpers/player-radius";
+import { ChatBubble, createChatBubble, destroyChatBubble, positionChatBubble, updateChatBubble } from "./helpers/chat-bubble";
+import { PlayerRadius, createPlayerRadius, destroyPlayerRadius, positionPlayerRadius, togglePlayerRadius } from "./helpers/player-radius";
 import { getNearbyPlayers } from "./helpers/proximity";
 import { clearNearbyPlayers, setNearbyPlayers } from "../nearby-store";
 
@@ -60,28 +45,18 @@ export class MainScene extends Phaser.Scene {
     this.floorLayer = floorLayer;
     this.colliderLayer = colliderLayer;
 
-    this.worldBounds = MapManager.getWorldBounds(
-      map,
-      [floorLayer, colliderLayer, wallLayer, wallTopLayer],
-      4,
-    );
+    this.worldBounds = MapManager.getWorldBounds(map, [floorLayer, colliderLayer, wallLayer, wallTopLayer], 4);
 
     const center = new Phaser.Math.Vector2(map.widthInPixels / 2, map.heightInPixels / 2);
-    const spawnFromMap =
-      MapManager.findSpawnOnFloor(floorLayer, colliderLayer) ??
-      this.findNearestWalkable(center.x, center.y) ??
-      center;
+    const spawnFromMap = MapManager.findSpawnOnFloor(floorLayer, colliderLayer) ?? this.findNearestWalkable(center.x, center.y) ?? center;
     this.fallbackSpawn = spawnFromMap;
 
     const roomSpawn = this.getSpawnFromRoom();
     const localSpawn = this.coerceToWalkable(roomSpawn?.x, roomSpawn?.y, this.fallbackSpawn);
 
-    const bounds =
-      this.worldBounds ??
-      new Phaser.Geom.Rectangle(0, 0, map.widthInPixels ?? 0, map.heightInPixels ?? 0);
+    const bounds = this.worldBounds ?? new Phaser.Geom.Rectangle(0, 0, map.widthInPixels ?? 0, map.heightInPixels ?? 0);
 
-    const localSkin =
-      this.room?.state.players.get(this.room?.sessionId ?? "")?.skin?.toString() ?? "steve";
+    const localSkin = this.room?.state.players.get(this.room?.sessionId ?? "")?.skin?.toString() ?? "steve";
     this.player = new Player(this, localSpawn.x, localSpawn.y, localSkin);
     this.player.setDepth(localSpawn.y);
 
@@ -111,11 +86,7 @@ export class MainScene extends Phaser.Scene {
     this.cameras.main.setZoom(zoom);
 
     this.syncInitialPosition(localSpawn);
-    this.remotes = new RemoteManager(
-      this,
-      (x, y) => this.coerceToWalkable(x, y, this.fallbackSpawn),
-      this.fallbackSpawn,
-    );
+    this.remotes = new RemoteManager(this, (x, y) => this.coerceToWalkable(x, y, this.fallbackSpawn), this.fallbackSpawn);
     this.registerNetworkListeners();
     this.selfBubble = createChatBubble(this, "", localSpawn.x, localSpawn.y);
     this.selfRadius = createPlayerRadius(this);
@@ -130,6 +101,7 @@ export class MainScene extends Phaser.Scene {
         positionChatBubble(this.selfBubble, this.player.x, this.player.y, 0);
       }
     };
+
     this.events.on(Phaser.Scenes.Events.POST_UPDATE, syncSelfBubble);
     this.syncSelfBubble = syncSelfBubble;
 
@@ -165,14 +137,7 @@ export class MainScene extends Phaser.Scene {
       positionPlayerRadius(this.selfRadius, this.player.x, this.player.y);
       const shouldDetect = this.selfRadius.graphics.visible;
       const nearby =
-        shouldDetect && this.remotes
-          ? getNearbyPlayers(
-              this.remotes.getRemoteSummaries(),
-              this.player.x,
-              this.player.y,
-              this.selfRadius.radius,
-            )
-          : [];
+        shouldDetect && this.remotes ? getNearbyPlayers(this.remotes.getRemoteSummaries(), this.player.x, this.player.y, this.selfRadius.radius) : [];
       const key = nearby.join("|");
       if (key !== this.lastNearbyKey) {
         setNearbyPlayers(nearby);
@@ -211,13 +176,7 @@ export class MainScene extends Phaser.Scene {
 
     if (!this.room) return;
 
-    const moved =
-      Phaser.Math.Distance.Between(
-        this.lastSentPosition.x,
-        this.lastSentPosition.y,
-        this.player.x,
-        this.player.y,
-      ) > 1;
+    const moved = Phaser.Math.Distance.Between(this.lastSentPosition.x, this.lastSentPosition.y, this.player.x, this.player.y) > 1;
 
     const moving = this.player.isMoving();
     const shouldSend = moved || (!moving && now - this.lastSentAt > 150);
@@ -246,16 +205,8 @@ export class MainScene extends Phaser.Scene {
     this.room.send("move", { x: spawn.x, y: spawn.y });
   }
 
-  private coerceToWalkable(
-    x: number | undefined,
-    y: number | undefined,
-    fallback?: Phaser.Math.Vector2,
-  ) {
-    const fb =
-      fallback ??
-      this.fallbackSpawn ??
-      MapManager.findSpawnOnFloor(this.floorLayer, this.colliderLayer) ??
-      new Phaser.Math.Vector2(0, 0);
+  private coerceToWalkable(x: number | undefined, y: number | undefined, fallback?: Phaser.Math.Vector2) {
+    const fb = fallback ?? this.fallbackSpawn ?? MapManager.findSpawnOnFloor(this.floorLayer, this.colliderLayer) ?? new Phaser.Math.Vector2(0, 0);
 
     if (typeof x !== "number" || typeof y !== "number") {
       return fb;

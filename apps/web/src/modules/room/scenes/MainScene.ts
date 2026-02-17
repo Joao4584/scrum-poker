@@ -40,6 +40,8 @@ export class MainScene extends Phaser.Scene {
   private selfStateMessage = "";
   private hiddenMessage?: string;
   private syncSelfBubble?: () => void;
+  private syncSelfLabel?: () => void;
+  private cleanupZoomControls?: () => void;
   private selfRadius?: PlayerRadius;
   private radiusToggleKey?: Phaser.Input.Keyboard.Key;
   private lastNearbyKey = "";
@@ -71,6 +73,9 @@ export class MainScene extends Phaser.Scene {
     const localSkin = this.room?.state.players.get(this.room?.sessionId ?? "")?.skin?.toString() ?? "steve";
     this.player = new Player(this, localSpawn.x, localSpawn.y, localSkin);
     this.player.setDepth(localSpawn.y);
+    const localName = this.room?.state.players.get(this.room?.sessionId ?? "")?.name?.toString() ?? "Player";
+    this.selfLabel = createNameLabel(this, localName, localSpawn.x, localSpawn.y);
+    this.selfLabel.setVisible(true);
 
     this.physics.world.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
 
@@ -84,10 +89,11 @@ export class MainScene extends Phaser.Scene {
     this.cameras.main.setRoundPixels(true);
     const background = (this.game.registry.get("room-background") as string | undefined) ?? "#0b1220";
     this.cameras.main.setBackgroundColor(background);
-
-    this.updateCameraZoom(bounds);
-    this.scale.on(Phaser.Scale.Events.RESIZE, () => {
-      this.updateCameraZoom(bounds);
+    this.cleanupZoomControls = MapManager.setupWheelZoom(this, this.cameras.main, {
+      initialZoom: 1,
+      minZoom: 0.9,
+      maxZoom: 2.5,
+      wheelStep: 0.1,
     });
 
     this.syncInitialPosition(localSpawn);
@@ -109,10 +115,26 @@ export class MainScene extends Phaser.Scene {
     this.events.on(Phaser.Scenes.Events.POST_UPDATE, syncSelfBubble);
     this.syncSelfBubble = syncSelfBubble;
 
+    const syncSelfLabel = () => {
+      if (this.selfLabel) {
+        positionLabel(this.selfLabel, this.player.x, this.player.y, 0);
+      }
+    };
+    this.events.on(Phaser.Scenes.Events.POST_UPDATE, syncSelfLabel);
+    this.syncSelfLabel = syncSelfLabel;
+
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       if (this.syncSelfBubble) {
         this.events.off(Phaser.Scenes.Events.POST_UPDATE, this.syncSelfBubble);
         this.syncSelfBubble = undefined;
+      }
+      if (this.syncSelfLabel) {
+        this.events.off(Phaser.Scenes.Events.POST_UPDATE, this.syncSelfLabel);
+        this.syncSelfLabel = undefined;
+      }
+      if (this.cleanupZoomControls) {
+        this.cleanupZoomControls();
+        this.cleanupZoomControls = undefined;
       }
       this.remotes?.destroy();
       this.room = undefined;
@@ -121,26 +143,16 @@ export class MainScene extends Phaser.Scene {
         destroyChatBubble(this.selfBubble);
         this.selfBubble = undefined;
       }
+      if (this.selfLabel) {
+        this.selfLabel.destroy();
+        this.selfLabel = undefined;
+      }
       if (this.selfRadius) {
         destroyPlayerRadius(this.selfRadius);
         this.selfRadius = undefined;
       }
       clearNearbyPlayers();
     });
-  }
-
-  private updateCameraZoom(bounds: Phaser.Geom.Rectangle) {
-    const { width: gameWidth, height: gameHeight } = this.scale;
-    const mapWidth = bounds.width;
-    const mapHeight = bounds.height;
-
-    const zoomX = gameWidth / mapWidth;
-    const zoomY = gameHeight / mapHeight;
-    const fitZoom = Math.max(zoomX, zoomY);
-    const rawZoom = Phaser.Math.Clamp(fitZoom * 1.25, 0.4, 2);
-    const zoom = Math.max(1, Math.round(rawZoom));
-
-    this.cameras.main.setZoom(zoom);
   }
 
   update() {
@@ -163,12 +175,10 @@ export class MainScene extends Phaser.Scene {
       }
     }
     if (this.selfLabel) {
-      positionLabel(this.selfLabel, this.player.x, this.player.y);
       const selfState = this.room?.state.players.get(this.room?.sessionId ?? "");
       if (selfState && selfState.name && selfState.name !== this.selfLabel.text) {
         this.selfLabel.setText(selfState.name);
       }
-      this.selfLabel.setDepth(this.player.y + 1);
     }
     const selfState = this.room?.state.players.get(this.room?.sessionId ?? "");
     const nextMessage = sanitizeChatMessage(selfState?.message ?? "");
@@ -277,6 +287,10 @@ export class MainScene extends Phaser.Scene {
           this.player.setPosition(player.x ?? this.player.x, player.y ?? this.player.y);
           const tint = Phaser.Display.Color.HexStringToColor(player.color ?? "#ffffff");
           this.player.setTint(tint.color);
+          if (this.selfLabel) {
+            this.selfLabel.setText(player.name ?? this.selfLabel.text);
+            this.selfLabel.setVisible(true);
+          }
           this.lastSentPosition.set(this.player.x, this.player.y);
           this.selfInitialized = true;
         }

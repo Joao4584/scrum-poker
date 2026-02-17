@@ -45,7 +45,6 @@ export class RemoteManager {
     this.skins.set(sessionId, skin);
 
     const label = createNameLabel(this.scene, player.name ?? "Player", spawn.x, spawn.y);
-    label.setDepth(spawn.y + 1);
     this.labels.set(sessionId, label);
 
     const initialMessage = sanitizeChatMessage(player.message ?? "");
@@ -193,11 +192,10 @@ export class RemoteManager {
   private updateLabel(sessionId: string, x: number, y: number, name?: string) {
     const label = this.labels.get(sessionId);
     if (!label) return;
-    positionLabel(label, x, y);
+    positionLabel(label, x, y, 0);
     if (name) {
       label.setText(name);
     }
-    label.setDepth(y + 5);
   }
 
   private updateBubble(sessionId: string, x: number, y: number, message?: string, allowTextUpdate = false) {

@@ -15,6 +15,7 @@ const SHADOW_OFFSET = 2;
 const SHADOW_ALPHA = 0.2;
 const SHADOW_COLOR = 0x0b1220;
 const OFFSET_Y = 51;
+const CHAT_BUBBLE_BASE_DEPTH = 20000;
 
 export function createChatBubble(scene: Phaser.Scene, message: string, x: number, y: number) {
   const safeMessage = sanitizeChatMessage(message);
@@ -69,7 +70,7 @@ export function positionChatBubble(bubble: ChatBubble, x: number, y: number, smo
     bubble.container.setPosition(finalPx, finalPy);
   }
 
-  const depth = Math.round(y + 200);
+  const depth = CHAT_BUBBLE_BASE_DEPTH + Math.round(y);
   if (bubble.container.depth !== depth) {
     bubble.container.setDepth(depth);
   }
