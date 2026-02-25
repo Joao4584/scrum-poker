@@ -9,9 +9,12 @@ import { FocusReturnButton } from "./components/focus-return-button";
 import { NearbyPlayers } from "./components/nearby-players";
 import { PingCard } from "./components/ping-card";
 import { PlayerInfoCard } from "./components/player-info-card";
+import { InvisibilityCard } from "./components/invisibility-card";
 import { useUser } from "@/modules/dashboard/hooks/use-user";
 import type { RoomDetail } from "../dashboard/services/get-room-detail";
 import { useCharacterStore } from "@/modules/room/stores/character.store";
+import { useRoomUiStore } from "./stores/room-ui-store";
+import { useRoomStore } from "./stores/room-store";
 import { useRoomUploadImages } from "./hooks/use-room-upload-images";
 import { useSounds } from "@/modules/shared/hooks/use-sounds";
 import { formatDisplayName } from "@/modules/shared/utils";
@@ -42,7 +45,9 @@ export default function RoomPage(props: RoomPageProps) {
   const userId = user?.public_id ?? (idParam ? idParam.toString().slice(0, 32) : null);
   const displayName = formatDisplayName(user?.name);
   const { characterKey } = useCharacterStore();
+  const invisibleMode = useRoomUiStore((s) => s.invisibleMode);
   const skin = characterKey || "steve";
+  const room = useRoomStore((s) => s.room);
   const { refetchRoomUploads: refetchRoomUploadsFromHook } = useRoomUploadImages(props.room.public_id);
   const sounds = useSounds();
 
@@ -58,6 +63,15 @@ export default function RoomPage(props: RoomPageProps) {
   useEffect(() => {
     sounds.armUnlockOnFirstInteraction();
   }, [sounds]);
+
+  // Sincroniza invisibilidade com a room em runtime (sem alterar profile/header).
+  useEffect(() => {
+    if (!room) return;
+    room.send("set_ghost", {
+      ghost: invisibleMode,
+      skin,
+    });
+  }, [room, invisibleMode, skin]);
 
   // Registra refetch automatico/manual para uploads associados a sala.
   useEffect(() => {
@@ -83,10 +97,11 @@ export default function RoomPage(props: RoomPageProps) {
           setGameFocus(true);
         }}
       >
-        <DynamicPhaserGame skin={skin} userId={userId} displayName={displayName} roomPublicId={props.room.public_id} onRoomConnected={handleRoomConnected} />
+        <DynamicPhaserGame skin={skin} ghost={invisibleMode} userId={userId} displayName={displayName} roomPublicId={props.room.public_id} onRoomConnected={handleRoomConnected} />
       </div>
       <FocusReturnButton />
       <PingCard />
+      <InvisibilityCard />
       <PlayerInfoCard />
       <NearbyPlayers />
       <ChatCard />

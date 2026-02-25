@@ -19,6 +19,11 @@ export function useRoomUploadImages(roomPublicId: string) {
         });
         console.log(`[room] snapshot upload (${source})`, roomPublicId, upload);
       } catch (error) {
+        const message = error instanceof Error ? error.message : "";
+        if (message.includes("Canvas not found for selector")) {
+          console.warn(`[room] snapshot skipped (${source}): canvas ainda nao montado`);
+          return;
+        }
         console.error("[room] failed to upload snapshot", error);
       }
     },

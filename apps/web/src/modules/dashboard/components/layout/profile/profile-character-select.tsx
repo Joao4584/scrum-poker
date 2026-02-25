@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/modules/shared/ui/select";
-import spriteAssets from "@/app/[locale]/playground/game/sprites/sprites-assets.json";
+import spriteAssets from "@/modules/dashboard/sprites-config.json";
 import { useCharacterStore } from "@/modules/room/stores/character.store";
 import { updateUserCharacter } from "@/modules/dashboard/services/update-user-character";
 
@@ -37,10 +37,14 @@ function SpriteThumb({ src, label, size }: { src: string; label: string; size: n
 
 export function ProfileCharacterSelect() {
   const queryClient = useQueryClient();
-  const spriteEntries = useMemo(() => Object.entries(spriteAssets), []);
+  const spriteEntries = useMemo(
+    () => Object.entries(spriteAssets).filter(([key]) => key !== "ghost"),
+    [],
+  );
+  const selectableKeys = useMemo(() => new Set(spriteEntries.map(([key]) => key)), [spriteEntries]);
   const { characterKey, setCharacterKey } = useCharacterStore();
   const fallbackKey = spriteEntries[0]?.[0] ?? "";
-  const selectedCharacterKey = characterKey && spriteAssets[characterKey as keyof typeof spriteAssets] ? characterKey : fallbackKey;
+  const selectedCharacterKey = characterKey && selectableKeys.has(characterKey) ? characterKey : fallbackKey;
   const [isUpdating, setIsUpdating] = useState(false);
 
   const selectedSprite = spriteAssets[selectedCharacterKey as keyof typeof spriteAssets];

@@ -1,5 +1,6 @@
 export type PhaserGameProps = {
   skin: string;
+  ghost?: boolean;
   userId?: string | null;
   displayName?: string | null;
   roomPublicId: string;

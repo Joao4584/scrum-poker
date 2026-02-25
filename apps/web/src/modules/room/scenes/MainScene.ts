@@ -96,6 +96,12 @@ export class MainScene extends Phaser.Scene {
     this.localPresence?.update(now);
     this.movementPublisher?.publish(now);
 
+    const selfState = this.room?.state.players.get(this.room?.sessionId ?? "");
+    const stateSkin = selfState?.skin?.toString();
+    if (stateSkin) {
+      this.player.setSkin(stateSkin);
+    }
+
     if (this.player.isMoving()) {
       void this.sounds.play("footstep", {
         throttleMs: this.player.isSprinting() ? 95 : 150,

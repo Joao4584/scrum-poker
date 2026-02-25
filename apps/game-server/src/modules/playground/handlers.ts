@@ -7,10 +7,35 @@ export type PlaygroundJoinOptions = {
   color?: string;
   id?: string;
   skin?: string;
+  ghost?: boolean;
 };
 
 const directions = new Set(["up", "down", "left", "right"]);
 const messageTtlMs = 15000;
+
+function logPlayersDebugSnapshot(room: Room<PlaygroundState>, reason: string) {
+  const payload = {
+    type: "playground-debug",
+    roomId: room.roomId,
+    reason,
+    at: new Date().toISOString(),
+    playerCount: room.state.players.size,
+    players: Array.from(room.state.players.entries()).map(([sessionId, p]) => ({
+      sessionId,
+      id: p.id,
+      name: p.name,
+      ghost: !!p.ghost,
+      skin: p.skin,
+      running: !!p.running,
+      dir: p.dir,
+      x: p.x,
+      y: p.y,
+      message: p.message,
+    })),
+  };
+
+  console.log(JSON.stringify(payload, null, 2));
+}
 
 function getSpawnPosition() {
   // Random spawn within a safe box of the map (approx 960x640)
@@ -43,6 +68,16 @@ export function registerPlaygroundMessageHandlers(room: Room<PlaygroundState>, m
     const player = room.state.players.get(client.sessionId);
     if (!player) return;
     player.name = sanitizeName(payload?.name, player.name);
+  });
+
+  room.onMessage("set_ghost", (client, payload: { ghost?: boolean; skin?: string }) => {
+    const player = room.state.players.get(client.sessionId);
+    if (!player) return;
+
+    const ghost = !!payload?.ghost;
+    player.ghost = ghost;
+    player.skin = ghost ? "ghost" : sanitizeSkin(payload?.skin);
+    logPlayersDebugSnapshot(room, `set_ghost:${client.sessionId}:${ghost ? "on" : "off"}`);
   });
 
   room.onMessage("chat", (client, payload: { text?: string }) => {
@@ -86,7 +121,8 @@ export function handlePlaygroundJoin(room: Room<PlaygroundState>, client: Client
   player.y = y;
   player.dir = "down";
   player.running = false;
-  player.skin = sanitizeSkin(options?.skin);
+  player.ghost = !!options?.ghost;
+  player.skin = player.ghost ? "ghost" : sanitizeSkin(options?.skin);
 
   room.state.players.set(client.sessionId, player);
   console.log(

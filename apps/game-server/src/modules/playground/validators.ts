@@ -1,4 +1,4 @@
-const allowedSkins = ["steve", "jerry", "mark", "sarah"] as const;
+const allowedSkins = ["steve", "jerry", "mark", "sarah", "ghost"] as const;
 
 export function sanitizeColor(color?: string | null, fallback = "#27c498") {
   if (!color || typeof color !== "string") return fallback;

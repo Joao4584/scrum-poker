@@ -8,6 +8,7 @@ export class Player extends Schema {
   @type("number") y: number = 0;
   @type("string") dir: string = "down";
   @type("boolean") running: boolean = false;
+  @type("boolean") ghost: boolean = false;
   @type("string") skin: string = "steve";
   @type("string") message: string = "";
 }

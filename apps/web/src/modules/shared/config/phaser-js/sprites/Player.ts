@@ -169,6 +169,16 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     return this.sprintKey.isDown;
   }
 
+  setSkin(nextSkin: string) {
+    const normalized = nextSkin?.trim() || "steve";
+    if (normalized === this.skin) return;
+
+    this.skin = normalized;
+    this.spriteName = `${normalized}-walk`;
+    this.idleSpriteName = `${normalized}-idle`;
+    this.setTexture(this.idleSpriteName);
+  }
+
   private animKey(type: "walk" | "idle", dir: Direction) {
     return `${this.skin}-${type}-${dir}`;
   }

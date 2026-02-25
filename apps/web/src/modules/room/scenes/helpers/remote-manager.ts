@@ -108,7 +108,14 @@ export class RemoteManager {
     const desired = this.coerce(player.x, player.y) ?? this.fallbackSpawn;
     const dist = Phaser.Math.Distance.Between(target.x, target.y, desired.x, desired.y);
     const moving = dist > 0.2;
-    const skin = this.skins.get(sessionId) ?? (player.skin ?? "steve").toString();
+    const nextSkin = (player.skin ?? "steve").toString();
+    const prevSkin = this.skins.get(sessionId);
+    const skin = nextSkin || prevSkin || "steve";
+    if (prevSkin !== skin) {
+      this.skins.set(sessionId, skin);
+      target.setTexture(`${skin}-idle`);
+      this.updateRemoteHoverOutlineSprites(sessionId);
+    }
 
     if (!moving) {
       this.scene.tweens.killTweensOf(target);

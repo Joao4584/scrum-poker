@@ -14,5 +14,9 @@
   "sarah": {
     "walk": "/sprites/sarah_32x32/sarah_walk.png",
     "idle": "/sprites/sarah_32x32/sarah_idle.png"
+  },
+  "ghost": {
+    "walk": "/sprites/ghost_32x32/ghost_walk.png",
+    "idle": "/sprites/ghost_32x32/ghost_idle.png"
   }
 }
