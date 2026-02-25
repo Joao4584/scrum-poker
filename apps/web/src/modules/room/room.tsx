@@ -1,17 +1,20 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useRoomActions } from "./hooks/use-room-actions";
 import { useQueryState } from "nuqs";
 import { ChatCard } from "./components/chat-card";
 import { FocusReturnButton } from "./components/focus-return-button";
 import { NearbyPlayers } from "./components/nearby-players";
 import { PingCard } from "./components/ping-card";
+import { PlayerInfoCard } from "./components/player-info-card";
 import { useUser } from "@/modules/dashboard/hooks/use-user";
 import type { RoomDetail } from "../dashboard/services/get-room-detail";
 import { useCharacterStore } from "@/modules/room/stores/character.store";
 import { useRoomUploadImages } from "./hooks/use-room-upload-images";
+import { useSounds } from "@/modules/shared/hooks/use-sounds";
+import { formatDisplayName } from "@/modules/shared/utils";
 
 const DynamicPhaserGame = dynamic(() => import("./PhaserGame").then((mod) => mod.PhaserGame), {
   ssr: false,
@@ -41,7 +44,22 @@ export default function RoomPage(props: RoomPageProps) {
   const { characterKey } = useCharacterStore();
   const skin = characterKey || "steve";
   const { refetchRoomUploads: refetchRoomUploadsFromHook } = useRoomUploadImages(props.room.public_id);
+  const sounds = useSounds();
 
+  const handleRoomConnected = useCallback(() => {
+    void sounds.play("join-room").then((played) => {
+      if (!played) {
+        sounds.armUnlockOnFirstInteraction();
+      }
+    });
+  }, [sounds]);
+
+  // Prepara fallback para tocar o som na primeira interacao do usuario.
+  useEffect(() => {
+    sounds.armUnlockOnFirstInteraction();
+  }, [sounds]);
+
+  // Registra refetch automatico/manual para uploads associados a sala.
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
       void refetchRoomUploadsFromHook("after_10s");
@@ -65,22 +83,13 @@ export default function RoomPage(props: RoomPageProps) {
           setGameFocus(true);
         }}
       >
-        <DynamicPhaserGame skin={skin} userId={userId} displayName={displayName} roomPublicId={props.room.public_id} />
+        <DynamicPhaserGame skin={skin} userId={userId} displayName={displayName} roomPublicId={props.room.public_id} onRoomConnected={handleRoomConnected} />
       </div>
       <FocusReturnButton />
       <PingCard />
+      <PlayerInfoCard />
       <NearbyPlayers />
       <ChatCard />
     </div>
   );
-}
-
-function formatDisplayName(name?: string | null) {
-  if (!name) return null;
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return null;
-  const shortName = parts.slice(0, 2).join(" ");
-  const maxLength = 20;
-  if (shortName.length <= maxLength) return shortName;
-  return `${shortName.slice(0, maxLength - 3).trimEnd()}...`;
 }

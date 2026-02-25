@@ -9,7 +9,16 @@ import { usePhaserGame } from "./hooks/use-phaser-game";
 import { usePhaserResize } from "./hooks/use-phaser-resize";
 import { getScaleMode } from "./lib/phaser-config";
 
-export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, userId, displayName, roomPublicId }) => {
+// Componente de integracao entre React e Phaser:
+// conecta na sala, cria o jogo e sincroniza callbacks com o estado global da room.
+export const PhaserGame: React.FC<PhaserGameProps> = ({
+  skin,
+  userId,
+  displayName,
+  roomPublicId,
+  onSceneReady,
+  onRoomConnected,
+}) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const setRoom = useRoomStore((s) => s.setRoom);
   const setFocusGame = useRoomStore((s) => s.setFocusGame);
@@ -24,16 +33,25 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, userId, displayNam
     containerRef,
     room,
     backgroundColor,
+    onSceneReady,
     setFocusGame,
     setKeyboardToggle,
   });
 
+  // Mantem o canvas Phaser responsivo ao tamanho do container.
   usePhaserResize({ containerRef, gameRef });
 
+  // Mantem o store com a referencia atual da sala conectada.
   useEffect(() => {
     setRoom(room ?? undefined);
     return () => setRoom(undefined);
   }, [room, setRoom]);
+
+  // Dispara o callback quando a conexao com a sala estiver pronta.
+  useEffect(() => {
+    if (!room || !onRoomConnected) return;
+    onRoomConnected();
+  }, [room, onRoomConnected]);
 
   if (error) {
     return <div className="w-full h-full flex items-center justify-center text-sm text-red-200 bg-slate-900">{error}</div>;

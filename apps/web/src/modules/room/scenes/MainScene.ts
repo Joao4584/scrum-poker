@@ -3,82 +3,56 @@ import { MapManager } from "@/modules/shared/config/phaser-js/map/MapManager";
 import { Player } from "@/modules/shared/config/phaser-js/sprites/Player";
 import type { Room } from "colyseus.js";
 import type { PlaygroundState } from "../@types/player";
-import { CHAT_HIDE_DELAY_MS, sanitizeChatMessage } from "@/modules/shared/config/phaser-js/chat-config";
 import { RemoteManager } from "./helpers/remote-manager";
-import { createNameLabel, positionLabel } from "@/modules/shared/config/phaser-js/scenes/helpers/labels";
-import {
-  ChatBubble,
-  createChatBubble,
-  destroyChatBubble,
-  positionChatBubble,
-  updateChatBubble,
-} from "@/modules/shared/config/phaser-js/scenes/helpers/chat-bubble";
-import {
-  PlayerRadius,
-  createPlayerRadius,
-  destroyPlayerRadius,
-  positionPlayerRadius,
-  togglePlayerRadius,
-} from "@/modules/shared/config/phaser-js/scenes/helpers/player-radius";
-import { getNearbyPlayers } from "@/modules/shared/config/phaser-js/scenes/helpers/proximity";
-import { clearNearbyPlayers, setNearbyPlayers } from "../stores/nearby-store";
+import { WalkableResolver } from "./helpers/walkable-resolver";
+import { MovementPublisher } from "./helpers/movement-publisher";
+import { LocalPlayerPresence } from "./helpers/local-player-presence";
+import { getSoundManager } from "@/modules/shared/audio/sound-manager";
 
+// Cena principal do jogo: monta mapa/jogador local e sincroniza estado em tempo real com a sala.
 export class MainScene extends Phaser.Scene {
   private player!: Player;
   private room?: Room<PlaygroundState>;
-  private lastSentAt = 0;
-  private lastSentPosition = new Phaser.Math.Vector2(0, 0);
-  private floorLayer?: Phaser.Tilemaps.TilemapLayer | null;
-  private colliderLayer?: Phaser.Tilemaps.TilemapLayer | null;
-  private worldBounds?: Phaser.Geom.Rectangle;
-  private fallbackSpawn?: Phaser.Math.Vector2;
   private selfInitialized = false;
-  private selfLabel?: Phaser.GameObjects.Text;
   private remotes?: RemoteManager;
-  private selfBubble?: ChatBubble;
-  private selfMessageSeenAt = 0;
-  private selfStateMessage = "";
-  private hiddenMessage?: string;
-  private syncSelfBubble?: () => void;
-  private syncSelfLabel?: () => void;
+  private walkableResolver?: WalkableResolver;
+  private movementPublisher?: MovementPublisher;
+  private localPresence?: LocalPlayerPresence;
   private cleanupZoomControls?: () => void;
-  private selfRadius?: PlayerRadius;
-  private radiusToggleKey?: Phaser.Input.Keyboard.Key;
-  private lastNearbyKey = "";
+  private sounds = getSoundManager();
 
   constructor() {
     super({ key: "game" });
   }
 
+  // Recebe a room no ciclo de init para uso durante create/update.
   init(data: { room?: Room<PlaygroundState> }) {
     this.room = data.room;
   }
 
+  // Cria o mapa, posiciona jogador local e registra listeners de rede.
   create() {
-    const { map, colliderLayer, floorLayer, wallLayer, wallTopLayer, blocksLayer } = MapManager.createMap(this);
-    this.floorLayer = floorLayer;
-    this.colliderLayer = colliderLayer;
+    const onSceneReady = this.game.registry.get("on-scene-ready") as (() => void) | undefined;
+    onSceneReady?.();
 
-    this.worldBounds = MapManager.getWorldBounds(map, [floorLayer, colliderLayer, wallLayer, wallTopLayer, blocksLayer], 4);
+    const { map, colliderLayer, floorLayer, wallLayer, wallTopLayer, blocksLayer } = MapManager.createMap(this);
+    const worldBounds = MapManager.getWorldBounds(map, [floorLayer, colliderLayer, wallLayer, wallTopLayer, blocksLayer], 4);
 
     const center = new Phaser.Math.Vector2(map.widthInPixels / 2, map.heightInPixels / 2);
-    const spawnFromMap = MapManager.findSpawnOnFloor(floorLayer, colliderLayer) ?? this.findNearestWalkable(center.x, center.y) ?? center;
-    this.fallbackSpawn = spawnFromMap;
+    const spawnFromMap = MapManager.findSpawnOnFloor(floorLayer, colliderLayer) ?? center;
+    this.walkableResolver = new WalkableResolver(floorLayer, colliderLayer, worldBounds, spawnFromMap);
 
     const roomSpawn = this.getSpawnFromRoom();
-    const localSpawn = this.coerceToWalkable(roomSpawn?.x, roomSpawn?.y, this.fallbackSpawn);
+    const localSpawn = this.walkableResolver.coerce(roomSpawn?.x, roomSpawn?.y, spawnFromMap);
 
-    const bounds = this.worldBounds ?? new Phaser.Geom.Rectangle(0, 0, map.widthInPixels ?? 0, map.heightInPixels ?? 0);
-
+    const bounds = worldBounds ?? new Phaser.Geom.Rectangle(0, 0, map.widthInPixels ?? 0, map.heightInPixels ?? 0);
     const localSkin = this.room?.state.players.get(this.room?.sessionId ?? "")?.skin?.toString() ?? "steve";
+    const localName = this.room?.state.players.get(this.room?.sessionId ?? "")?.name?.toString() ?? "Player";
+
     this.player = new Player(this, localSpawn.x, localSpawn.y, localSkin);
     this.player.setDepth(localSpawn.y);
-    const localName = this.room?.state.players.get(this.room?.sessionId ?? "")?.name?.toString() ?? "Player";
-    this.selfLabel = createNameLabel(this, localName, localSpawn.x, localSpawn.y);
-    this.selfLabel.setVisible(true);
 
     this.physics.world.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
-
     if (colliderLayer) {
       this.physics.add.collider(this.player, colliderLayer);
     }
@@ -91,135 +65,45 @@ export class MainScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor(background);
     this.cleanupZoomControls = MapManager.setupWheelZoom(this, this.cameras.main, {
       initialZoom: 1,
-      minZoom: 0.9,
+      minZoom: 0.86,
       maxZoom: 2.5,
       wheelStep: 0.1,
     });
 
-    this.syncInitialPosition(localSpawn);
-    this.remotes = new RemoteManager(this, (x, y) => this.coerceToWalkable(x, y, this.fallbackSpawn), this.fallbackSpawn);
+    this.remotes = new RemoteManager(this, (x, y) => this.walkableResolver?.coerce(x, y, spawnFromMap) ?? spawnFromMap, spawnFromMap);
+    this.movementPublisher = new MovementPublisher(() => this.room, this.player);
+    this.movementPublisher.syncInitialPosition(localSpawn);
+    this.localPresence = new LocalPlayerPresence(
+      this,
+      this.player,
+      () => this.room,
+      () => this.remotes,
+    );
+    this.localPresence.create(localName, localSpawn);
+
     this.registerNetworkListeners();
-    this.selfBubble = createChatBubble(this, "", localSpawn.x, localSpawn.y);
-    this.selfRadius = createPlayerRadius(this);
-    this.radiusToggleKey = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.P);
-    this.radiusToggleKey?.on("down", () => {
-      if (this.selfRadius) {
-        togglePlayerRadius(this.selfRadius);
-      }
-    });
-    const syncSelfBubble = () => {
-      if (this.selfBubble) {
-        positionChatBubble(this.selfBubble, this.player.x, this.player.y, 0);
-      }
-    };
-    this.events.on(Phaser.Scenes.Events.POST_UPDATE, syncSelfBubble);
-    this.syncSelfBubble = syncSelfBubble;
-
-    const syncSelfLabel = () => {
-      if (this.selfLabel) {
-        positionLabel(this.selfLabel, this.player.x, this.player.y, 0);
-      }
-    };
-    this.events.on(Phaser.Scenes.Events.POST_UPDATE, syncSelfLabel);
-    this.syncSelfLabel = syncSelfLabel;
-
-    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
-      if (this.syncSelfBubble) {
-        this.events.off(Phaser.Scenes.Events.POST_UPDATE, this.syncSelfBubble);
-        this.syncSelfBubble = undefined;
-      }
-      if (this.syncSelfLabel) {
-        this.events.off(Phaser.Scenes.Events.POST_UPDATE, this.syncSelfLabel);
-        this.syncSelfLabel = undefined;
-      }
-      if (this.cleanupZoomControls) {
-        this.cleanupZoomControls();
-        this.cleanupZoomControls = undefined;
-      }
-      this.remotes?.destroy();
-      this.room = undefined;
-      this.room?.leave();
-      if (this.selfBubble) {
-        destroyChatBubble(this.selfBubble);
-        this.selfBubble = undefined;
-      }
-      if (this.selfLabel) {
-        this.selfLabel.destroy();
-        this.selfLabel = undefined;
-      }
-      if (this.selfRadius) {
-        destroyPlayerRadius(this.selfRadius);
-        this.selfRadius = undefined;
-      }
-      clearNearbyPlayers();
-    });
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.handleShutdown());
   }
 
+  // Atualiza movimentacao local, profundidade e publicacao periodica de posicao.
   update() {
     this.player.update();
     const now = this.time.now;
     const cam = this.cameras.main;
-    // Snap camera scroll to whole pixels to avoid tile seams near edges
     cam.setScroll(Math.round(cam.scrollX), Math.round(cam.scrollY));
-    // depth based on y to simulate layering
     this.player.setDepth(this.player.y);
-    if (this.selfRadius) {
-      positionPlayerRadius(this.selfRadius, this.player.x, this.player.y);
-      const shouldDetect = this.selfRadius.graphics.visible;
-      const nearby =
-        shouldDetect && this.remotes ? getNearbyPlayers(this.remotes.getRemoteSummaries(), this.player.x, this.player.y, this.selfRadius.radius) : [];
-      const key = nearby.join("|");
-      if (key !== this.lastNearbyKey) {
-        setNearbyPlayers(nearby);
-        this.lastNearbyKey = key;
-      }
+
+    this.localPresence?.update(now);
+    this.movementPublisher?.publish(now);
+
+    if (this.player.isMoving()) {
+      void this.sounds.play("footstep", {
+        throttleMs: this.player.isSprinting() ? 95 : 150,
+      });
     }
-    if (this.selfLabel) {
-      const selfState = this.room?.state.players.get(this.room?.sessionId ?? "");
-      if (selfState && selfState.name && selfState.name !== this.selfLabel.text) {
-        this.selfLabel.setText(selfState.name);
-      }
-    }
-    const selfState = this.room?.state.players.get(this.room?.sessionId ?? "");
-    const nextMessage = sanitizeChatMessage(selfState?.message ?? "");
-    if (this.selfBubble) {
-      const changed = nextMessage !== this.selfStateMessage;
-      const hiddenSame = this.hiddenMessage !== undefined && nextMessage === this.hiddenMessage;
-
-      if (!hiddenSame) {
-        if (changed) {
-          this.selfStateMessage = nextMessage;
-          this.selfMessageSeenAt = nextMessage ? now : 0;
-          this.hiddenMessage = undefined;
-          updateChatBubble(this.selfBubble, nextMessage);
-        } else if (this.selfStateMessage) {
-          if (this.selfMessageSeenAt && now - this.selfMessageSeenAt > CHAT_HIDE_DELAY_MS) {
-            this.hiddenMessage = this.selfStateMessage;
-            this.selfMessageSeenAt = 0;
-            updateChatBubble(this.selfBubble, "");
-          }
-        }
-      }
-    }
-
-    if (!this.room) return;
-
-    const moved = Phaser.Math.Distance.Between(this.lastSentPosition.x, this.lastSentPosition.y, this.player.x, this.player.y) > 1;
-
-    const moving = this.player.isMoving();
-    const shouldSend = moved || (!moving && now - this.lastSentAt > 150);
-    if (!shouldSend || now - this.lastSentAt < 20) return;
-
-    this.room.send("move", {
-      x: this.player.x,
-      y: this.player.y,
-      dir: this.player.getDirection(),
-      run: this.player.isSprinting(),
-    });
-    this.lastSentAt = now;
-    this.lastSentPosition.set(this.player.x, this.player.y);
   }
 
+  // Extrai o spawn inicial do jogador local a partir do estado da room.
   private getSpawnFromRoom() {
     if (!this.room) return undefined;
     const player = this.room.state.players.get(this.room.sessionId);
@@ -227,54 +111,7 @@ export class MainScene extends Phaser.Scene {
     return new Phaser.Math.Vector2(player.x ?? 0, player.y ?? 0);
   }
 
-  private syncInitialPosition(spawn: Phaser.Math.Vector2) {
-    this.lastSentPosition.set(spawn.x, spawn.y);
-    if (!this.room) return;
-    this.room.send("move", { x: spawn.x, y: spawn.y });
-  }
-
-  private coerceToWalkable(x: number | undefined, y: number | undefined, fallback?: Phaser.Math.Vector2) {
-    const fb = fallback ?? this.fallbackSpawn ?? MapManager.findSpawnOnFloor(this.floorLayer, this.colliderLayer) ?? new Phaser.Math.Vector2(0, 0);
-
-    if (typeof x !== "number" || typeof y !== "number") {
-      return fb;
-    }
-
-    const snapped = this.findNearestWalkable(x, y);
-    return snapped ?? fb;
-  }
-
-  private findNearestWalkable(worldX: number, worldY: number) {
-    if (!this.floorLayer) return undefined;
-
-    const tilemap = this.floorLayer.tilemap;
-    const startX = tilemap.worldToTileX(worldX);
-    const startY = tilemap.worldToTileY(worldY);
-    const maxRadius = 8;
-
-    for (let r = 0; r <= maxRadius; r++) {
-      for (let dx = -r; dx <= r; dx++) {
-        for (let dy = -r; dy <= r; dy++) {
-          const tx = startX + dx;
-          const ty = startY + dy;
-          const floorTile = this.floorLayer.getTileAt(tx, ty);
-          if (!floorTile || floorTile.index === -1) continue;
-          if (this.colliderLayer) {
-            const colTile = this.colliderLayer.getTileAt(tx, ty);
-            if (colTile?.collides) continue;
-          }
-          const wx = tilemap.tileToWorldX(tx) + tilemap.tileWidth / 2;
-          const wy = tilemap.tileToWorldY(ty) + tilemap.tileHeight / 2;
-          if (this.worldBounds && !this.worldBounds.contains(wx, wy)) {
-            continue;
-          }
-          return new Phaser.Math.Vector2(wx, wy);
-        }
-      }
-    }
-    return undefined;
-  }
-
+  // Conecta callbacks do estado Colyseus para criar/atualizar/remover jogadores remotos.
   private registerNetworkListeners() {
     const room = this.room;
     if (!room) return;
@@ -287,11 +124,8 @@ export class MainScene extends Phaser.Scene {
           this.player.setPosition(player.x ?? this.player.x, player.y ?? this.player.y);
           const tint = Phaser.Display.Color.HexStringToColor(player.color ?? "#ffffff");
           this.player.setTint(tint.color);
-          if (this.selfLabel) {
-            this.selfLabel.setText(player.name ?? this.selfLabel.text);
-            this.selfLabel.setVisible(true);
-          }
-          this.lastSentPosition.set(this.player.x, this.player.y);
+          this.localPresence?.setName(player.name ?? "Player");
+          this.movementPublisher?.syncWithCurrentPosition();
           this.selfInitialized = true;
         }
         return;
@@ -321,5 +155,23 @@ export class MainScene extends Phaser.Scene {
         this.room?.leave();
       }
     };
+  }
+
+  // Libera recursos da cena e encerra a conexao da room ao desmontar.
+  private handleShutdown() {
+    if (this.cleanupZoomControls) {
+      this.cleanupZoomControls();
+      this.cleanupZoomControls = undefined;
+    }
+
+    this.remotes?.destroy();
+    this.remotes = undefined;
+
+    this.localPresence?.destroy();
+    this.localPresence = undefined;
+
+    const room = this.room;
+    this.room = undefined;
+    room?.leave();
   }
 }

@@ -3,19 +3,23 @@ import type { CreatePhaserGameOptions } from "../@types/phaser";
 import { MainScene } from "../scenes/MainScene";
 import Preloader from "../scenes/preloader";
 
+// Configuracoes base do canvas Phaser para manter proporcao e grade de tiles.
 const BASE_GAME_WIDTH = 1280;
 const BASE_GAME_HEIGHT = 720;
 const TILE_SIZE = 32;
 const USE_DYNAMIC_SCALE = process.env.NEXT_PUBLIC_PHASER_DYNAMIC_SCALE === "true";
 const USE_QUANTIZED_DYNAMIC = process.env.NEXT_PUBLIC_PHASER_DYNAMIC_SCALE_QUANTIZED !== "false";
 
+// Ajusta dimensoes para multiplos do tile, evitando blur e desalinhamento visual.
 const quantizeToTile = (value: number) => Math.max(TILE_SIZE, Math.floor(value / TILE_SIZE) * TILE_SIZE);
 
+// Resume qual estrategia de escala esta ativa para uso na interface/debug.
 export const getScaleMode = () => {
   if (!USE_DYNAMIC_SCALE) return "fixed";
   return USE_QUANTIZED_DYNAMIC ? "quantized" : "dynamic";
 };
 
+// Redimensiona o jogo de acordo com o modo dinamico ou fixo.
 export const resizePhaserGame = (game: Phaser.Game, width: number, height: number) => {
   const parentWidth = Math.floor(width);
   const parentHeight = Math.floor(height);
@@ -31,7 +35,8 @@ export const resizePhaserGame = (game: Phaser.Game, width: number, height: numbe
   game.scale.refresh?.();
 };
 
-export function createPhaserGame({ parent, room, backgroundColor }: CreatePhaserGameOptions) {
+// Cria a instancia principal do Phaser com fisica, cenas e valores iniciais de registry.
+export function createPhaserGame({ parent, room, backgroundColor, onSceneReady }: CreatePhaserGameOptions) {
   const parentRect = parent?.getBoundingClientRect();
   const rawInitialWidth = parentRect?.width ? Math.floor(parentRect.width) : BASE_GAME_WIDTH;
   const rawInitialHeight = parentRect?.height ? Math.floor(parentRect.height) : BASE_GAME_HEIGHT;
@@ -74,6 +79,9 @@ export function createPhaserGame({ parent, room, backgroundColor }: CreatePhaser
         game.registry.set("room", room);
         if (backgroundColor) {
           game.registry.set("room-background", backgroundColor);
+        }
+        if (onSceneReady) {
+          game.registry.set("on-scene-ready", onSceneReady);
         }
         console.log("[phaser] booted, room set in registry");
       },

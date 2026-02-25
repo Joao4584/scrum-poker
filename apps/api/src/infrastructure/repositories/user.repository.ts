@@ -28,6 +28,15 @@ export interface CreateUserInput {
   google_id?: string;
 }
 
+export interface PublicUserInfoRecord {
+  public_id: string;
+  name: string;
+  avatar_url?: string;
+  bio?: string;
+  xp: number;
+  created_at: Date;
+}
+
 @Injectable()
 export class UserTypeOrmRepository {
   constructor(
@@ -59,6 +68,21 @@ export class UserTypeOrmRepository {
 
   async findById(id: number): Promise<User | null> {
     return await this.userRepository.findOne({ where: { id } });
+  }
+
+  async findPublicInfoByPublicId(public_id: string): Promise<PublicUserInfoRecord | null> {
+    return await this.userRepository
+      .createQueryBuilder('user')
+      .select([
+        'user.public_id',
+        'user.name',
+        'user.avatar_url',
+        'user.bio',
+        'user.xp',
+        'user.created_at',
+      ])
+      .where('user.public_id = :public_id', { public_id })
+      .getOne();
   }
 
   async findByIntegration(data: IntegrationUser): Promise<User | null> {        

@@ -5,11 +5,13 @@ import { LoadUserIntegrationUseCase } from './use-case/load-user-integration.use
 import { UserTypeOrmRepository } from '../../infrastructure/repositories/user.repository';
 import { CreateJwtUserUseCase } from './use-case/create-jwt-user.use-case';
 import { AddUserXpUseCase } from './use-case/add-user-xp.use-case';
+import { GetPublicUserInfoUseCase } from './use-case/get-public-user-info.use-case';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../../infrastructure/entities/user.entity';
 import { UlidModule } from '@/shared/ulid/ulid.module';
 import { GetUserController } from '@/presentation/controllers/user/get-user.controller';
 import { SearchUserController } from '@/presentation/controllers/user/search-user.controller';
+import { GetPublicUserInfoController } from '@/presentation/controllers/user/get-public-user-info.controller';
 import { FriendModule } from '@/application/friend/friend.module';
 
 @Module({
@@ -24,8 +26,14 @@ import { FriendModule } from '@/application/friend/friend.module';
     LoadUserIntegrationUseCase,
     CreateJwtUserUseCase,
     AddUserXpUseCase,
+    GetPublicUserInfoUseCase,
   ],
-  controllers: [RegisterIntegrationUserController, GetUserController, SearchUserController],
+  controllers: [
+    RegisterIntegrationUserController,
+    GetUserController,
+    SearchUserController,
+    GetPublicUserInfoController,
+  ],
   exports: [UserTypeOrmRepository],
 })
 export class UserModule {}
