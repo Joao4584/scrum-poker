@@ -31,11 +31,11 @@ export function ChatCard() {
             sendChat();
           }
         }}
-        className="px-3 py-2 bg-slate-800 text-slate-100 text-sm rounded border border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-400/60"
+        className="px-3 py-2 bg-slate-800 text-slate-100 text-sm rounded border border-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400/60"
       />
       <button
         onClick={sendChat}
-        className="px-3 py-2 text-sm font-semibold bg-emerald-500 text-slate-900 rounded hover:bg-emerald-400 transition disabled:opacity-50"
+        className="px-3 py-2 text-sm font-semibold bg-slate-700 text-slate-100 rounded hover:bg-slate-600 border border-slate-600 transition disabled:opacity-50"
         disabled={!room}
       >
         Enviar
