@@ -3,6 +3,7 @@ import { Player, PlaygroundState } from "./state";
 import { sanitizeColor, sanitizeId, sanitizeLevel, sanitizeMessage, sanitizeName, sanitizeSkin } from "./validators";
 
 export type PlaygroundJoinOptions = {
+  roomPublicId?: string;
   name?: string;
   color?: string;
   id?: string;

@@ -13,7 +13,7 @@ export default config({
     /**
      * Define your room handlers:
      */
-    gameServer.define('playground', PlaygroundRoom);
+    gameServer.define('playground', PlaygroundRoom).filterBy(['roomPublicId']);
     gameServer.define('simple_room', SimpleRoom);
   },
 

@@ -13,10 +13,12 @@ export class PlaygroundRoom extends Room<PlaygroundState> {
   private debugInterval?: any;
   private messageTimers = new Map<string, any>();
 
-  onCreate() {
+  onCreate(options?: PlaygroundJoinOptions) {
     this.setState(new PlaygroundState());
     this.setPatchRate(50);
-    console.log("[playground] room created", this.roomId);
+    const roomPublicId = options?.roomPublicId ?? "unknown";
+    this.setMetadata({ roomPublicId });
+    console.log("[playground] room created", this.roomId, "roomPublicId:", roomPublicId);
 
     this.debugInterval = this.clock.setInterval(() => {
       const snapshot = Array.from(this.state.players.entries()).map(([sessionId, p]) => ({
