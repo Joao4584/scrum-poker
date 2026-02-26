@@ -1,12 +1,13 @@
 import type { Client, Room } from "@colyseus/core";
 import { Player, PlaygroundState } from "./state";
-import { sanitizeColor, sanitizeId, sanitizeMessage, sanitizeName, sanitizeSkin } from "./validators";
+import { sanitizeColor, sanitizeId, sanitizeLevel, sanitizeMessage, sanitizeName, sanitizeSkin } from "./validators";
 
 export type PlaygroundJoinOptions = {
   name?: string;
   color?: string;
   id?: string;
   skin?: string;
+  level?: number;
   ghost?: boolean;
 };
 
@@ -25,6 +26,7 @@ function logPlayersDebugSnapshot(room: Room<PlaygroundState>, reason: string) {
       id: p.id,
       name: p.name,
       ghost: !!p.ghost,
+      level: p.level,
       skin: p.skin,
       running: !!p.running,
       dir: p.dir,
@@ -68,6 +70,12 @@ export function registerPlaygroundMessageHandlers(room: Room<PlaygroundState>, m
     const player = room.state.players.get(client.sessionId);
     if (!player) return;
     player.name = sanitizeName(payload?.name, player.name);
+  });
+
+  room.onMessage("set_level", (client, payload: { level?: number }) => {
+    const player = room.state.players.get(client.sessionId);
+    if (!player) return;
+    player.level = sanitizeLevel(payload?.level, player.level);
   });
 
   room.onMessage("set_ghost", (client, payload: { ghost?: boolean; skin?: string }) => {
@@ -121,6 +129,7 @@ export function handlePlaygroundJoin(room: Room<PlaygroundState>, client: Client
   player.y = y;
   player.dir = "down";
   player.running = false;
+  player.level = sanitizeLevel(options?.level);
   player.ghost = !!options?.ghost;
   player.skin = player.ghost ? "ghost" : sanitizeSkin(options?.skin);
 

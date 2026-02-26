@@ -25,6 +25,11 @@ export function sanitizeSkin(skin?: string | null) {
   return "steve";
 }
 
+export function sanitizeLevel(level?: number | null, fallback = 0) {
+  if (typeof level !== "number" || !Number.isFinite(level)) return fallback;
+  return Math.max(0, Math.floor(level));
+}
+
 export function sanitizeMessage(raw?: string | null) {
   if (!raw || typeof raw !== "string") return "";
   const cleaned = raw.replace(/[\r\n\t]+/g, " ").trim();
