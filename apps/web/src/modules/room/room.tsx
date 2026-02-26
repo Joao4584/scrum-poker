@@ -80,6 +80,16 @@ export default function RoomPage(props: RoomPageProps) {
     room.send("set_level", { level });
   }, [room, level]);
 
+  useEffect(() => {
+    const previousTitle = document.title;
+    const roomName = props.room.name?.trim() || "Room";
+    document.title = `${roomName} | Scrum Poker`;
+
+    return () => {
+      document.title = previousTitle;
+    };
+  }, [props.room.name]);
+
   // Registra refetch automatico/manual para uploads associados a sala.
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -98,6 +108,9 @@ export default function RoomPage(props: RoomPageProps) {
 
   return (
     <div className="w-full h-full flex justify-center items-center overflow-hidden relative">
+      <div className="pointer-events-none absolute left-4 top-4 z-50 max-w-[55vw] truncate text-sm font-semibold text-slate-700 dark:text-white">
+        <span className="text-slate-500 dark:text-slate-300">Sala:</span> {props.room.name}
+      </div>
       <div
         className="w-full h-full"
         onClick={() => {
