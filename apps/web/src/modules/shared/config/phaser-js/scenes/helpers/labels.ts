@@ -1,4 +1,5 @@
 import * as Phaser from "phaser";
+import { getLevelTheme } from "@/modules/shared/utils/level-theme";
 
 const LABEL_OFFSET_Y = 32;
 const LABEL_BASE_DEPTH = 20000;
@@ -11,7 +12,6 @@ const LABEL_CORNER_RADIUS = 10;
 const LABEL_BG_COLOR = 0x64748b; // slate-500
 const LABEL_BG_ALPHA = 0.6;
 const LABEL_BORDER_COLOR = 0x475569; // slate-600
-const LABEL_BADGE_COLOR = 0x475569; // slate-600
 
 type ParsedLabel = {
   name: string;
@@ -24,6 +24,7 @@ export class NameLabel extends Phaser.GameObjects.Container {
   private levelText: Phaser.GameObjects.Text;
   private nameText: Phaser.GameObjects.Text;
   private rawText = "Player (0)";
+  private currentLevel = 0;
 
   constructor(scene: Phaser.Scene, x: number, y: number, text: string) {
     super(scene, x, y);
@@ -62,8 +63,11 @@ export class NameLabel extends Phaser.GameObjects.Container {
 
   setText(value: string) {
     const parsed = parseLabel(value);
+    const theme = getLevelTheme(parsed.level);
     this.rawText = `${parsed.name} (${parsed.level})`;
+    this.currentLevel = parsed.level;
     this.levelText.setText(String(parsed.level));
+    this.levelText.setColor(theme.phaser.levelText);
     this.nameText.setText(parsed.name);
     this.layout();
     return this;
@@ -110,7 +114,7 @@ export class NameLabel extends Phaser.GameObjects.Container {
     ];
 
     this.badgeBackground.clear();
-    this.badgeBackground.fillStyle(LABEL_BADGE_COLOR, 1);
+    this.badgeBackground.fillStyle(getLevelTheme(this.currentLevel).phaser.badgeFill, 1);
     this.badgeBackground.fillPoints(points, true);
   }
 }

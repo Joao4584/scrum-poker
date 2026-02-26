@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { DropdownMenu, DropdownMenuTrigger } from "@/modules/shared/ui/dropdown-menu";
 import { Skeleton } from "@/modules/shared/ui/skeleton";
 import { getCurrentGreating } from "@/modules/shared/utils/get-current-greeting";
+import { getLevelTheme } from "@/modules/shared/utils/level-theme";
 import { ListContentDropDown } from "./profile-content-dropdown";
 import { useUser } from "../../../hooks/use-user";
 import { useCharacterStore } from "@/modules/room/stores/character.store";
@@ -20,6 +21,7 @@ export default function UserProfileHeader(props: UserProfileProps) {
   const { characterKey, setCharacterKey } = useCharacterStore();
   const xp = data?.xp ?? 0;
   const { level, xpToNextLevel } = useExperience(xp);
+  const levelTheme = getLevelTheme(level);
 
   const fullName = data?.name?.trim();
   const displayName = fullName ? fullName.split(/\s+/).slice(0, 2).join(" ") : null;
@@ -33,10 +35,17 @@ export default function UserProfileHeader(props: UserProfileProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <div className="flex relative h-9 pl-5 justify-start gap-2  cursor-pointer  transition-all">
+        <div className="flex relative h-9 pl-5 justify-start gap-2 cursor-pointer transition-all">
           <div className="flex items-center">
             <div className="relative h-11 w-11">
-              <div className="card bg-slate-400 rounded-full overflow-hidden p-1 bg-opacity-25 h-11 w-11">
+              <div
+                className="card rounded-full overflow-hidden p-1 h-11 w-11 border"
+                style={{
+                  backgroundColor: levelTheme.ui.accentSoft,
+                  borderColor: levelTheme.ui.accentStrong,
+                  boxShadow: `0 0 0 1px ${levelTheme.ui.accentSoft} inset`,
+                }}
+              >
                 {!avatarLoaded && <Skeleton className="absolute inset-1 rounded-full" aria-hidden="true" />}
                 <Image
                   src={data?.avatar_url ?? "/dashboard/default-user-logo.png"}
@@ -48,14 +57,17 @@ export default function UserProfileHeader(props: UserProfileProps) {
                 />
               </div>
               <div
-                className="absolute -bottom-1 -left-1 h-5 w-5 bg-slate-500 text-[10px] font-semibold text-white flex items-center justify-center shadow"
+                className="absolute -bottom-1 -left-1 h-5 w-5 text-[10px] font-semibold flex items-center justify-center shadow"
                 style={{
+                  backgroundColor: levelTheme.ui.accentHex,
+                  color: levelTheme.ui.textOnAccent,
+                  boxShadow: `0 4px 14px -6px ${levelTheme.ui.accentHex}`,
                   clipPath: "polygon(25% 6.7%, 75% 6.7%, 100% 50%, 75% 93.3%, 25% 93.3%, 0% 50%)",
                 }}
                 title={`Faltam ${xpToNextLevel} XP para o proximo nivel`}
                 aria-label={`Nivel ${level}`}
               >
-                <NumberTicker value={level} direction="up" className="text-white" />
+                <NumberTicker value={level} direction="up" className="font-bold" style={{ color: levelTheme.ui.textOnAccent }} />
               </div>
             </div>
           </div>
