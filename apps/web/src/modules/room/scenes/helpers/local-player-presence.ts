@@ -3,7 +3,7 @@ import type { Room } from "colyseus.js";
 import type { PlaygroundState } from "../../@types/player";
 import { Player } from "@/modules/shared/config/phaser-js/sprites/Player";
 import { CHAT_HIDE_DELAY_MS, sanitizeChatMessage } from "@/modules/shared/config/phaser-js/chat-config";
-import { createNameLabel, positionLabel } from "@/modules/shared/config/phaser-js/scenes/helpers/labels";
+import { createNameLabel, positionLabel, type NameLabel } from "@/modules/shared/config/phaser-js/scenes/helpers/labels";
 import {
   ChatBubble,
   createChatBubble,
@@ -26,10 +26,16 @@ import { RemoteManager } from "./remote-manager";
 type RoomGetter = () => Room<PlaygroundState> | undefined;
 type RemoteManagerGetter = () => RemoteManager | undefined;
 
+function formatPlayerLabel(name?: string, level?: number) {
+  const safeName = (name ?? "Player").toString();
+  const safeLevel = typeof level === "number" && Number.isFinite(level) ? Math.max(0, Math.floor(level)) : 0;
+  return `${safeName} (${safeLevel})`;
+}
+
 // Gerencia elementos visuais do jogador local (nome, chat, raio de proximidade)
 // e sincroniza esses dados com estado e entrada do usuario.
 export class LocalPlayerPresence {
-  private selfLabel?: Phaser.GameObjects.Text;
+  private selfLabel?: NameLabel;
   private selfBubble?: ChatBubble;
   private selfRadius?: PlayerRadius;
   private selfHoverOutlineSprites: Phaser.GameObjects.Sprite[] = [];
@@ -84,7 +90,7 @@ export class LocalPlayerPresence {
   // Cria os elementos visuais iniciais do jogador local e registra handlers de atualizacao.
   public create(initialName: string, spawn: Phaser.Math.Vector2) {
     this.selfName = initialName;
-    this.selfLabel = createNameLabel(this.scene, initialName, spawn.x, spawn.y);
+    this.selfLabel = createNameLabel(this.scene, formatPlayerLabel(initialName, 0), spawn.x, spawn.y);
     this.selfLabel.setVisible(true);
     this.selfBubble = createChatBubble(this.scene, "", spawn.x, spawn.y);
     this.selfRadius = createPlayerRadius(this.scene);
@@ -136,9 +142,14 @@ export class LocalPlayerPresence {
     const room = this.getRoom();
     const selfState = room?.state.players.get(room?.sessionId ?? "");
 
-    if (this.selfLabel && selfState && selfState.name && selfState.name !== this.selfLabel.text) {
-      this.selfLabel.setText(selfState.name);
-      this.selfName = selfState.name;
+    if (this.selfLabel && selfState) {
+      const nextName = selfState.name ?? this.selfName;
+      const nextLevel = typeof selfState.level === "number" ? selfState.level : 0;
+      const nextLabel = formatPlayerLabel(nextName, nextLevel);
+      if (this.selfLabel.text !== nextLabel) {
+        this.selfLabel.setText(nextLabel);
+      }
+      this.selfName = nextName;
     }
 
     const nextMessage = sanitizeChatMessage(selfState?.message ?? "");
@@ -167,7 +178,7 @@ export class LocalPlayerPresence {
   public setName(name: string) {
     if (!this.selfLabel) return;
     this.selfName = name;
-    this.selfLabel.setText(name);
+    this.selfLabel.setText(formatPlayerLabel(name, 0));
     this.selfLabel.setVisible(true);
   }
 

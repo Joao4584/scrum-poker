@@ -8,6 +8,7 @@ export interface PlayerState extends Schema {
   y: number;
   dir: "up" | "down" | "left" | "right";
   running: boolean;
+  level: number;
   ghost: boolean;
   skin: string;
   message: string;

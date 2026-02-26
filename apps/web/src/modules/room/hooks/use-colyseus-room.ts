@@ -6,13 +6,14 @@ import { resolveServerUrl } from "../utils/server-url";
 
 type UseColyseusRoomParams = {
   skin: string;
+  level?: number;
   ghost?: boolean;
   userId?: string | null;
   displayName?: string | null;
   roomPublicId: string;
 };
 
-export function useColyseusRoom({ skin, ghost, userId, displayName, roomPublicId }: UseColyseusRoomParams) {
+export function useColyseusRoom({ skin, level, ghost, userId, displayName, roomPublicId }: UseColyseusRoomParams) {
   const roomRef = useRef<Room<PlaygroundState> | null>(null);
   const [room, setRoom] = useState<Room<PlaygroundState> | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -36,6 +37,7 @@ export function useColyseusRoom({ skin, ghost, userId, displayName, roomPublicId
           name: identity.name,
           color: identity.color,
           skin,
+          level,
           ghost: !!ghost,
           roomPublicId,
         };

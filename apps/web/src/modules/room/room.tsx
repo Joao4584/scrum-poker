@@ -17,6 +17,7 @@ import { useRoomUiStore } from "./stores/room-ui-store";
 import { useRoomStore } from "./stores/room-store";
 import { useRoomUploadImages } from "./hooks/use-room-upload-images";
 import { useSounds } from "@/modules/shared/hooks/use-sounds";
+import { useExperience } from "@/modules/shared/hooks/use-experience";
 import { formatDisplayName } from "@/modules/shared/utils";
 
 const DynamicPhaserGame = dynamic(() => import("./PhaserGame").then((mod) => mod.PhaserGame), {
@@ -44,6 +45,7 @@ export default function RoomPage(props: RoomPageProps) {
   const { data: user } = useUser();
   const userId = user?.public_id ?? (idParam ? idParam.toString().slice(0, 32) : null);
   const displayName = formatDisplayName(user?.name);
+  const { level } = useExperience(user?.xp ?? 0);
   const { characterKey } = useCharacterStore();
   const invisibleMode = useRoomUiStore((s) => s.invisibleMode);
   const skin = characterKey || "steve";
@@ -73,6 +75,11 @@ export default function RoomPage(props: RoomPageProps) {
     });
   }, [room, invisibleMode, skin]);
 
+  useEffect(() => {
+    if (!room) return;
+    room.send("set_level", { level });
+  }, [room, level]);
+
   // Registra refetch automatico/manual para uploads associados a sala.
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -97,13 +104,21 @@ export default function RoomPage(props: RoomPageProps) {
           setGameFocus(true);
         }}
       >
-        <DynamicPhaserGame skin={skin} ghost={invisibleMode} userId={userId} displayName={displayName} roomPublicId={props.room.public_id} onRoomConnected={handleRoomConnected} />
+        <DynamicPhaserGame
+          skin={skin}
+          level={level}
+          ghost={invisibleMode}
+          userId={userId}
+          displayName={displayName}
+          roomPublicId={props.room.public_id}
+          onRoomConnected={handleRoomConnected}
+        />
       </div>
       <FocusReturnButton />
       <PingCard />
-      <InvisibilityCard />
       <PlayerInfoCard />
       <NearbyPlayers />
+      <InvisibilityCard />
       <ChatCard />
     </div>
   );

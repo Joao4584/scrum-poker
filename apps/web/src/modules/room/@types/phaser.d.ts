@@ -1,5 +1,6 @@
 export type PhaserGameProps = {
   skin: string;
+  level?: number;
   ghost?: boolean;
   userId?: string | null;
   displayName?: string | null;

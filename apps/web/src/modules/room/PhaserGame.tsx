@@ -13,6 +13,7 @@ import { getScaleMode } from "./lib/phaser-config";
 // conecta na sala, cria o jogo e sincroniza callbacks com o estado global da room.
 export const PhaserGame: React.FC<PhaserGameProps> = ({
   skin,
+  level,
   ghost,
   userId,
   displayName,
@@ -29,7 +30,7 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({
   const activeTheme = resolvedTheme ?? theme;
   const backgroundColor = activeTheme === "light" ? "#4fbeff" : "#0b1220";
 
-  const { room, error } = useColyseusRoom({ skin, ghost, userId, displayName, roomPublicId });
+  const { room, error } = useColyseusRoom({ skin, level, ghost, userId, displayName, roomPublicId });
   const { gameRef } = usePhaserGame({
     containerRef,
     room,

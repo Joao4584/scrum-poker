@@ -1,7 +1,7 @@
 import * as Phaser from "phaser";
 import type { Room } from "colyseus.js";
 import type { PlaygroundState } from "../../@types/player";
-import { createNameLabel, positionLabel } from "@/modules/shared/config/phaser-js/scenes/helpers/labels";
+import { createNameLabel, positionLabel, type NameLabel } from "@/modules/shared/config/phaser-js/scenes/helpers/labels";
 import {
   ChatBubble,
   createChatBubble,
@@ -15,6 +15,12 @@ import { useRoomUiStore } from "../../stores/room-ui-store";
 type CoerceFn = (x: number | undefined, y: number | undefined) => Phaser.Math.Vector2;
 type RemoteIdentity = { id?: string | number | null };
 
+function formatPlayerLabel(name?: string, level?: number) {
+  const safeName = (name ?? "Player").toString();
+  const safeLevel = typeof level === "number" && Number.isFinite(level) ? Math.max(0, Math.floor(level)) : 0;
+  return `${safeName} (${safeLevel})`;
+}
+
 export class RemoteManager {
   private static readonly HOVER_OUTLINE_OFFSETS = [
     [-1, 0],
@@ -27,7 +33,7 @@ export class RemoteManager {
     [0, 2],
   ] as const;
   private sprites = new Map<string, Phaser.GameObjects.Sprite>();
-  private labels = new Map<string, Phaser.GameObjects.Text>();
+  private labels = new Map<string, NameLabel>();
   private listeners = new Map<string, { cleanup?: () => void }>();
   private skins = new Map<string, string>();
   private bubbles = new Map<string, ChatBubble>();
@@ -69,7 +75,7 @@ export class RemoteManager {
     this.createRemoteHoverOutlineSprites(sessionId, sprite);
     this.bindRemotePointerEvents(sessionId, player, sprite);
 
-    const label = createNameLabel(this.scene, player.name ?? "Player", spawn.x, spawn.y);
+    const label = createNameLabel(this.scene, formatPlayerLabel(player.name, player.level), spawn.x, spawn.y);
     this.labels.set(sessionId, label);
 
     const initialMessage = sanitizeChatMessage(player.message ?? "");
@@ -123,7 +129,7 @@ export class RemoteManager {
       this.setRemoteAnimation(target, player.dir, false, !!player.running, skin);
       target.setDepth(desired.y);
       this.updateRemoteHoverOutlineSprites(sessionId);
-      this.updateLabel(sessionId, target.x, target.y, player.name);
+      this.updateLabel(sessionId, target.x, target.y, player.name, player.level);
       this.updateBubble(sessionId, target.x, target.y, player.message, true);
       return;
     }
@@ -148,14 +154,14 @@ export class RemoteManager {
       onUpdate: () => {
         target.setDepth(target.y);
         this.updateRemoteHoverOutlineSprites(sessionId);
-        this.updateLabel(sessionId, target.x, target.y, player.name);
+        this.updateLabel(sessionId, target.x, target.y, player.name, player.level);
         this.updateBubble(sessionId, target.x, target.y, player.message, false);
       },
       onComplete: () => {
         this.setRemoteAnimation(target, player.dir, false, !!player.running, skin);
         target.setDepth(next.y);
         this.updateRemoteHoverOutlineSprites(sessionId);
-        this.updateLabel(sessionId, target.x, target.y, player.name);
+        this.updateLabel(sessionId, target.x, target.y, player.name, player.level);
         this.updateBubble(sessionId, next.x, next.y, player.message, true);
       },
     });
@@ -224,13 +230,11 @@ export class RemoteManager {
     }
   }
 
-  private updateLabel(sessionId: string, x: number, y: number, name?: string) {
+  private updateLabel(sessionId: string, x: number, y: number, name?: string, level?: number) {
     const label = this.labels.get(sessionId);
     if (!label) return;
     positionLabel(label, x, y, 0);
-    if (name) {
-      label.setText(name);
-    }
+    label.setText(formatPlayerLabel(name, level));
   }
 
   private updateBubble(sessionId: string, x: number, y: number, message?: string, allowTextUpdate = false) {
