@@ -7,7 +7,7 @@ export function InvisibilityCard() {
   const toggleInvisibleMode = useRoomUiStore((s) => s.toggleInvisibleMode);
 
   return (
-    <div className="absolute bottom-16 left-4 z-50 rounded-lg border border-slate-700/60 bg-slate-900/80 px-3 py-2 shadow-lg">
+    <div className="absolute bottom-4 left-32 z-50 rounded-lg border border-slate-700/60 bg-slate-900/80 px-3 py-2 shadow-lg">
       <button
         type="button"
         onClick={toggleInvisibleMode}
@@ -19,9 +19,7 @@ export function InvisibilityCard() {
         <span
           className={[
             "rounded-md border px-2 py-0.5 text-xs font-semibold transition-colors",
-            invisibleMode
-              ? "border-emerald-400/50 bg-emerald-500/15 text-emerald-300"
-              : "border-slate-600/70 bg-slate-800/70 text-slate-200",
+            invisibleMode ? "border-emerald-400/50 bg-emerald-500/15 text-emerald-300" : "border-slate-600/70 bg-slate-800/70 text-slate-200",
           ].join(" ")}
         >
           {invisibleMode ? "Ativo" : "Off"}
@@ -30,4 +28,3 @@ export function InvisibilityCard() {
     </div>
   );
 }
-
