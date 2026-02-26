@@ -23,6 +23,7 @@ export const RoomDocs = {
           value: {
             name: 'Backlog Grooming',
             public: false,
+            password: 'secret123',
           },
         },
       },

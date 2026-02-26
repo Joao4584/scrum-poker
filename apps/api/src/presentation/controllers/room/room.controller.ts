@@ -35,6 +35,7 @@ export class RoomController {
       ...data,
       owner_id: user.id,
       is_public: data.public,
+      password: data.password,
     });
     const roomResponse = { ...room } as Record<string, unknown>;
     delete roomResponse.owner_id;

@@ -11,16 +11,7 @@ import { getScaleMode } from "./lib/phaser-config";
 
 // Componente de integracao entre React e Phaser:
 // conecta na sala, cria o jogo e sincroniza callbacks com o estado global da room.
-export const PhaserGame: React.FC<PhaserGameProps> = ({
-  skin,
-  level,
-  ghost,
-  userId,
-  displayName,
-  roomPublicId,
-  onSceneReady,
-  onRoomConnected,
-}) => {
+export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, level, ghost, userId, displayName, roomPublicId, onSceneReady, onRoomConnected }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const setRoom = useRoomStore((s) => s.setRoom);
   const setFocusGame = useRoomStore((s) => s.setFocusGame);

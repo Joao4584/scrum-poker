@@ -5,6 +5,7 @@ export type CreateRoomInput = {
   name: string;
   description?: string;
   public: boolean;
+  password?: string;
   voting_scale?: VotingScale;
 };
 

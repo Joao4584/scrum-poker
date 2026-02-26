@@ -29,6 +29,8 @@ export function CreateRoom() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [isPublic, setIsPublic] = useState("true");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [votingScale, setVotingScale] = useState<"none" | VotingScale>("none");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -37,6 +39,8 @@ export function CreateRoom() {
     setName("");
     setDescription("");
     setIsPublic("true");
+    setPassword("");
+    setConfirmPassword("");
     setVotingScale("none");
     setError(null);
   };
@@ -49,6 +53,19 @@ export function CreateRoom() {
       return;
     }
 
+    const isPrivateRoom = isPublic === "false";
+    if (isPrivateRoom) {
+      if (password.length < 6) {
+        setError("A senha da sala deve ter pelo menos 6 caracteres.");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        setError("A confirmacao de senha nao confere.");
+        return;
+      }
+    }
+
     setSubmitting(true);
     setError(null);
 
@@ -56,7 +73,8 @@ export function CreateRoom() {
       const response = await createRoom({
         name: trimmedName,
         description: description.trim() || undefined,
-        public: isPublic === "true",
+        public: !isPrivateRoom,
+        password: isPrivateRoom ? password : undefined,
         voting_scale: votingScale === "none" ? undefined : votingScale,
       });
 
@@ -123,7 +141,16 @@ export function CreateRoom() {
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label>Visibilidade</Label>
-              <Select value={isPublic} onValueChange={setIsPublic}>
+              <Select
+                value={isPublic}
+                onValueChange={(value) => {
+                  setIsPublic(value);
+                  if (value === "true") {
+                    setPassword("");
+                    setConfirmPassword("");
+                  }
+                }}
+              >
                 <SelectTrigger className="h-9 bg-secondary">
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
@@ -147,6 +174,36 @@ export function CreateRoom() {
               </Select>
             </div>
           </div>
+          {isPublic === "false" ? (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="room-password">Senha da sala</Label>
+                <Input
+                  id="room-password"
+                  type="password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  placeholder="Minimo 6 caracteres"
+                  minLength={6}
+                  autoComplete="new-password"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="room-confirm-password">Confirmar senha</Label>
+                <Input
+                  id="room-confirm-password"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(event) => setConfirmPassword(event.target.value)}
+                  placeholder="Repita a senha"
+                  minLength={6}
+                  autoComplete="new-password"
+                  required
+                />
+              </div>
+            </div>
+          ) : null}
           {error ? <p className="text-sm text-destructive">{error}</p> : null}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>

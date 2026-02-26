@@ -15,7 +15,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       closeButton
       className="toaster group"
       toastOptions={{
-        duration: 10022200,
+        duration: 12000,
         classNames: {
           toast: "group toast pr-12 group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg",
           actionButton: "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
