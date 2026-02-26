@@ -21,14 +21,7 @@ export function Providers({ locale, children }: ProviderProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <NuqsAdapter>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          themes={["light", "dark"]}
-          storageKey="color-theme"
-          enableSystem={false}
-          disableTransitionOnChange
-        >
+        <ThemeProvider attribute="class" defaultTheme="dark" themes={["light", "dark"]} storageKey="color-theme" enableSystem={false} disableTransitionOnChange>
           <I18nProviderClient locale={locale}>
             <LocalePersist locale={locale as "pt-br" | "en-us"} />
             {children}
@@ -38,7 +31,7 @@ export function Providers({ locale, children }: ProviderProps) {
           </I18nProviderClient>
         </ThemeProvider>
       </NuqsAdapter>
-      <ReactQueryDevtools initialIsOpen={true} />
+      <ReactQueryDevtools initialIsOpen={true} buttonPosition="bottom-left" />
     </QueryClientProvider>
   );
 }
