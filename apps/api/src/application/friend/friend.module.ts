@@ -6,6 +6,7 @@ import { FriendController } from '@/presentation/controllers/friend/friend.contr
 import { SendFriendRequestUseCase } from './use-case/send-friend-request.use-case';
 import { AcceptFriendRequestUseCase } from './use-case/accept-friend-request.use-case';
 import { DeleteFriendUseCase } from './use-case/delete-friend.use-case';
+import { ListFriendsUseCase } from './use-case/list-friends.use-case';
 import { UserModule } from '@/application/user/user.module';
 import { UlidModule } from '@/shared/ulid/ulid.module';
 
@@ -20,6 +21,7 @@ import { UlidModule } from '@/shared/ulid/ulid.module';
     SendFriendRequestUseCase,
     AcceptFriendRequestUseCase,
     DeleteFriendUseCase,
+    ListFriendsUseCase,
   ],
   controllers: [FriendController],
   exports: [FriendsTypeOrmRepository],

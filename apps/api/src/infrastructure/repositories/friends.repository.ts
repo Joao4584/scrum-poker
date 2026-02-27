@@ -68,4 +68,15 @@ export class FriendsTypeOrmRepository {
       .andWhere('friends.deleted_at IS NULL')
       .getMany();
   }
+
+  async listByUserId(user_id: number): Promise<Friends[]> {
+    return await this.repository.find({
+      where: [{ user_id }, { friend_id: user_id }],
+      relations: {
+        user: true,
+        friend: true,
+      },
+      order: { created_at: 'DESC' },
+    });
+  }
 }

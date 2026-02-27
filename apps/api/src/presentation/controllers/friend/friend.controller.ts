@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -23,6 +24,7 @@ import { ValidationRequestPipe } from '@/shared/pipes/validation-request.pipe';
 import { SendFriendRequestUseCase } from '@/application/friend/use-case/send-friend-request.use-case';
 import { AcceptFriendRequestUseCase } from '@/application/friend/use-case/accept-friend-request.use-case';
 import { DeleteFriendUseCase } from '@/application/friend/use-case/delete-friend.use-case';
+import { ListFriendsUseCase } from '@/application/friend/use-case/list-friends.use-case';
 import { FriendDocs } from './friend.doc';
 
 @ApiTags(FriendDocs.tags)
@@ -33,7 +35,15 @@ export class FriendController {
     private readonly sendFriendRequestUseCase: SendFriendRequestUseCase,
     private readonly acceptFriendRequestUseCase: AcceptFriendRequestUseCase,
     private readonly deleteFriendUseCase: DeleteFriendUseCase,
+    private readonly listFriendsUseCase: ListFriendsUseCase,
   ) {}
+
+  @Get()
+  @ApiOperation(FriendDocs.list.operation)
+  @ApiResponse(FriendDocs.list.response)
+  async list(@User() user: UserEntity) {
+    return await this.listFriendsUseCase.execute(user.id);
+  }
 
   @Post('requests')
   @ApiOperation(FriendDocs.request.operation)
