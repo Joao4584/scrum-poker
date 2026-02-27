@@ -24,8 +24,7 @@ export default {
   landing: {
     badge: "Manutenção",
     title: "Estamos lapidando sua experiência",
-    description:
-      "Nossa equipe está aplicando melhorias para deixar o planejamento mais rápido e suave. Voltamos em breve.",
+    description: "Nossa equipe está aplicando melhorias para deixar o planejamento mais rápido e suave. Voltamos em breve.",
     primaryCta: "Voltar para início",
     secondaryCta: "Ver atualizações",
   },
@@ -33,8 +32,7 @@ export default {
     alertTitle: "Atenção",
     alertMessage: "Não encontramos a página que você procura.",
     title: "Página não encontrada",
-    description:
-      "O conteúdo pode ter sido movido ou não existe mais. Verifique o endereço ou volte para a página principal.",
+    description: "O conteúdo pode ter sido movido ou não existe mais. Verifique o endereço ou volte para a página principal.",
     backHome: "Voltar para início",
     tryAgain: "Tentar novamente",
   },
@@ -216,6 +214,34 @@ export default {
       },
       table: {
         emptyTitle: "Nenhum Amigo Encontrado",
+      },
+      list: {
+        loading: "Carregando amigos...",
+        emptyDescription: "Envie um pedido para iniciar sua rede de amigos.",
+        requestButton: "Pedidos ({count})",
+        requestsDialogTitle: "Pedidos recentes",
+        requestsDialogDescription: "Aqui voce pode aceitar, recusar ou cancelar pedidos.",
+        recentRequestsTitle: "Pedidos recentes ({count})",
+        friendsTitle: "Amigos ({count})",
+        noRecentRequests: "Sem pedidos recentes.",
+        noFriends: "Voce ainda nao possui amigos aceitos.",
+        processing: "Processando acao...",
+        actions: {
+          accept: "Aceitar",
+          decline: "Recusar",
+          cancel: "Cancelar",
+          remove: "Remover",
+        },
+        toasts: {
+          acceptSuccessTitle: "Pedido aceito",
+          acceptSuccessDescription: "Agora voces ja sao amigos.",
+          acceptErrorTitle: "Falha ao aceitar pedido",
+          acceptErrorDescription: "Tente novamente em instantes.",
+          removeSuccessTitle: "Atualizado com sucesso",
+          removeSuccessDescription: "A relacao de amizade foi atualizada.",
+          removeErrorTitle: "Falha ao atualizar amizade",
+          removeErrorDescription: "Nao foi possivel concluir a acao.",
+        },
       },
       serviceTable: {
         statusMeta: "Status",

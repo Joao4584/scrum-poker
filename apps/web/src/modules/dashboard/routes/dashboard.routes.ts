@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Bell, Kanban, PanelsLeftBottom, Clock8, Trash2, Users } from "lucide-react";
+import { Clock8, Users } from "lucide-react";
 
 export interface RouteProps {
   title: string;
@@ -35,18 +35,12 @@ export const routeDashboardConfig: RouteDefinitionConfig[] = [
     icon: Clock8,
     path: "/",
   },
-  // {
-  //   titleKey: "dashboard.menu.friends",
-  //   fallback: "friends",
-  //   icon: Users,
-  //   path: "/friends",
-  // },
-  // {
-  //   titleKey: "dashboard.menu.trash",
-  //   fallback: "trash",
-  //   icon: Trash2,
-  //   path: "/trash",
-  // },
+  {
+    titleKey: "dashboard.menu.friends",
+    fallback: "friends",
+    icon: Users,
+    path: "/friends",
+  },
 ];
 
 export function getDashboardRoutes(t: (key: string, params?: Record<string, unknown>) => string): RouteDefinition[] {

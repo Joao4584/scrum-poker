@@ -10,7 +10,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -22,6 +21,9 @@ import { searchUsers } from "@/modules/dashboard/services/search-users";
 import { sendFriendRequest } from "@/modules/dashboard/services/send-friend-request";
 import { useUser } from "@/modules/dashboard/hooks/use-user";
 import { deleteFriendRequest } from "@/modules/dashboard/services/delete-friend-request";
+import { SearchUserResult } from "@/modules/dashboard/services/search-users";
+
+type SearchUsersCache = { data: SearchUserResult[] };
 
 export function AddFriendDialog() {
   const t = useI18n();
@@ -86,7 +88,7 @@ export function AddFriendDialog() {
       });
       queryClient.setQueryData(
         ["friends:search", submittedQuery],
-        (current?: { data: Array<any> }) => {
+        (current?: SearchUsersCache) => {
           if (!current) return current;
           return {
             ...current,
@@ -104,7 +106,7 @@ export function AddFriendDialog() {
           };
         },
       );
-      queryClient.invalidateQueries({ queryKey: ["table:services-panel"] });
+      queryClient.invalidateQueries({ queryKey: ["friends:list"] });
     },
     onError: (_error, _variables, context) => {
       if (context?.previous) {
@@ -128,7 +130,7 @@ export function AddFriendDialog() {
       });
       queryClient.setQueryData(
         ["friends:search", submittedQuery],
-        (current?: { data: Array<any> }) => {
+        (current?: SearchUsersCache) => {
           if (!current) return current;
           return {
             ...current,
@@ -143,7 +145,7 @@ export function AddFriendDialog() {
           };
         },
       );
-      queryClient.invalidateQueries({ queryKey: ["table:services-panel"] });
+      queryClient.invalidateQueries({ queryKey: ["friends:list"] });
     },
     onError: () => {
       toast(t("dashboard.friends.addDialog.toasts.cancelErrorTitle"), {
@@ -250,11 +252,6 @@ export function AddFriendDialog() {
             })}
           </div>
         </div>
-        <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-            {t("dashboard.friends.addDialog.actions.close")}
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

@@ -24,8 +24,7 @@ export default {
   landing: {
     badge: "Maintenance",
     title: "We are polishing your experience",
-    description:
-      "Our squad is rolling out improvements to make planning faster and smoother. We will be back online shortly.",
+    description: "Our squad is rolling out improvements to make planning faster and smoother. We will be back online shortly.",
     primaryCta: "Back to home",
     secondaryCta: "See status updates",
   },
@@ -33,8 +32,7 @@ export default {
     alertTitle: "Heads up",
     alertMessage: "We could not find the page you were looking for.",
     title: "Page not found",
-    description:
-      "The content may have been moved or no longer exists. Check the address or head back to the main page.",
+    description: "The content may have been moved or no longer exists. Check the address or head back to the main page.",
     backHome: "Return to home",
     tryAgain: "Try again",
   },
@@ -216,6 +214,34 @@ export default {
       },
       table: {
         emptyTitle: "No friends found",
+      },
+      list: {
+        loading: "Loading friends...",
+        emptyDescription: "Send a request to start your friends network.",
+        requestButton: "Requests ({count})",
+        requestsDialogTitle: "Recent requests",
+        requestsDialogDescription: "You can accept, decline, or cancel requests here.",
+        recentRequestsTitle: "Recent requests ({count})",
+        friendsTitle: "Friends ({count})",
+        noRecentRequests: "No recent requests.",
+        noFriends: "You do not have accepted friends yet.",
+        processing: "Processing action...",
+        actions: {
+          accept: "Accept",
+          decline: "Decline",
+          cancel: "Cancel",
+          remove: "Remove",
+        },
+        toasts: {
+          acceptSuccessTitle: "Request accepted",
+          acceptSuccessDescription: "You are now friends.",
+          acceptErrorTitle: "Failed to accept request",
+          acceptErrorDescription: "Please try again shortly.",
+          removeSuccessTitle: "Updated successfully",
+          removeSuccessDescription: "Friend relationship was updated.",
+          removeErrorTitle: "Failed to update friendship",
+          removeErrorDescription: "Could not complete this action.",
+        },
       },
       serviceTable: {
         statusMeta: "Status",
