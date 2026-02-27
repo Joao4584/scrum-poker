@@ -29,6 +29,7 @@ import { DeleteVoteUseCase } from './use-case/delete-vote.use-case';
 import { VoteController } from '@/presentation/controllers/room/vote.controller';
 import { UploadFile } from '@/infrastructure/entities/upload-file.entity';
 import { UploadFileTypeOrmRepository } from '@/infrastructure/repositories/upload-file.repository';
+import { VerifyRoomPasswordUseCase } from './use-case/verify-room-password.use-case';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Room, RoomParticipant, RoomFavorite, Question, Vote, UploadFile]), UlidModule],
@@ -39,6 +40,7 @@ import { UploadFileTypeOrmRepository } from '@/infrastructure/repositories/uploa
     QuestionTypeOrmRepository,
     VoteTypeOrmRepository,
     UploadFileTypeOrmRepository,
+    VerifyRoomPasswordUseCase,
     CreateRoomUseCase,
     GetRoomUseCase,
     DeleteRoomUseCase,

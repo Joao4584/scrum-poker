@@ -8,9 +8,12 @@ import { GetRoomUseCase } from '@/application/room/use-case/get-room.use-case';
 import { DeleteRoomUseCase } from '@/application/room/use-case/delete-room.use-case';
 import { ListUserRoomsUseCase } from '@/application/room/use-case/list-user-rooms.use-case';
 import { ToggleRoomFavoriteUseCase } from '@/application/room/use-case/toggle-room-favorite.use-case';
+import { VerifyRoomPasswordUseCase } from '@/application/room/use-case/verify-room-password.use-case';
 import { User as UserEntity } from '@/infrastructure/entities/user.entity';
 import { User } from '@/presentation/decorators/user.decorator';
 import { AppErrors } from '@/presentation/errors';
+import { VerifyRoomPasswordRequest } from '@/presentation/requests/room/verify-room-password.request';
+import { VerifyRoomAccessTokenRequest } from '@/presentation/requests/room/verify-room-access-token.request';
 import { RoomDocs } from './room.doc';
 
 @ApiTags(RoomDocs.tags)
@@ -24,6 +27,7 @@ export class RoomController {
     @Inject(ListUserRoomsUseCase)
     private readonly listUserRoomsUseCase: ListUserRoomsUseCase,
     private readonly toggleRoomFavoriteUseCase: ToggleRoomFavoriteUseCase,
+    private readonly verifyRoomPasswordUseCase: VerifyRoomPasswordUseCase,
   ) {}
 
   @Post()
@@ -88,5 +92,35 @@ export class RoomController {
       message: result.liked ? 'Sala favoritada' : 'Favorito removido',
       ...result,
     };
+  }
+
+  @Post(':public_id/verify-password')
+  @ApiOperation({ summary: 'Verify private room password' })
+  @ApiParam({ name: 'public_id', description: 'Room public id' })
+  @ApiResponse({
+    status: 200,
+    description: 'Password accepted',
+    schema: { example: { authorized: true } },
+  })
+  async verifyRoomPassword(
+    @Param('public_id') public_id: string,
+    @Body(ValidationRequestPipe) data: VerifyRoomPasswordRequest,
+  ) {
+    return await this.verifyRoomPasswordUseCase.execute(public_id, data.password);
+  }
+
+  @Post(':public_id/verify-access-token')
+  @ApiOperation({ summary: 'Verify room access token' })
+  @ApiParam({ name: 'public_id', description: 'Room public id' })
+  @ApiResponse({
+    status: 200,
+    description: 'Access token accepted',
+    schema: { example: { authorized: true } },
+  })
+  async verifyRoomAccessToken(
+    @Param('public_id') public_id: string,
+    @Body(ValidationRequestPipe) data: VerifyRoomAccessTokenRequest,
+  ) {
+    return this.verifyRoomPasswordUseCase.verifyAccessToken(public_id, data.accessToken);
   }
 }
