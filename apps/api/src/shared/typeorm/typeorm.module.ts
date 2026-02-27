@@ -8,6 +8,7 @@ import { User } from '@/infrastructure/entities/user.entity';
 import { Friends } from '@/infrastructure/entities/friends.entity';
 import { RoomFavorite } from '@/infrastructure/entities/room-favorite.entity';
 import { UploadFile } from '@/infrastructure/entities/upload-file.entity';
+import { SupportRequest } from '@/infrastructure/entities/support-request.entity';
 import { env } from '@scrum-poker/env';
 
 @Module({
@@ -22,16 +23,7 @@ import { env } from '@scrum-poker/env';
       extra: {
         options: `-c timezone=${env.DB_TIMEZONE}`,
       },
-      entities: [
-        User,
-        Room,
-        RoomParticipant,
-        RoomFavorite,
-        Question,
-        Vote,
-        Friends,
-        UploadFile,
-      ],
+      entities: [User, Room, RoomParticipant, RoomFavorite, Question, Vote, Friends, UploadFile, SupportRequest],
       synchronize: false,
     }),
   ],

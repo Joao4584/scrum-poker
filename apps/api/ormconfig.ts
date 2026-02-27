@@ -9,6 +9,7 @@ import { Vote } from './src/infrastructure/entities/vote.entity';
 import { Friends } from './src/infrastructure/entities/friends.entity';
 import { RoomFavorite } from './src/infrastructure/entities/room-favorite.entity';
 import { UploadFile } from './src/infrastructure/entities/upload-file.entity';
+import { SupportRequest } from './src/infrastructure/entities/support-request.entity';
 
 export default new DataSource({
   type: 'postgres',
@@ -20,7 +21,17 @@ export default new DataSource({
   extra: {
     options: `-c timezone=${env.DB_TIMEZONE}`,
   },
-  entities: [User, Room, RoomParticipant, RoomFavorite, Question, Vote, Friends, UploadFile],
+  entities: [
+    User,
+    Room,
+    RoomParticipant,
+    RoomFavorite,
+    Question,
+    Vote,
+    Friends,
+    UploadFile,
+    SupportRequest,
+  ],
   migrations: ['./src/infrastructure/migrations/*.ts'],
   synchronize: false,
 });
