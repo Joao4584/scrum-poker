@@ -1,11 +1,13 @@
 "use client";
 
+import { useI18n } from "@/locales/client";
 import { CHAT_MESSAGE_MAX_CHARS } from "@/modules/shared/config/phaser-js/chat-config";
 import { useRoomActions } from "../hooks/use-room-actions";
 import { useRoomStore } from "../stores/room-store";
 import { useRoomUiStore } from "../stores/room-ui-store";
 
 export function ChatCard() {
+  const t = useI18n();
   const room = useRoomStore((s) => s.room);
   const chatMessage = useRoomUiStore((s) => s.chatMessage);
   const setChatMessage = useRoomUiStore((s) => s.setChatMessage);
@@ -20,7 +22,7 @@ export function ChatCard() {
           setChatMessage(next);
         }}
         maxLength={CHAT_MESSAGE_MAX_CHARS}
-        placeholder="Mensagem"
+        placeholder={t("room.chat.placeholder")}
         onFocus={() => setGameFocus(false)}
         onBlur={() => setGameFocus(true)}
         onKeyDownCapture={(e) => {
@@ -38,7 +40,7 @@ export function ChatCard() {
         className="px-3 py-2 text-sm font-semibold bg-slate-700 text-slate-100 rounded hover:bg-slate-600 border border-slate-600 transition disabled:opacity-50"
         disabled={!room}
       >
-        Enviar
+        {t("room.chat.send")}
       </button>
     </div>
   );

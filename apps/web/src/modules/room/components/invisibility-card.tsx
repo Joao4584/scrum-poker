@@ -1,8 +1,10 @@
 "use client";
 
+import { useI18n } from "@/locales/client";
 import { useRoomUiStore } from "../stores/room-ui-store";
 
 export function InvisibilityCard() {
+  const t = useI18n();
   const invisibleMode = useRoomUiStore((s) => s.invisibleMode);
   const toggleInvisibleMode = useRoomUiStore((s) => s.toggleInvisibleMode);
 
@@ -13,16 +15,16 @@ export function InvisibilityCard() {
         onClick={toggleInvisibleMode}
         className="flex items-center gap-2 text-left"
         aria-pressed={invisibleMode}
-        title={invisibleMode ? "Desativar invisibilidade" : "Ativar invisibilidade"}
+        title={invisibleMode ? t("room.invisibility.titleDisable") : t("room.invisibility.titleEnable")}
       >
-        <span className="text-[11px] uppercase tracking-wide text-slate-400">Invisivel</span>
+        <span className="text-[11px] uppercase tracking-wide text-slate-400">{t("room.invisibility.label")}</span>
         <span
           className={[
             "rounded-md border px-2 py-0.5 text-xs font-semibold transition-colors",
             invisibleMode ? "border-emerald-400/50 bg-emerald-500/15 text-emerald-300" : "border-slate-600/70 bg-slate-800/70 text-slate-200",
           ].join(" ")}
         >
-          {invisibleMode ? "Ativo" : "Off"}
+          {invisibleMode ? t("room.invisibility.active") : t("room.invisibility.off")}
         </span>
       </button>
     </div>

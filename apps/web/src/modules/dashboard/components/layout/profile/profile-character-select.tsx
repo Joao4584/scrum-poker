@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useI18n } from "@/locales/client";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/modules/shared/ui/select";
 import spriteAssets from "@/modules/dashboard/sprites-config.json";
 import { useCharacterStore } from "@/modules/room/stores/character.store";
@@ -36,6 +37,7 @@ function SpriteThumb({ src, label, size }: { src: string; label: string; size: n
 }
 
 export function ProfileCharacterSelect() {
+  const t = useI18n();
   const queryClient = useQueryClient();
   const spriteEntries = useMemo(
     () => Object.entries(spriteAssets).filter(([key]) => key !== "ghost"),
@@ -82,12 +84,12 @@ export function ProfileCharacterSelect() {
 
   return (
     <div className="px-3 pt-3 pb-2">
-      <p className="text-xs text-muted-foreground">Personagem</p>
+      <p className="text-xs text-muted-foreground">{t("dashboard.profile.character.label")}</p>
       <Select value={selectedCharacterKey} onValueChange={handleCharacterChange} disabled={isUpdating}>
         <SelectTrigger className="mt-2 h-10 bg-secondary/70">
           <div className="flex items-center gap-2">
             {selectedSprite?.idle && <SpriteThumb src={selectedSprite.idle} label={selectedCharacterKey} size={32} />}
-            <span className="text-sm capitalize">{selectedCharacterKey || "Selecionar"}</span>
+            <span className="text-sm capitalize">{selectedCharacterKey || t("dashboard.profile.character.select")}</span>
           </div>
         </SelectTrigger>
         <SelectContent>

@@ -1,39 +1,23 @@
 "use client";
 
-import {
-  Cloud,
-  CreditCard,
-  Github,
-  Keyboard,
-  LifeBuoy,
-  LogOut,
-  Mail,
-  MessageSquare,
-  Plus,
-  PlusCircle,
-  Settings,
-  User,
-  SunMoon,
-  UserPlus,
-  Users,
-} from "lucide-react";
-
 import { ReactElement } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
+import { useI18n } from "@/locales/client";
+import { Github, LifeBuoy, LogOut, Settings, SunMoon, User } from "lucide-react";
 import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
 } from "@/modules/shared/ui/dropdown-menu";
 import { deleteCookie } from "cookies-next";
 import { storageKey } from "@/modules/shared/config/storage-key";
 import { ProfileCharacterSelect } from "./profile-character-select";
 
 export function ListContentDropDown(): ReactElement {
+  const t = useI18n();
   const { theme, setTheme } = useTheme();
   const router = useRouter();
 
@@ -45,48 +29,42 @@ export function ListContentDropDown(): ReactElement {
   const changeTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
+
+  const nextThemeLabel = theme === "dark" ? t("dashboard.profile.menu.light") : t("dashboard.profile.menu.dark");
+
   return (
-    <DropdownMenuContent align="end" sideOffset={12} flushCorner="top-right" className="w-64 mr-6 bg-card/70">
+    <DropdownMenuContent align="end" sideOffset={12} flushCorner="top-right" className="mr-6 w-64 bg-card/70">
       <ProfileCharacterSelect />
       <DropdownMenuSeparator />
-      <DropdownMenuLabel className="">Minha Conta</DropdownMenuLabel>
+      <DropdownMenuLabel>{t("dashboard.profile.menu.account")}</DropdownMenuLabel>
       <DropdownMenuSeparator />
       <DropdownMenuGroup>
         <DropdownMenuItem>
           <User className="mr-2 h-4 w-4" />
-          <span>Perfil</span>
+          <span>{t("dashboard.profile.menu.profile")}</span>
         </DropdownMenuItem>
         <DropdownMenuItem>
           <Settings className="mr-2 h-4 w-4" />
-          <span>Configurações</span>
+          <span>{t("dashboard.profile.menu.settings")}</span>
         </DropdownMenuItem>
-        {/* <DropdownMenuItem>
-          <Keyboard className="mr-2 h-4 w-4" />
-          <span>Atalhos de Teclado</span>
-          <DropdownMenuShortcut className="text-xs">ctrl + /</DropdownMenuShortcut>
-        </DropdownMenuItem> */}
         <DropdownMenuItem onClick={changeTheme}>
           <SunMoon className="mr-2 h-4 w-4" />
-          <span>Modo {theme === "dark" ? "Claro" : "Escuro"}</span>
+          <span>{t("dashboard.profile.menu.themeMode", { mode: nextThemeLabel })}</span>
         </DropdownMenuItem>
       </DropdownMenuGroup>
       <DropdownMenuSeparator />
       <DropdownMenuItem>
         <Github className="mr-2 h-4 w-4" />
-        <span>GitHub (Projeto)</span>
+        <span>{t("dashboard.profile.menu.projectGithub")}</span>
       </DropdownMenuItem>
       <DropdownMenuItem>
         <LifeBuoy className="mr-2 h-4 w-4" />
-        <span>Suporte</span>
+        <span>{t("dashboard.profile.menu.support")}</span>
       </DropdownMenuItem>
-      {/* <DropdownMenuItem disabled>
-        <Cloud className="mr-2 h-4 w-4" />
-        <span>API</span>
-      </DropdownMenuItem> */}
       <DropdownMenuSeparator />
-      <DropdownMenuItem onClick={disconnectAuth} className="rounded-bl-full dark:rounded-bl-xl rounded-br-full dark:rounded-br-xl">
+      <DropdownMenuItem onClick={disconnectAuth} className="rounded-bl-full rounded-br-full dark:rounded-bl-xl dark:rounded-br-xl">
         <LogOut className="mr-2 h-4 w-4" />
-        <span>Desconectar</span>
+        <span>{t("dashboard.profile.menu.disconnect")}</span>
       </DropdownMenuItem>
     </DropdownMenuContent>
   );

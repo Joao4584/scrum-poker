@@ -3,6 +3,7 @@
 import React, { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { UserPlus } from "lucide-react";
+import { useI18n } from "@/locales/client";
 import { toast } from "sonner";
 import { Button } from "@/modules/shared/ui/button";
 import {
@@ -23,6 +24,7 @@ import { useUser } from "@/modules/dashboard/hooks/use-user";
 import { deleteFriendRequest } from "@/modules/dashboard/services/delete-friend-request";
 
 export function AddFriendDialog() {
+  const t = useI18n();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -79,8 +81,8 @@ export function AddFriendDialog() {
       return { previous };
     },
     onSuccess: (payload, friendPublicId) => {
-      toast("Pedido enviado", {
-        description: "A solicitacao de amizade foi enviada.",
+      toast(t("dashboard.friends.addDialog.toasts.requestSentTitle"), {
+        description: t("dashboard.friends.addDialog.toasts.requestSentDescription"),
       });
       queryClient.setQueryData(
         ["friends:search", submittedQuery],
@@ -108,8 +110,8 @@ export function AddFriendDialog() {
       if (context?.previous) {
         queryClient.setQueryData(["friends:search", submittedQuery], context.previous);
       }
-      toast("Erro ao enviar", {
-        description: "Nao foi possivel enviar a solicitacao.",
+      toast(t("dashboard.friends.addDialog.toasts.requestErrorTitle"), {
+        description: t("dashboard.friends.addDialog.toasts.requestErrorDescription"),
       });
     },
   });
@@ -121,8 +123,8 @@ export function AddFriendDialog() {
   const cancelMutation = useMutation({
     mutationFn: (publicId: string) => deleteFriendRequest(publicId),
     onSuccess: (_payload, publicId) => {
-      toast("Solicitacao cancelada", {
-        description: "A solicitacao de amizade foi cancelada.",
+      toast(t("dashboard.friends.addDialog.toasts.cancelTitle"), {
+        description: t("dashboard.friends.addDialog.toasts.cancelDescription"),
       });
       queryClient.setQueryData(
         ["friends:search", submittedQuery],
@@ -144,8 +146,8 @@ export function AddFriendDialog() {
       queryClient.invalidateQueries({ queryKey: ["table:services-panel"] });
     },
     onError: () => {
-      toast("Erro ao cancelar", {
-        description: "Nao foi possivel cancelar a solicitacao.",
+      toast(t("dashboard.friends.addDialog.toasts.cancelErrorTitle"), {
+        description: t("dashboard.friends.addDialog.toasts.cancelErrorDescription"),
       });
     },
   });
@@ -160,23 +162,21 @@ export function AddFriendDialog() {
       <DialogTrigger asChild>
         <Button variant="secondary" className="gap-2">
           <UserPlus className="h-4 w-4" />
-          Adicionar amigo
+          {t("dashboard.friends.addDialog.open")}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-xl">
         <DialogHeader>
-          <DialogTitle>Adicionar amigo</DialogTitle>
-          <DialogDescription>
-            Pesquise pelo nome e envie uma solicitacao.
-          </DialogDescription>
+          <DialogTitle>{t("dashboard.friends.addDialog.title")}</DialogTitle>
+          <DialogDescription>{t("dashboard.friends.addDialog.description")}</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="friend-search">Nome</Label>
+            <Label htmlFor="friend-search">{t("dashboard.friends.addDialog.nameLabel")}</Label>
             <div className="flex gap-2">
               <Input
                 id="friend-search"
-                placeholder="Digite o nome"
+                placeholder={t("dashboard.friends.addDialog.searchPlaceholder")}
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
               />
@@ -186,14 +186,14 @@ export function AddFriendDialog() {
                 onClick={handleSearch}
                 disabled={!canSearch || isFetching}
               >
-                {isFetching ? "Buscando..." : "Pesquisar"}
+                {isFetching ? t("dashboard.friends.addDialog.searching") : t("dashboard.friends.addDialog.search")}
               </Button>
             </div>
           </div>
           <div className="space-y-3">
             {submittedQuery.length >= 2 && !isFetching && results.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                Nenhum usuario encontrado.
+                {t("dashboard.friends.addDialog.noneFound")}
               </p>
             ) : null}
             {results.map((user) => {
@@ -238,12 +238,12 @@ export function AddFriendDialog() {
                     }
                   >
                     {status === "pending_sent"
-                      ? "Cancelar"
+                      ? t("dashboard.friends.addDialog.actions.cancel")
                       : status === "pending_received"
-                        ? "Recebido"
+                        ? t("dashboard.friends.addDialog.actions.received")
                         : status === "accepted"
-                          ? "Amigo"
-                          : "Adicionar"}
+                          ? t("dashboard.friends.addDialog.actions.friend")
+                          : t("dashboard.friends.addDialog.actions.add")}
                   </Button>
                 </div>
               );
@@ -252,7 +252,7 @@ export function AddFriendDialog() {
         </div>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-            Fechar
+            {t("dashboard.friends.addDialog.actions.close")}
           </Button>
         </DialogFooter>
       </DialogContent>

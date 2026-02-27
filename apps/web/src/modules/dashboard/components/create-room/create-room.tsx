@@ -3,6 +3,7 @@
 import React, { useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
+import { useI18n } from "@/locales/client";
 import { Button } from "@/modules/shared/ui/button";
 import {
   Dialog,
@@ -22,6 +23,7 @@ import { DetailsRoom, type DetailsRoomHandle } from "../details-room/details-roo
 import { useSidebarSizeStore } from "../../stores/sidebar-size.store";
 
 export function CreateRoom() {
+  const t = useI18n();
   const queryClient = useQueryClient();
   const minimized = useSidebarSizeStore((state) => state.minimized);
   const detailsRoomRef = useRef<DetailsRoomHandle>(null);
@@ -49,19 +51,19 @@ export function CreateRoom() {
     event.preventDefault();
     const trimmedName = name.trim();
     if (trimmedName.length < 3) {
-      setError("O nome da sala deve ter pelo menos 3 caracteres.");
+      setError(t("dashboard.createRoom.errors.nameMin"));
       return;
     }
 
     const isPrivateRoom = isPublic === "false";
     if (isPrivateRoom) {
       if (password.length < 6) {
-        setError("A senha da sala deve ter pelo menos 6 caracteres.");
+        setError(t("dashboard.createRoom.errors.passwordMin"));
         return;
       }
 
       if (password !== confirmPassword) {
-        setError("A confirmacao de senha nao confere.");
+        setError(t("dashboard.createRoom.errors.passwordConfirm"));
         return;
       }
     }
@@ -86,7 +88,7 @@ export function CreateRoom() {
         detailsRoomRef.current?.open(response.room.public_id);
       }
     } catch {
-      setError("Nao foi possivel criar a sala. Tente novamente.");
+      setError(t("dashboard.createRoom.errors.createFailed"));
     } finally {
       setSubmitting(false);
     }
@@ -108,39 +110,39 @@ export function CreateRoom() {
             transition-[background-position] duration-700 ease-in-out hover:bg-[position:100%_50%]"
         >
           <Plus className=" h-4 w-4" />
-          {minimized ? null : "Novo"}
+          {minimized ? null : t("dashboard.createRoom.triggerNew")}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-xl">
         <DialogHeader>
-          <DialogTitle>Nova sala</DialogTitle>
-          <DialogDescription>Preencha os dados para criar uma sala.</DialogDescription>
+          <DialogTitle>{t("dashboard.createRoom.title")}</DialogTitle>
+          <DialogDescription>{t("dashboard.createRoom.description")}</DialogDescription>
         </DialogHeader>
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="space-y-2">
-            <Label htmlFor="room-name">Nome</Label>
+            <Label htmlFor="room-name">{t("dashboard.createRoom.fields.name")}</Label>
             <Input
               id="room-name"
               value={name}
               onChange={(event) => setName(event.target.value)}
-              placeholder="Ex: Planning Poker - Squad A"
+              placeholder={t("dashboard.createRoom.placeholders.roomName")}
               required
               minLength={3}
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="room-description">Descricao</Label>
+            <Label htmlFor="room-description">{t("dashboard.createRoom.fields.description")}</Label>
             <textarea
               id="room-description"
               value={description}
               onChange={(event) => setDescription(event.target.value)}
               className="flex min-h-[90px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-              placeholder="Opcional"
+              placeholder={t("dashboard.createRoom.placeholders.optional")}
             />
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label>Visibilidade</Label>
+              <Label>{t("dashboard.createRoom.fields.visibility")}</Label>
               <Select
                 value={isPublic}
                 onValueChange={(value) => {
@@ -152,24 +154,24 @@ export function CreateRoom() {
                 }}
               >
                 <SelectTrigger className="h-9 bg-secondary">
-                  <SelectValue placeholder="Selecione" />
+                  <SelectValue placeholder={t("dashboard.createRoom.placeholders.select")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="true">Publica</SelectItem>
-                  <SelectItem value="false">Privada</SelectItem>
+                  <SelectItem value="true">{t("dashboard.createRoom.visibility.public")}</SelectItem>
+                  <SelectItem value="false">{t("dashboard.createRoom.visibility.private")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Escala de votacao</Label>
+              <Label>{t("dashboard.createRoom.fields.votingScale")}</Label>
               <Select value={votingScale} onValueChange={(value) => setVotingScale(value as "none" | VotingScale)}>
                 <SelectTrigger className="h-9 bg-secondary">
-                  <SelectValue placeholder="Opcional" />
+                  <SelectValue placeholder={t("dashboard.createRoom.placeholders.optional")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">Sem escala</SelectItem>
-                  <SelectItem value={VotingScale.FIBONACCI}>Fibonacci</SelectItem>
-                  <SelectItem value={VotingScale.POWER_OF_2}>Power of 2</SelectItem>
+                  <SelectItem value="none">{t("dashboard.createRoom.scale.none")}</SelectItem>
+                  <SelectItem value={VotingScale.FIBONACCI}>{t("dashboard.createRoom.scale.fibonacci")}</SelectItem>
+                  <SelectItem value={VotingScale.POWER_OF_2}>{t("dashboard.createRoom.scale.powerOf2")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -177,26 +179,26 @@ export function CreateRoom() {
           {isPublic === "false" ? (
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="room-password">Senha da sala</Label>
+                <Label htmlFor="room-password">{t("dashboard.createRoom.fields.roomPassword")}</Label>
                 <Input
                   id="room-password"
                   type="password"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
-                  placeholder="Minimo 6 caracteres"
+                  placeholder={t("dashboard.createRoom.placeholders.minPassword")}
                   minLength={6}
                   autoComplete="new-password"
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="room-confirm-password">Confirmar senha</Label>
+                <Label htmlFor="room-confirm-password">{t("dashboard.createRoom.fields.confirmPassword")}</Label>
                 <Input
                   id="room-confirm-password"
                   type="password"
                   value={confirmPassword}
                   onChange={(event) => setConfirmPassword(event.target.value)}
-                  placeholder="Repita a senha"
+                  placeholder={t("dashboard.createRoom.placeholders.repeatPassword")}
                   minLength={6}
                   autoComplete="new-password"
                   required
@@ -207,10 +209,10 @@ export function CreateRoom() {
           {error ? <p className="text-sm text-destructive">{error}</p> : null}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-              Cancelar
+              {t("dashboard.createRoom.actions.cancel")}
             </Button>
             <Button type="submit" disabled={submitting}>
-              {submitting ? "Criando..." : "Criar sala"}
+              {submitting ? t("dashboard.createRoom.actions.creating") : t("dashboard.createRoom.actions.create")}
             </Button>
           </DialogFooter>
         </form>

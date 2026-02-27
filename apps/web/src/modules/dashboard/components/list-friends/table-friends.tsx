@@ -3,7 +3,8 @@
 import React, { useCallback, useState } from "react";
 import { parseAsInteger, useQueryState } from "nuqs";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { Send, Users } from "lucide-react";
+import { Users } from "lucide-react";
+import { useI18n } from "@/locales/client";
 
 import { DataTableViewOptions, DataTableEmptyState, useTableSettings, RenderTable } from "@/modules/shared/components/data-table";
 import { useColumns } from "./use-columns";
@@ -11,6 +12,7 @@ import { useListFriends } from "../../hooks/use-friends";
 import { AddFriendDialog } from "./add-friend-dialog";
 
 export function FriendListTable() {
+  const t = useI18n();
   const columns: any = useColumns();
 
   const { columnOrder, columnVisibility, handleColumnOrderChange, handleColumnVisibilityChange } = useTableSettings("service-panel-administrative", columns);
@@ -47,7 +49,7 @@ export function FriendListTable() {
 
   const renderTable = () => {
     if (services?.meta?.total === 0) {
-      return <DataTableEmptyState title={`Nenhum Amigo Encontrado`} description={""} icon={Users}></DataTableEmptyState>;
+      return <DataTableEmptyState title={t("dashboard.friends.table.emptyTitle")} description={""} icon={Users}></DataTableEmptyState>;
     }
 
     return <RenderTable columns={columns} columnOrder={columnOrder} onColumnOrderChange={handleColumnOrderChange} table={table} isLoading={isLoading} />;

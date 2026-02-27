@@ -1,17 +1,18 @@
 "use client";
 
+import { useCurrentLocale, useI18n } from "@/locales/client";
 import { Skeleton } from "@/modules/shared/ui/skeleton";
 import { getLevelTheme } from "@/modules/shared/utils/level-theme";
 import { useInfoUser } from "../hooks/use-info-user";
 import { useRoomUiStore } from "../stores/room-ui-store";
 
-function formatMemberSince(dateString?: string) {
+function formatMemberSince(dateString: string | undefined, locale: string) {
   if (!dateString) return "---";
 
   const date = new Date(dateString);
   if (Number.isNaN(date.getTime())) return "---";
 
-  return new Intl.DateTimeFormat("pt-BR", {
+  return new Intl.DateTimeFormat(locale === "pt-br" ? "pt-BR" : "en-US", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -29,9 +30,18 @@ function getInitials(name?: string) {
 }
 
 export function PlayerInfoCard() {
+  const t = useI18n();
+  const locale = useCurrentLocale();
   const publicId = useRoomUiStore((s) => s.selectedPlayerPublicId);
   const { data, isLoading, isError } = useInfoUser(publicId);
   const levelTheme = getLevelTheme(data?.level);
+  const tierLabelByTheme = {
+    gray: t("room.playerInfo.levelTiers.gray"),
+    blue: t("room.playerInfo.levelTiers.blue"),
+    yellow: t("room.playerInfo.levelTiers.yellow"),
+    beige: t("room.playerInfo.levelTiers.beige"),
+    red: t("room.playerInfo.levelTiers.red"),
+  } as const;
 
   if (!publicId) return null;
 
@@ -42,10 +52,7 @@ export function PlayerInfoCard() {
           className="absolute left-0 top-0 h-full w-1.5"
           style={{ background: `linear-gradient(180deg, ${levelTheme.ui.accentStrong}, ${levelTheme.ui.accentHex})` }}
         />
-        <div
-          className="absolute -left-8 top-5 h-20 w-20 rounded-full blur-2xl"
-          style={{ backgroundColor: levelTheme.ui.accentSoft }}
-        />
+        <div className="absolute -left-8 top-5 h-20 w-20 rounded-full blur-2xl" style={{ backgroundColor: levelTheme.ui.accentSoft }} />
         <div
           className="absolute right-3 top-3 rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em]"
           style={{
@@ -55,7 +62,7 @@ export function PlayerInfoCard() {
             boxShadow: `0 0 0 1px ${levelTheme.ui.accentSoft} inset`,
           }}
         >
-          {levelTheme.label}
+          {tierLabelByTheme[levelTheme.tier]}
         </div>
         <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-cyan-300/40 to-transparent" />
         <div className="absolute -right-12 top-3 h-24 w-24 rotate-12 rounded-2xl border border-white/10 bg-white/5" />
@@ -64,7 +71,7 @@ export function PlayerInfoCard() {
 
       <div className="relative px-4 pb-4">
         <div className="-mt-10 flex items-end justify-between gap-3">
-          <div className="h-20 w-20 overflow-hidden rounded-2xl border-2 border-slate-900 bg-slate-800 shadow-lg ring-1 ring-cyan-200/15 flex items-center justify-center">
+          <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl border-2 border-slate-900 bg-slate-800 shadow-lg ring-1 ring-cyan-200/15">
             {data?.avatar_url ? (
               <img src={data.avatar_url} alt={data.name} className="h-full w-full object-cover" />
             ) : (
@@ -90,7 +97,7 @@ export function PlayerInfoCard() {
                 />
                 <div className="relative text-center leading-none">
                   <p className="text-[8px] font-semibold uppercase tracking-[0.16em]" style={{ color: levelTheme.ui.textOnAccent }}>
-                    Lv
+                    {t("room.playerInfo.levelBadge")}
                   </p>
                   <p className="mt-0.5 text-[22px] font-extrabold tracking-tight" style={{ color: levelTheme.ui.textOnAccent }}>
                     {data.level}
@@ -113,33 +120,33 @@ export function PlayerInfoCard() {
           </section>
         ) : isError || !data ? (
           <div className="mt-4 rounded-xl border border-rose-300/20 bg-rose-400/5 p-3">
-            <p className="text-sm text-rose-300">Nao foi possivel carregar o perfil.</p>
+            <p className="text-sm text-rose-300">{t("room.playerInfo.loadError")}</p>
           </div>
         ) : (
           <div className="mt-4">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className="truncate text-lg font-semibold tracking-tight text-slate-50">{data.name}</p>
-                <p className="mt-1 text-[11px] uppercase tracking-[0.16em] text-slate-400">Informações do Perfil</p>
+                <p className="mt-1 text-[11px] uppercase tracking-[0.16em] text-slate-400">{t("room.playerInfo.profileInfo")}</p>
               </div>
             </div>
 
             <div className="mt-4 rounded-xl border border-slate-700/70 bg-slate-800/45 p-3">
-              <p className="text-[11px] uppercase tracking-[0.14em] text-slate-400">Membro desde</p>
-              <p className="mt-1 text-sm font-semibold text-slate-100">{formatMemberSince(data.member_since)}</p>
+              <p className="text-[11px] uppercase tracking-[0.14em] text-slate-400">{t("room.playerInfo.memberSince")}</p>
+              <p className="mt-1 text-sm font-semibold text-slate-100">{formatMemberSince(data.member_since, locale)}</p>
             </div>
 
             <p className="mt-3 rounded-xl border border-slate-700/60 bg-slate-800/35 px-3 py-2.5 text-xs leading-5 text-slate-300">
-              {data.description?.trim() || "Sem descricao ainda."}
+              {data.description?.trim() || t("room.playerInfo.noDescription")}
             </p>
 
             <div className="mt-3 grid grid-cols-2 gap-2">
               <div className="rounded-xl border border-slate-700/70 bg-slate-800/55 px-3 py-2">
-                <span className="text-[10px] uppercase tracking-[0.14em] text-slate-400">XP Total</span>
+                <span className="text-[10px] uppercase tracking-[0.14em] text-slate-400">{t("room.playerInfo.xpTotal")}</span>
                 <p className="mt-1 text-base font-semibold text-slate-100">{data.xp}</p>
               </div>
               <div className="rounded-xl border border-slate-700/70 bg-slate-800/55 px-3 py-2">
-                <span className="text-[10px] uppercase tracking-[0.14em] text-slate-400">Nivel</span>
+                <span className="text-[10px] uppercase tracking-[0.14em] text-slate-400">{t("room.playerInfo.level")}</span>
                 <p className="mt-1 text-base font-semibold" style={{ color: levelTheme.ui.textOnAccent }}>
                   {data.level}
                 </p>

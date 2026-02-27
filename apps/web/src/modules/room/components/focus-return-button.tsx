@@ -1,9 +1,11 @@
 "use client";
 
+import { useI18n } from "@/locales/client";
 import { useRoomActions } from "../hooks/use-room-actions";
 import { useRoomUiStore } from "../stores/room-ui-store";
 
 export function FocusReturnButton() {
+  const t = useI18n();
   const isGameFocused = useRoomUiStore((s) => s.isGameFocused);
   const { setGameFocus } = useRoomActions();
 
@@ -15,7 +17,7 @@ export function FocusReturnButton() {
       }}
       className="absolute top-4 right-4 z-50 px-3 py-2 text-xs font-semibold bg-slate-800/90 text-slate-100 border border-slate-700 rounded shadow hover:bg-slate-700 transition"
     >
-      Voltar ao jogo
+      {t("room.focusReturn.button")}
     </button>
   );
 }

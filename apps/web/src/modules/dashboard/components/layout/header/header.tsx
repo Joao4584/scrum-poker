@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { Input } from "@/modules/shared/ui/input";
+import { useI18n } from "@/locales/client";
 import { Button } from "@/modules/shared/ui/button";
 import { toast } from "sonner";
 import { AlertCircle, Share2 } from "lucide-react";
@@ -14,6 +14,7 @@ interface HeaderProps {
 }
 
 export function Header({ onSearch }: HeaderProps) {
+  const t = useI18n();
   const [searchQuery, setSearchQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
@@ -38,25 +39,28 @@ export function Header({ onSearch }: HeaderProps) {
         document.body.removeChild(tempInput);
       }
 
-      toast("Link copiado", { description: "Agora é só enviar para o time.", icon: <AlertCircle /> });
-    } catch (error) {
-      toast("Nao foi possivel copiar", { description: "Copie manualmente o link da barra de endereco." });
+      toast(t("dashboard.header.copySuccessTitle"), {
+        description: t("dashboard.header.copySuccessDescription"),
+        icon: <AlertCircle />,
+      });
+    } catch {
+      toast(t("dashboard.header.copyErrorTitle"), {
+        description: t("dashboard.header.copyErrorDescription"),
+      });
     }
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-card/70 border-b border-border ">
-      <div className="px-5 py-4 flex items-center justify-between gap-4">
-        {/* Logo */}
-        <div className="flex items-center gap-2 min-w-fit">
+    <header className="sticky top-0 z-40 border-b border-border bg-card/70">
+      <div className="flex items-center justify-between gap-4 px-5 py-4">
+        <div className="flex min-w-fit items-center gap-2">
           <Image src="/meta-rtc-logo.png" width={120} height={70} alt="Meta-Scrum" />
         </div>
-        {/* Icons */}
         <div className="flex items-center gap-2">
           {isRoomRoute && (
             <Button variant="secondary" size="sm" onClick={handleShareRoom}>
               <Share2 />
-              Compartilhar
+              {t("dashboard.header.share")}
             </Button>
           )}
           <UserProfileHeader />

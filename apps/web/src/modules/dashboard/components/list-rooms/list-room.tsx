@@ -3,6 +3,7 @@
 import React, { useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Star, Users } from "lucide-react";
+import { useI18n } from "@/locales/client";
 import { DataTableEmptyState } from "@/modules/shared/components/data-table";
 import { Card } from "@/modules/shared/ui/card";
 import { Skeleton } from "@/modules/shared/ui/skeleton";
@@ -13,6 +14,7 @@ import { DetailsRoom, type DetailsRoomHandle } from "../details-room/details-roo
 import type { RoomSort } from "../../services/get-rooms";
 
 export function RoomList() {
+  const t = useI18n();
   const [sortBy, setSortBy] = useState<RoomSort>("recent");
   const queryClient = useQueryClient();
   const { data, isLoading } = useGetRooms({ sort: sortBy });
@@ -37,7 +39,7 @@ export function RoomList() {
       <FilterRoom roomLength={rooms.length} sortBy={sortBy} onSortChange={setSortBy} onReload={handleReload} />
 
       {rooms.length === 0 ? (
-        <DataTableEmptyState title="Nenhuma sala encontrada" description="Crie uma sala para comecar uma nova votacao." icon={Users} disabledBackground />
+        <DataTableEmptyState title={t("dashboard.roomList.emptyTitle")} description={t("dashboard.roomList.emptyDescription")} icon={Users} disabledBackground />
       ) : (
         <div className="flex w-full h-[calc(100%-30px)] pb-10 pr-2 overflow-y-auto flex-wrap items-start justify-start gap-6">
           {rooms.map((room) => (
@@ -63,13 +65,13 @@ export function RoomList() {
                     <h3 className="text-base font-semibold">{room.name}</h3>
                     <div className="flex items-center gap-1 text-xs">
                       <Star className={room.is_favorite ? "h-4 w-4 fill-amber-500 text-amber-500" : "h-4 w-4 fill-transparent text-muted-foreground"} />
-                      <span className="text-muted-foreground">{room.is_favorite ? "Favorito" : "Nao favorito"}</span>
+                      <span className="text-muted-foreground">{room.is_favorite ? t("dashboard.roomList.favorite") : t("dashboard.roomList.notFavorite")}</span>
                     </div>
                   </div>
-                  <p className="text-xs text-muted-foreground">Criacao: {toBRFormat(room.created_at)}</p>
+                  <p className="text-xs text-muted-foreground">{t("dashboard.roomList.createdAt")}: {toBRFormat(room.created_at)}</p>
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  Jogadores: <span className="font-medium text-foreground">{room.participants_count}</span>
+                  {t("dashboard.roomList.players")}: <span className="font-medium text-foreground">{room.participants_count}</span>
                 </div>
               </div>
             </Card>

@@ -4,6 +4,7 @@ import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useState } 
 import { useParams, useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { Star } from "lucide-react";
+import { useI18n } from "@/locales/client";
 import { Button } from "@/modules/shared/ui/button";
 import { Skeleton } from "@/modules/shared/ui/skeleton";
 import {
@@ -30,13 +31,14 @@ export type DetailsRoomHandle = {
   close: () => void;
 };
 
-const getVotingScaleLabel = (value: RoomListItem["voting_scale"] | null | undefined) => {
-  if (value === VotingScale.FIBONACCI) return "Fibonacci";
-  if (value === VotingScale.POWER_OF_2) return "Power of 2";
-  return "Sem escala";
+const getVotingScaleLabel = (value: RoomListItem["voting_scale"] | null | undefined, t: ReturnType<typeof useI18n>) => {
+  if (value === VotingScale.FIBONACCI) return t("dashboard.roomDetails.values.fibonacci");
+  if (value === VotingScale.POWER_OF_2) return t("dashboard.roomDetails.values.powerOf2");
+  return t("dashboard.roomDetails.values.noScale");
 };
 
 export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(_props, ref) {
+  const t = useI18n();
   const router = useRouter();
   const params = useParams<{ locale?: string }>();
   const locale = params?.locale ? `/${params.locale}` : "";
@@ -54,7 +56,7 @@ export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(_p
   const previewRoom = useMemo(() => rooms.find((item) => item.public_id === publicId), [rooms, publicId]);
   const { data: detailRoom, isLoading } = useDetailRoom(publicId, open);
 
-  const roomName = detailRoom?.name ?? previewRoom?.name ?? "Sala";
+  const roomName = detailRoom?.name ?? previewRoom?.name ?? t("dashboard.roomDetails.fallbackName");
   const createdAt = detailRoom?.created_at ?? previewRoom?.created_at;
   const status = detailRoom?.status ?? previewRoom?.status ?? "open";
   const isPublic = detailRoom?.is_public ?? previewRoom?.is_public ?? true;
@@ -93,7 +95,7 @@ export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(_p
       previousRooms.forEach(([key, data]) => {
         queryClient.setQueryData<RoomListItem[]>(key, data);
       });
-      setDeleteError("Nao foi possivel excluir a sala. Tente novamente.");
+      setDeleteError(t("dashboard.roomDetails.errors.deleteFailed"));
     } finally {
       setIsDeleting(false);
     }
@@ -140,7 +142,7 @@ export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(_p
         queryClient.setQueryData<RoomListItem[]>(key, data);
       });
       setIsFavorite(Boolean(previewRoom?.is_favorite));
-      setFavoriteError("Nao foi possivel atualizar o favorito. Tente novamente.");
+      setFavoriteError(t("dashboard.roomDetails.errors.favoriteFailed"));
     } finally {
       setIsTogglingFavorite(false);
     }
@@ -179,7 +181,7 @@ export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(_p
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>{isLoading ? <Skeleton className="h-6 w-48" /> : roomName}</DialogTitle>
-          <DialogDescription>{isLoading ? "Carregando informacoes da sala..." : "Informacoes da sala."}</DialogDescription>
+          <DialogDescription>{isLoading ? t("dashboard.roomDetails.loadingDescription") : t("dashboard.roomDetails.readyDescription")}</DialogDescription>
         </DialogHeader>
         <div className="space-y-5">
           {isLoading ? (
@@ -188,7 +190,7 @@ export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(_p
             <div className="h-48 w-full overflow-hidden rounded-md border border-border">
               <img
                 src={imageUrl}
-                alt={`Imagem da sala ${roomName}`}
+                alt={t("dashboard.roomDetails.imageAlt", { roomName })}
                 className="h-full w-full object-cover"
                 onError={(event) => {
                   event.currentTarget.onerror = null;
@@ -217,29 +219,29 @@ export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(_p
             <>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1">
-                  <p className="text-xs uppercase text-muted-foreground">Criacao</p>
+                  <p className="text-xs uppercase text-muted-foreground">{t("dashboard.roomDetails.fields.createdAt")}</p>
                   <p className="text-sm font-medium">{createdAt ? toBRFormat(createdAt) : "-"}</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs uppercase text-muted-foreground">Status</p>
+                  <p className="text-xs uppercase text-muted-foreground">{t("dashboard.roomDetails.fields.status")}</p>
                   <p className="text-sm font-medium">{status}</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs uppercase text-muted-foreground">Visibilidade</p>
-                  <p className="text-sm font-medium">{isPublic ? "Publica" : "Privada"}</p>
+                  <p className="text-xs uppercase text-muted-foreground">{t("dashboard.roomDetails.fields.visibility")}</p>
+                  <p className="text-sm font-medium">{isPublic ? t("dashboard.roomDetails.values.public") : t("dashboard.roomDetails.values.private")}</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs uppercase text-muted-foreground">Escala</p>
-                  <p className="text-sm font-medium">{getVotingScaleLabel(votingScale)}</p>
+                  <p className="text-xs uppercase text-muted-foreground">{t("dashboard.roomDetails.fields.scale")}</p>
+                  <p className="text-sm font-medium">{getVotingScaleLabel(votingScale, t)}</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs uppercase text-muted-foreground">Participantes</p>
+                  <p className="text-xs uppercase text-muted-foreground">{t("dashboard.roomDetails.fields.participants")}</p>
                   <p className="text-sm font-medium">{participantsCount}</p>
                 </div>
               </div>
               <div className="space-y-2">
-                <p className="text-xs uppercase text-muted-foreground">Descricao</p>
-                <p className="text-sm text-foreground">{description ? description : "Sem descricao."}</p>
+                <p className="text-xs uppercase text-muted-foreground">{t("dashboard.roomDetails.fields.description")}</p>
+                <p className="text-sm text-foreground">{description ? description : t("dashboard.roomDetails.values.noDescription")}</p>
               </div>
             </>
           )}
@@ -248,36 +250,36 @@ export const DetailsRoom = forwardRef<DetailsRoomHandle>(function DetailsRoom(_p
         <DialogFooter>
           <Button type="button" variant="outline" disabled={isLoading || !publicId || isTogglingFavorite} onClick={handleToggleFavorite} className="gap-2">
             <Star className={isFavorite ? "h-4 w-4 fill-amber-500 text-amber-500" : "h-4 w-4 fill-transparent text-muted-foreground"} />
-            {isTogglingFavorite ? "Atualizando..." : isFavorite ? "Desfavoritar" : "Favoritar"}
+            {isTogglingFavorite ? t("dashboard.roomDetails.favorite.updating") : isFavorite ? t("dashboard.roomDetails.favorite.remove") : t("dashboard.roomDetails.favorite.add")}
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button type="button" variant="destructive" disabled={isLoading || !publicId}>
-                Excluir
+                {t("dashboard.roomDetails.delete.action")}
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Excluir sala?</AlertDialogTitle>
-                <AlertDialogDescription>Essa acao remove a sala permanentemente.</AlertDialogDescription>
+                <AlertDialogTitle>{t("dashboard.roomDetails.delete.title")}</AlertDialogTitle>
+                <AlertDialogDescription>{t("dashboard.roomDetails.delete.description")}</AlertDialogDescription>
               </AlertDialogHeader>
               {deleteError ? <p className="text-sm text-destructive">{deleteError}</p> : null}
               <AlertDialogFooter>
                 <AlertDialogCancel asChild>
                   <Button type="button" variant="outline">
-                    Cancelar
+                    {t("dashboard.roomDetails.actions.cancel")}
                   </Button>
                 </AlertDialogCancel>
                 <AlertDialogAction asChild>
                   <Button type="button" variant="destructive" onClick={handleDelete} disabled={isDeleting}>
-                    {isDeleting ? "Excluindo..." : "Excluir sala"}
+                    {isDeleting ? t("dashboard.roomDetails.delete.deleting") : t("dashboard.roomDetails.delete.confirm")}
                   </Button>
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
           <Button type="button" onClick={handleEnterRoom} disabled={!publicId}>
-            Entrar na sala
+            {t("dashboard.roomDetails.actions.enterRoom")}
           </Button>
         </DialogFooter>
       </DialogContent>
