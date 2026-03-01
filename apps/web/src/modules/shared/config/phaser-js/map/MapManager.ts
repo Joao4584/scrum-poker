@@ -6,6 +6,7 @@ interface WheelZoomOptions {
   maxZoom?: number;
   wheelStep?: number;
   precision?: number;
+  zoomSnapStep?: number;
   tweenDurationMs?: number;
   tweenEase?: string;
 }
@@ -167,6 +168,7 @@ export class MapManager {
     const maxZoom = options?.maxZoom ?? 2.5;
     const wheelStep = options?.wheelStep ?? 0.1;
     const precision = options?.precision ?? 100;
+    const zoomSnapStep = options?.zoomSnapStep ?? 0.25;
     const tweenDurationMs = options?.tweenDurationMs ?? 120;
     const tweenEase = options?.tweenEase ?? "Sine.Out";
     const initialZoom = Phaser.Math.Clamp(options?.initialZoom ?? 1, minZoom, maxZoom);
@@ -175,7 +177,8 @@ export class MapManager {
 
     const clampAndRoundZoom = (value: number) => {
       const clamped = Phaser.Math.Clamp(value, minZoom, maxZoom);
-      return Math.round(clamped * precision) / precision;
+      const snapped = Math.round(clamped / zoomSnapStep) * zoomSnapStep;
+      return Math.round(snapped * precision) / precision;
     };
 
     let targetZoom = initialZoom;

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useI18n } from "@/locales/client";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/modules/shared/ui/select";
-import spriteAssets from "@/modules/dashboard/sprites-config.json";
+import spriteAssets from "@/sprites-config.json";
 import { useCharacterStore } from "@/modules/room/stores/character.store";
 import { updateUserCharacter } from "@/modules/dashboard/services/update-user-character";
 

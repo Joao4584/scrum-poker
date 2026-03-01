@@ -1,7 +1,7 @@
 import * as Phaser from "phaser";
 import type { Room } from "colyseus.js";
 import type { PlaygroundState } from "../@types/player";
-import spriteAssets from "@/modules/dashboard/sprites-config.json";
+import spriteAssets from "@/sprites-config.json";
 
 export default class Preloader extends Phaser.Scene {
   constructor() {

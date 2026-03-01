@@ -65,9 +65,10 @@ export class MainScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor(background);
     this.cleanupZoomControls = MapManager.setupWheelZoom(this, this.cameras.main, {
       initialZoom: 1,
-      minZoom: 0.86,
+      minZoom: 1,
       maxZoom: 2.5,
-      wheelStep: 0.1,
+      wheelStep: 0.25,
+      zoomSnapStep: 0.25,
     });
 
     this.remotes = new RemoteManager(this, (x, y) => this.walkableResolver?.coerce(x, y, spawnFromMap) ?? spawnFromMap, spawnFromMap);
