@@ -11,6 +11,7 @@ import { NearbyPlayers } from "./components/nearby-players";
 import { PingCard } from "./components/ping-card";
 import { PlayerInfoCard } from "./components/player-info-card";
 import { InvisibilityCard } from "./components/invisibility-card";
+import { PlanningCard } from "./components/planning-card";
 import { useUser } from "@/modules/profile/hooks/use-user";
 import type { RoomDetail } from "../rooms/services/get-room-detail";
 import { useCharacterStore } from "@/modules/room/stores/character.store";
@@ -241,6 +242,7 @@ export default function RoomPage(props: RoomPageProps) {
             />
           </div>
           <FocusReturnButton />
+          <PlanningCard roomPublicId={props.room.public_id} votingScale={props.room.voting_scale} />
           <PingCard />
           <PlayerInfoCard />
           <NearbyPlayers />

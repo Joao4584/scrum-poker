@@ -29,9 +29,40 @@ export class QuestionTypeOrmRepository {
 
   async findByPublicId(public_id: string): Promise<Question | null> {
     const question = await this.repository.findOne({
-      where: { public_id },
+      where: {
+        public_id,
+        deleted_at: null,
+      },
     });
     return question;
+  }
+
+  async findByRoomId(room_id: number): Promise<Question[]> {
+    return await this.repository.find({
+      where: {
+        room_id,
+        deleted_at: null,
+      },
+      relations: {
+        votes: {
+          user: true,
+        },
+      },
+      order: {
+        is_active: 'DESC',
+        created_at: 'DESC',
+      },
+    });
+  }
+
+  async findActiveByRoomId(room_id: number): Promise<Question | null> {
+    return await this.repository.findOne({
+      where: {
+        room_id,
+        is_active: true,
+        deleted_at: null,
+      },
+    });
   }
 
   async update(id: number, data: Partial<Question>): Promise<void> {
@@ -39,6 +70,9 @@ export class QuestionTypeOrmRepository {
   }
 
   async delete(id: number): Promise<void> {
-    await this.repository.delete(id);
+    await this.repository.update(id, {
+      is_active: false,
+      deleted_at: new Date(),
+    });
   }
 }

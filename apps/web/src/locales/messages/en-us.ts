@@ -303,6 +303,46 @@ export default {
       },
     },
   },
+  planning: {
+    panel: {
+      emptyQuestion: "No question created yet.",
+      votesLabel: "Votes",
+      noVotes: "There are no votes for this question yet.",
+      hiddenVote: "?",
+      moreVoters: "+{count} people",
+      votersSectionTitle: "Participants who voted ({count})",
+      composer: {
+        title: "New question",
+        description: "Create the next estimation round for the room.",
+        placeholder: "Ex: What is the effort for this delivery?",
+        locked: "Finish or delete the open question before creating another one.",
+      },
+      actions: {
+        newQuestion: "New question",
+        cancel: "Cancel",
+        create: "Create",
+        delete: "Delete",
+        finish: "Finish",
+      },
+      votingDeck: {
+        title: "Your vote",
+        empty: "No vote",
+      },
+      summary: {
+        average: "Average",
+        reference: "Reference",
+        finishedAt: "Finished at",
+        },
+      questionStatus: {
+        active: "Open",
+        closed: "#{index}",
+      },
+      revealedStatus: {
+        revealed: "Revealed",
+        hidden: "Hidden",
+      },
+    },
+  },
   room: {
     page: {
       roomLabel: "Room:",

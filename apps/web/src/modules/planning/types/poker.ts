@@ -13,3 +13,5 @@ export type RoomPokerState = {
   activeQuestion: PokerQuestionSummary | null;
   history: PokerQuestionSummary[];
 };
+
+export type PlanningConnectionStatus = 'idle' | 'connecting' | 'connected' | 'error';

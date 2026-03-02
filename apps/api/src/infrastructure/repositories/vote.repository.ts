@@ -29,6 +29,16 @@ export class VoteTypeOrmRepository {
     return vote;
   }
 
+  async findByQuestionIdAndUserId(question_id: number, user_id: number): Promise<Vote | null> {
+    const vote = await this.repository.findOne({
+      where: {
+        question_id,
+        user_id,
+      },
+    });
+    return vote;
+  }
+
   async update(id: number, data: Partial<Vote>): Promise<void> {
     await this.repository.update(id, data);
   }

@@ -303,6 +303,46 @@ export default {
       },
     },
   },
+  planning: {
+    panel: {
+      emptyQuestion: "Nenhuma pergunta criada ainda.",
+      votesLabel: "Votos",
+      noVotes: "Ainda nao houve votos nessa pergunta.",
+      hiddenVote: "?",
+      moreVoters: "+{count} pessoas",
+      votersSectionTitle: "Participantes que votaram ({count})",
+      composer: {
+        title: "Nova pergunta",
+        description: "Crie a proxima rodada de estimativa para a sala.",
+        placeholder: "Ex: Qual o esforco dessa entrega?",
+        locked: "Finalize ou exclua a pergunta aberta antes de criar outra.",
+      },
+      actions: {
+        newQuestion: "Nova pergunta",
+        cancel: "Cancelar",
+        create: "Criar",
+        delete: "Excluir",
+        finish: "Finalizar",
+      },
+      votingDeck: {
+        title: "Seu voto",
+        empty: "Sem voto",
+      },
+      summary: {
+        average: "Media",
+        reference: "Referencia",
+        finishedAt: "Finalizado em",
+        },
+      questionStatus: {
+        active: "Aberta",
+        closed: "#{index}",
+      },
+      revealedStatus: {
+        revealed: "Revelada",
+        hidden: "Oculta",
+      },
+    },
+  },
   room: {
     page: {
       roomLabel: "Sala:",

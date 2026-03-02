@@ -38,6 +38,13 @@ export class RoomTypeOrmRepository {
     return room;
   }
 
+  async findById(id: number): Promise<Room | null> {
+    const room = await this.roomRepository.findOne({
+      where: { id },
+    });
+    return room;
+  }
+
   async deleteByPublicId(public_id: string): Promise<void> {
     await this.roomRepository.softDelete({ public_id });
   }

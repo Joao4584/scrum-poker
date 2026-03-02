@@ -4,7 +4,7 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
-import { WsAdapter } from '@nestjs/platform-ws';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import chalk from 'chalk';
 import fastifyCookie from '@fastify/cookie';
@@ -29,7 +29,7 @@ async function bootstrap() {
   app.enableCors(corsConfig);
   await app.register(fastifyCookie as any);
   await app.register(fastifyMultipart as any);
-  app.useWebSocketAdapter(new WsAdapter(app));
+  app.useWebSocketAdapter(new IoAdapter(app));
   app.useGlobalPipes(new ValidationRequestPipe());
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Scrum Poker API')

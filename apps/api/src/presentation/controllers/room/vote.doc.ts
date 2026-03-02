@@ -5,12 +5,12 @@ export const VoteDocs = {
   tags: 'Votes',
   bearer: true,
   create: {
-    operation: { summary: 'Create vote' },
+    operation: { summary: 'Create or update my vote' },
     param: { name: 'question_public_id', description: 'Question public id' },
     body: { type: CreateVoteRequest },
     response: {
       status: 201,
-      description: 'Vote created',
+      description: 'Vote created or updated',
       schema: {
         example: {
           public_id: 'vote_01HZX...',

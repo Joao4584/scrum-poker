@@ -9,12 +9,11 @@ import { SupportModule } from './application/support/support.module';
 import { TypeOrmConfigModule } from './shared/typeorm/typeorm.module';
 import { PingController } from './presentation/controllers/ping.controller';
 import { SwaggerController } from './presentation/controllers/swagger.controller';
-import { DashboardGateway } from './presentation/gateways/dashboard/dashboard.gateway';
 
 @Module({
   imports: [UserModule, RoomModule, FriendModule, UploadModule, SupportModule, TypeOrmConfigModule],
   controllers: [PingController, SwaggerController],
-  providers: [DashboardGateway],
+  providers: [],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

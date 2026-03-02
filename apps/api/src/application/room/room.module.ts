@@ -20,6 +20,7 @@ import { QuestionTypeOrmRepository } from '@/infrastructure/repositories/questio
 import { CreateQuestionUseCase } from './use-case/create-question.use-case';
 import { UpdateQuestionUseCase } from './use-case/update-question.use-case';
 import { DeleteQuestionUseCase } from './use-case/delete-question.use-case';
+import { ListRoomQuestionsUseCase } from './use-case/list-room-questions.use-case';
 import { QuestionController } from '@/presentation/controllers/room/question.controller';
 import { Vote } from '@/infrastructure/entities/vote.entity';
 import { VoteTypeOrmRepository } from '@/infrastructure/repositories/vote.repository';
@@ -30,9 +31,11 @@ import { VoteController } from '@/presentation/controllers/room/vote.controller'
 import { UploadFile } from '@/infrastructure/entities/upload-file.entity';
 import { UploadFileTypeOrmRepository } from '@/infrastructure/repositories/upload-file.repository';
 import { VerifyRoomPasswordUseCase } from './use-case/verify-room-password.use-case';
+import { PlanningGateway } from '@/presentation/gateways/planning/planning.gateway';
+import { UserModule } from '@/application/user/user.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Room, RoomParticipant, RoomFavorite, Question, Vote, UploadFile]), UlidModule],
+  imports: [TypeOrmModule.forFeature([Room, RoomParticipant, RoomFavorite, Question, Vote, UploadFile]), UlidModule, UserModule],
   providers: [
     RoomTypeOrmRepository,
     RoomParticipantTypeOrmRepository,
@@ -48,11 +51,13 @@ import { VerifyRoomPasswordUseCase } from './use-case/verify-room-password.use-c
     JoinRoomUseCase,
     ToggleRoomFavoriteUseCase,
     CreateQuestionUseCase,
+    ListRoomQuestionsUseCase,
     UpdateQuestionUseCase,
     DeleteQuestionUseCase,
     CreateVoteUseCase,
     UpdateVoteUseCase,
     DeleteVoteUseCase,
+    PlanningGateway,
   ],
   controllers: [RoomController, RoomParticipantsController, QuestionController, VoteController],
 })
