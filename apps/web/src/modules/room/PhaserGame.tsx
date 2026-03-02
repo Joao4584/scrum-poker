@@ -47,7 +47,11 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({ skin, level, ghost, user
   }, [room, onRoomConnected]);
 
   if (error) {
-    return <div className="w-full h-full flex items-center justify-center text-sm text-red-200 bg-slate-900">{error}</div>;
+    return (
+      <div className="flex h-full w-full items-center justify-center bg-slate-100 text-sm text-rose-700 dark:bg-slate-900 dark:text-red-200">
+        {error}
+      </div>
+    );
   }
 
   return <div id="phaser-game-container" data-scale-mode={getScaleMode()} ref={containerRef} style={{ width: "100%", height: "100%", backgroundColor }} />;

@@ -76,8 +76,8 @@ export function PokerPanel(props: PokerPanelProps) {
   return (
     <div className="space-y-3">
       {sortedQuestions.length === 0 ? (
-        <div className="rounded-2xl border border-slate-800 bg-slate-950/85 p-3.5 shadow-2xl backdrop-blur-sm">
-          <p className="text-sm text-slate-300">{t("planning.panel.emptyQuestion")}</p>
+        <div className="rounded-2xl border border-sky-200/80 bg-white/92 p-3.5 shadow-2xl backdrop-blur-sm dark:border-slate-800 dark:bg-slate-950/85">
+          <p className="text-sm text-slate-600 dark:text-slate-300">{t("planning.panel.emptyQuestion")}</p>
         </div>
       ) : (
         <div className="max-h-[580px] space-y-2 overflow-y-auto pr-1">

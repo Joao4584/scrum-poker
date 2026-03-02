@@ -219,8 +219,8 @@ export default function RoomPage(props: RoomPageProps) {
       </div>
       {checkingSavedAccessToken ? (
         <div className="flex h-full w-full items-center justify-center p-4">
-          <div className="w-full max-w-md rounded-2xl border border-slate-700/70 bg-slate-900/90 p-5 text-center shadow-2xl backdrop-blur-sm">
-            <p className="text-sm text-slate-200">{t("room.page.checkingAccess")}</p>
+          <div className="w-full max-w-md rounded-2xl border border-sky-200/80 bg-white/90 p-5 text-center shadow-2xl backdrop-blur-sm dark:border-slate-700/70 dark:bg-slate-900/90">
+            <p className="text-sm text-slate-700 dark:text-slate-200">{t("room.page.checkingAccess")}</p>
           </div>
         </div>
       ) : canMountGame ? (
@@ -251,16 +251,16 @@ export default function RoomPage(props: RoomPageProps) {
         </>
       ) : (
         <div className="flex h-full w-full items-center justify-center p-4">
-          <div className="w-full max-w-md rounded-2xl border border-slate-700/70 bg-slate-900/90 p-5 shadow-2xl backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-2xl border border-sky-200/80 bg-white/92 p-5 shadow-2xl backdrop-blur-sm dark:border-slate-700/70 dark:bg-slate-900/90">
             <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">{t("room.page.privateBadge")}</p>
-              <h2 className="text-lg font-semibold tracking-tight text-slate-100">{props.room.name}</h2>
-              <p className="text-sm text-slate-300">{t("room.page.privateDescription")}</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">{t("room.page.privateBadge")}</p>
+              <h2 className="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">{props.room.name}</h2>
+              <p className="text-sm text-slate-600 dark:text-slate-300">{t("room.page.privateDescription")}</p>
             </div>
 
             <form className="mt-4 space-y-3" onSubmit={handleVerifyRoomPassword}>
               <div className="space-y-2">
-                <label htmlFor="room-access-password" className="text-xs font-medium text-slate-300">
+                <label htmlFor="room-access-password" className="text-xs font-medium text-slate-700 dark:text-slate-300">
                   {t("room.page.passwordLabel")}
                 </label>
                 <Input
@@ -270,12 +270,12 @@ export default function RoomPage(props: RoomPageProps) {
                   onChange={(event) => setRoomPassword(event.target.value)}
                   placeholder={t("room.page.passwordPlaceholder")}
                   autoComplete="current-password"
-                  className="border-slate-700 bg-slate-800 text-slate-100 placeholder:text-slate-400"
+                  className="border-sky-200 bg-white text-slate-900 placeholder:text-slate-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                   disabled={verifyingPassword}
                 />
               </div>
 
-              {roomPasswordError ? <p className="text-sm text-rose-300">{roomPasswordError}</p> : null}
+              {roomPasswordError ? <p className="text-sm text-rose-700 dark:text-rose-300">{roomPasswordError}</p> : null}
 
               <Button type="submit" className="w-full" disabled={verifyingPassword}>
                 {verifyingPassword ? t("room.page.checking") : t("room.page.enterRoom")}

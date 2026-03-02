@@ -6,23 +6,23 @@ export function PokerPanelSkeleton() {
       {Array.from({ length: 3 }).map((_, index) => (
         <div
           key={`planning-skeleton-${index}`}
-          className="rounded-2xl border border-slate-800 bg-[linear-gradient(135deg,rgba(15,23,42,0.96),rgba(30,41,59,0.92))] p-3.5 shadow-xl backdrop-blur-sm"
+          className="rounded-2xl border border-sky-200/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(226,232,240,0.95))] p-3.5 shadow-xl backdrop-blur-sm dark:border-slate-800 dark:bg-[linear-gradient(135deg,rgba(15,23,42,0.96),rgba(30,41,59,0.92))]"
         >
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0 flex-1 space-y-3">
               <div className="flex gap-2">
-                <Skeleton className="h-5 w-16 rounded-full bg-slate-700/60" />
-                <Skeleton className="h-5 w-20 rounded-full bg-slate-700/60" />
+                <Skeleton className="h-5 w-16 rounded-full bg-slate-200 dark:bg-slate-700/60" />
+                <Skeleton className="h-5 w-20 rounded-full bg-slate-200 dark:bg-slate-700/60" />
               </div>
-              <Skeleton className="h-4 w-11/12 bg-slate-700/60" />
-              <Skeleton className="h-4 w-8/12 bg-slate-700/60" />
+              <Skeleton className="h-4 w-11/12 bg-slate-200 dark:bg-slate-700/60" />
+              <Skeleton className="h-4 w-8/12 bg-slate-200 dark:bg-slate-700/60" />
               <div className="flex gap-2">
-                <Skeleton className="h-7 w-7 rounded-full bg-slate-700/60" />
-                <Skeleton className="h-7 w-7 rounded-full bg-slate-700/60" />
-                <Skeleton className="h-7 w-7 rounded-full bg-slate-700/60" />
+                <Skeleton className="h-7 w-7 rounded-full bg-slate-200 dark:bg-slate-700/60" />
+                <Skeleton className="h-7 w-7 rounded-full bg-slate-200 dark:bg-slate-700/60" />
+                <Skeleton className="h-7 w-7 rounded-full bg-slate-200 dark:bg-slate-700/60" />
               </div>
             </div>
-            <Skeleton className="h-10 w-12 rounded-2xl bg-slate-700/60" />
+            <Skeleton className="h-10 w-12 rounded-2xl bg-slate-200 dark:bg-slate-700/60" />
           </div>
         </div>
       ))}

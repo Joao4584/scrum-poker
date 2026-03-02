@@ -52,16 +52,22 @@ export function QuestionComposer(props: QuestionComposerProps) {
   return (
     <div
       className={cn(
-        "rounded-2xl border border-slate-800 bg-[linear-gradient(135deg,rgba(15,23,42,0.96),rgba(30,41,59,0.92))] p-3 shadow-xl backdrop-blur-sm",
+        "rounded-2xl border border-sky-200/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(226,232,240,0.95))] p-3 shadow-xl backdrop-blur-sm dark:border-slate-800 dark:bg-[linear-gradient(135deg,rgba(15,23,42,0.96),rgba(30,41,59,0.92))]",
         props.disabled && "opacity-70",
       )}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-1">
-          <p className="text-sm font-semibold text-slate-50">{t("planning.panel.composer.title")}</p>
-          <p className="text-xs text-slate-400">{t("planning.panel.composer.description")}</p>
+          <p className="text-sm font-semibold text-slate-900 dark:text-slate-50">{t("planning.panel.composer.title")}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">{t("planning.panel.composer.description")}</p>
         </div>
-        <Button type="button" size="icon" variant="ghost" className="h-8 w-8 rounded-xl text-slate-300 hover:bg-slate-800" onClick={handleClose}>
+        <Button
+          type="button"
+          size="icon"
+          variant="ghost"
+          className="h-8 w-8 rounded-xl text-slate-500 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+          onClick={handleClose}
+        >
           <X className="h-4 w-4" />
         </Button>
       </div>
@@ -71,14 +77,20 @@ export function QuestionComposer(props: QuestionComposerProps) {
           value={title}
           onChange={(event) => setTitle(event.target.value)}
           placeholder={t("planning.panel.composer.placeholder")}
-          className="h-10 rounded-xl border-slate-700 bg-slate-950/60 text-slate-100 placeholder:text-slate-500"
+          className="h-10 rounded-xl border-slate-300 bg-white/85 text-slate-900 placeholder:text-slate-400 dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-100 dark:placeholder:text-slate-500"
           maxLength={140}
         />
 
-        {props.disabled ? <p className="text-xs text-amber-300">{t("planning.panel.composer.locked")}</p> : null}
+        {props.disabled ? <p className="text-xs text-amber-700 dark:text-amber-300">{t("planning.panel.composer.locked")}</p> : null}
 
         <div className="flex justify-end gap-2">
-          <Button type="button" variant="ghost" size="sm" className="rounded-xl text-slate-300 hover:bg-slate-800" onClick={handleClose}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="rounded-xl text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+            onClick={handleClose}
+          >
             {t("planning.panel.actions.cancel")}
           </Button>
           <Button

@@ -59,8 +59,8 @@ export function QuestionCard(props: QuestionCardProps) {
       className={cn(
         "overflow-hidden rounded-2xl border shadow-xl backdrop-blur-sm",
         question.is_active
-          ? "border-cyan-400/40 bg-[linear-gradient(135deg,rgba(34,211,238,0.18),rgba(15,23,42,0.92))]"
-          : "border-slate-800 bg-[linear-gradient(135deg,rgba(15,23,42,0.96),rgba(30,41,59,0.92))]",
+          ? "border-cyan-400/40 bg-[linear-gradient(135deg,rgba(34,211,238,0.16),rgba(255,255,255,0.96))] dark:bg-[linear-gradient(135deg,rgba(34,211,238,0.18),rgba(15,23,42,0.92))]"
+          : "border-sky-200/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(226,232,240,0.95))] dark:border-slate-800 dark:bg-[linear-gradient(135deg,rgba(15,23,42,0.96),rgba(30,41,59,0.92))]",
       )}
     >
       <AccordionItem value={question.public_id} className="border-none">
@@ -68,15 +68,15 @@ export function QuestionCard(props: QuestionCardProps) {
           <div className="flex w-full items-start justify-between gap-3.5 text-left">
             <div className="min-w-0 flex-1 space-y-2.5">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="shrink-0 rounded-full border border-slate-700 bg-slate-900/80 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] text-slate-300">
+                <span className="shrink-0 rounded-full border border-slate-300 bg-white/85 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] text-slate-600 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300">
                   {question.is_active ? t("planning.panel.questionStatus.active") : t("planning.panel.questionStatus.closed", { index: index + 1 })}
                 </span>
                 <span
                   className={cn(
                     "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em]",
                     question.revealed
-                      ? "border border-emerald-400/30 bg-emerald-500/10 text-emerald-200"
-                      : "border border-amber-400/30 bg-amber-500/10 text-amber-200",
+                      ? "border border-emerald-400/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-200"
+                      : "border border-amber-400/40 bg-amber-500/10 text-amber-700 dark:text-amber-200",
                   )}
                 >
                   {question.revealed ? t("planning.panel.revealedStatus.revealed") : t("planning.panel.revealedStatus.hidden")}
@@ -84,21 +84,23 @@ export function QuestionCard(props: QuestionCardProps) {
               </div>
 
               <div className="space-y-2.5">
-                <p className={cn("line-clamp-2 text-sm", question.is_active ? "font-semibold text-slate-50" : "font-medium text-slate-200")}>{question.text}</p>
+                <p className={cn("line-clamp-2 text-sm", question.is_active ? "font-semibold text-slate-900 dark:text-slate-50" : "font-medium text-slate-700 dark:text-slate-200")}>
+                  {question.text}
+                </p>
                 <div className="flex items-center gap-3">
                   {question.voters.length > 0 ? (
                     <div className="flex -space-x-2">
                       {question.voters.slice(0, 4).map((voter, voterIndex) => (
-                        <Avatar key={`${voter.public_id}-${voterIndex}`} className="h-7 w-7 border-2 border-slate-950 shadow-sm">
+                        <Avatar key={`${voter.public_id}-${voterIndex}`} className="h-7 w-7 border-2 border-white shadow-sm dark:border-slate-950">
                           {voter.avatar_url ? <AvatarImage src={voter.avatar_url} alt={voter.name} /> : null}
-                          <AvatarFallback className="bg-slate-700 text-[9px] text-slate-100">
+                          <AvatarFallback className="bg-slate-200 text-[9px] text-slate-700 dark:bg-slate-700 dark:text-slate-100">
                             {(formatDisplayName(voter.name) ?? voter.name).slice(0, 2).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
                       ))}
                     </div>
                   ) : (
-                    <div className="rounded-full border border-dashed border-slate-700 bg-slate-900/40 px-2.5 py-1 text-[11px] text-slate-400">
+                    <div className="rounded-full border border-dashed border-slate-300 bg-white/55 px-2.5 py-1 text-[11px] text-slate-500 dark:border-slate-700 dark:bg-slate-900/40 dark:text-slate-400">
                       {t("planning.panel.noVotes")}
                     </div>
                   )}
@@ -107,24 +109,24 @@ export function QuestionCard(props: QuestionCardProps) {
             </div>
 
             <div className="shrink-0 space-y-1.5">
-              <div className="min-w-[90px] overflow-hidden rounded-xl border border-slate-700/60 bg-slate-950/65">
+              <div className="min-w-[90px] overflow-hidden rounded-xl border border-slate-300/80 bg-white/80 dark:border-slate-700/60 dark:bg-slate-950/65">
                 <div className="flex items-center justify-center px-2.5 py-1.5">
-                  <p className="inline-flex items-center gap-1.5 text-[9px] uppercase tracking-[0.16em] text-slate-500">
+                  <p className="inline-flex items-center gap-1.5 text-[9px] uppercase tracking-[0.16em] text-slate-500 dark:text-slate-500">
                     <span>{t("planning.panel.votesLabel")}</span>
-                    <span className="text-xs font-semibold leading-none text-slate-50 tabular-nums">{question.votes_count}</span>
+                    <span className="text-xs font-semibold leading-none text-slate-900 tabular-nums dark:text-slate-50">{question.votes_count}</span>
                   </p>
                 </div>
               </div>
               <div className="px-1">
                 <p className="text-center text-[8px] uppercase tracking-[0.16em] text-slate-500">{t("planning.panel.summary.average")}</p>
-                <p className="mt-0.5 text-center text-xs font-semibold text-cyan-100 tabular-nums">{question.revealed ? formattedAverage : "-"}</p>
+                <p className="mt-0.5 text-center text-xs font-semibold text-cyan-700 tabular-nums dark:text-cyan-100">{question.revealed ? formattedAverage : "-"}</p>
               </div>
             </div>
           </div>
         </AccordionTrigger>
 
         <AccordionContent className="px-3.5 pb-3.5 pt-0">
-          <div className="space-y-2.5 rounded-xl border border-slate-800/80 bg-slate-950/45 p-2.5">
+          <div className="space-y-2.5 rounded-xl border border-sky-200/80 bg-white/55 p-2.5 dark:border-slate-800/80 dark:bg-slate-950/45">
             {question.is_active && votingDeckValues.length > 0 ? (
               <VotingDeck
                 cards={votingDeckValues}
@@ -135,13 +137,13 @@ export function QuestionCard(props: QuestionCardProps) {
             ) : null}
             {question.revealed ? (
               <div className="grid grid-cols-2 gap-2">
-                <div className="min-w-0 rounded-xl border border-slate-800/90 bg-slate-950/70 px-2.5 py-2">
+                <div className="min-w-0 rounded-xl border border-slate-300/80 bg-white/80 px-2.5 py-2 dark:border-slate-800/90 dark:bg-slate-950/70">
                   <p className="text-[9px] uppercase tracking-[0.12em] text-slate-500">{t("planning.panel.summary.reference")}</p>
-                  <p className="mt-1 truncate text-xs font-semibold text-slate-50 tabular-nums">{votingSummary.suggestedValue ?? "-"}</p>
+                  <p className="mt-1 truncate text-xs font-semibold text-slate-900 tabular-nums dark:text-slate-50">{votingSummary.suggestedValue ?? "-"}</p>
                 </div>
-                <div className="min-w-0 rounded-xl border border-slate-800/90 bg-slate-950/70 px-2.5 py-2">
+                <div className="min-w-0 rounded-xl border border-slate-300/80 bg-white/80 px-2.5 py-2 dark:border-slate-800/90 dark:bg-slate-950/70">
                   <p className="text-[9px] uppercase tracking-[0.12em] text-slate-500">{t("planning.panel.summary.finishedAt")}</p>
-                  <p className="mt-1 truncate text-xs font-medium text-slate-50">{formattedFinishedAt}</p>
+                  <p className="mt-1 truncate text-xs font-medium text-slate-900 dark:text-slate-50">{formattedFinishedAt}</p>
                 </div>
               </div>
             ) : null}

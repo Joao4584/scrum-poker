@@ -18,12 +18,12 @@ export function QuestionCardActions(props: QuestionCardActionsProps) {
   }
 
   return (
-    <div className="flex justify-end gap-2 border-t border-slate-800/80 pt-2">
+    <div className="flex justify-end gap-2 border-t border-slate-300/80 pt-2 dark:border-slate-800/80">
       <Button
         type="button"
         size="sm"
         variant="ghost"
-        className="rounded-xl text-rose-200 hover:bg-rose-500/10 hover:text-rose-100"
+        className="rounded-xl text-rose-700 hover:bg-rose-500/10 hover:text-rose-800 dark:text-rose-200 dark:hover:text-rose-100"
         disabled={props.isDeleting || props.isFinishing}
         onClick={props.onDelete}
       >

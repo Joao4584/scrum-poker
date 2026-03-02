@@ -15,7 +15,7 @@ export function FocusReturnButton() {
       onClick={() => {
         setGameFocus(true);
       }}
-      className="absolute top-4 right-4 z-50 px-3 py-2 text-xs font-semibold bg-slate-800/90 text-slate-100 border border-slate-700 rounded shadow hover:bg-slate-700 transition"
+      className="absolute top-4 right-4 z-50 rounded border border-sky-300 bg-white/92 px-3 py-2 text-xs font-semibold text-slate-800 shadow backdrop-blur-sm transition hover:bg-sky-50 dark:border-slate-700 dark:bg-slate-800/90 dark:text-slate-100 dark:hover:bg-slate-700"
     >
       {t("room.focusReturn.button")}
     </button>

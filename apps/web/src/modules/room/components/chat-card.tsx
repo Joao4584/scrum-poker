@@ -14,7 +14,7 @@ export function ChatCard() {
   const { sendChat, setGameFocus } = useRoomActions();
 
   return (
-    <div className="absolute bottom-4 right-4 z-50 flex items-center gap-2 bg-slate-900/90 border border-slate-800 px-3 py-2 rounded-md shadow-xl">
+    <div className="absolute bottom-4 right-4 z-50 flex items-center gap-2 rounded-md border border-sky-200/80 bg-white/88 px-3 py-2 shadow-xl backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/90">
       <input
         value={chatMessage}
         onChange={(e) => {
@@ -33,11 +33,11 @@ export function ChatCard() {
             sendChat();
           }
         }}
-        className="px-3 py-2 bg-slate-800 text-slate-100 text-sm rounded border border-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400/60"
+        className="rounded border border-sky-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-300/70 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:ring-slate-400/60"
       />
       <button
         onClick={sendChat}
-        className="px-3 py-2 text-sm font-semibold bg-slate-700 text-slate-100 rounded hover:bg-slate-600 border border-slate-600 transition disabled:opacity-50"
+        className="rounded border border-sky-300 bg-sky-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-sky-500 disabled:opacity-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:hover:bg-slate-600"
         disabled={!room}
       >
         {t("room.chat.send")}
