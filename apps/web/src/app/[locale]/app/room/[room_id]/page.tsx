@@ -1,8 +1,8 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useDetailRoom } from "@/modules/dashboard/hooks/use-detail-room";
-import { useSidebarSizeStore } from "@/modules/dashboard/stores/sidebar-size.store";
+import { useDetailRoom } from "@/modules/rooms/hooks/use-detail-room";
+import { useSidebarSizeStore } from "@/modules/workspace/stores/sidebar-size.store";
 import { useEffect } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";

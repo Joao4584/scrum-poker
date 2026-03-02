@@ -9,7 +9,7 @@ import { sanitizeChatMessage } from "./game/chat-config";
 import { ChatCard } from "./layout/chat-card";
 import { PingCard } from "./layout/ping-card";
 import { UpdateNameCard } from "./layout/update-name-card";
-import { useUser } from "@/modules/dashboard/hooks/use-user";
+import { useUser } from "@/modules/profile/hooks/use-user";
 
 const DynamicPhaserGame = dynamic(() => import("./game/PhaserGame").then((mod) => mod.PhaserGame), {
   ssr: false,

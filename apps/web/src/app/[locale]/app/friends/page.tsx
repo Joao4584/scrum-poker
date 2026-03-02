@@ -1,4 +1,4 @@
-import { FriendListTable } from "@/modules/dashboard/components/list-friends/table-friends";
+import { FriendListTable } from "@/modules/friends/components/list-friends/table-friends";
 import React from "react";
 
 export default function Page() {

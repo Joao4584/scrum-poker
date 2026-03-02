@@ -1,6 +1,6 @@
 "use client";
 
-import { RoomList } from "@/modules/dashboard/components/list-rooms/list-room";
+import { RoomList } from "@/modules/rooms/components/list-rooms/list-room";
 
 export default function Page() {
   return (
