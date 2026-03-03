@@ -1,4 +1,4 @@
-import { PokerPanel } from "@/modules/planning/components/poker-panel";
+import { PokerPanel } from "@/modules/planning/components/panel/poker-panel";
 import type { VotingScale } from "@/modules/shared/enums/voting-scale.enum";
 
 type PlanningCardProps = {

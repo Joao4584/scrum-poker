@@ -1,7 +1,7 @@
 import { useI18n } from "@/locales/client";
 import { formatDisplayName, toBRFormat } from "@/modules/shared/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/modules/shared/ui/avatar";
-import type { PlanningQuestion } from "../services/get-room-questions";
+import type { PlanningQuestion } from "../../services/get-room-questions";
 
 type QuestionVotersListProps = {
   voters: PlanningQuestion["voters"];

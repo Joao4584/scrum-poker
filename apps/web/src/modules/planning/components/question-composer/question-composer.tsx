@@ -4,6 +4,7 @@ import { Button } from "@/modules/shared/ui/button";
 import { Input } from "@/modules/shared/ui/input";
 import { cn } from "@/modules/shared/utils/cn";
 import { Loader2, Plus, X } from "lucide-react";
+import { useRoomActions } from "@/modules/room/hooks/use-room-actions";
 
 type QuestionComposerProps = {
   disabled: boolean;
@@ -15,8 +16,10 @@ export function QuestionComposer(props: QuestionComposerProps) {
   const t = useI18n();
   const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState("");
+  const { setGameFocus } = useRoomActions();
 
   const handleClose = () => {
+    setGameFocus(true);
     setIsOpen(false);
     setTitle("");
   };
@@ -40,7 +43,10 @@ export function QuestionComposer(props: QuestionComposerProps) {
           size="sm"
           className="rounded-xl bg-cyan-500 text-slate-950 hover:bg-cyan-400"
           disabled={props.disabled}
-          onClick={() => setIsOpen(true)}
+          onClick={() => {
+            setGameFocus(false);
+            setIsOpen(true);
+          }}
         >
           <Plus className="h-4 w-4" />
           {t("planning.panel.actions.newQuestion")}
@@ -74,11 +80,18 @@ export function QuestionComposer(props: QuestionComposerProps) {
 
       <div className="mt-3 space-y-3">
         <Input
+          autoFocus
           value={title}
           onChange={(event) => setTitle(event.target.value)}
           placeholder={t("planning.panel.composer.placeholder")}
           className="h-10 rounded-xl border-slate-300 bg-white/85 text-slate-900 placeholder:text-slate-400 dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-100 dark:placeholder:text-slate-500"
           maxLength={140}
+          onFocus={() => setGameFocus(false)}
+          onBlur={() => setGameFocus(true)}
+          onKeyDownCapture={(event) => {
+            event.stopPropagation();
+            event.nativeEvent.stopImmediatePropagation();
+          }}
         />
 
         {props.disabled ? <p className="text-xs text-amber-700 dark:text-amber-300">{t("planning.panel.composer.locked")}</p> : null}
